@@ -1,2 +1,6 @@
 id,title,description,acceptance_criteria,priority,size,status,sprint,created_at,updated_at
-PBI-001,(PBI title),(User story description),(Acceptance criteria separated by semicolons),Critical/High/Medium/Low,0,New,,YYYY-MM-DD,YYYY-MM-DD
+PBI-007,Remaining views and view picker,As a user I want 5-day Day and List views and an icon view picker,Rest of CAL-01.b; CAL-06.c; CAL-01.j pass,Medium,5,New,,2026-11-21,2026-11-21
+PBI-008,Calendar filter,As a user I want to filter calendars,FLT backlog rows (9) pass,Medium,5,New,,2026-11-21,2026-11-21
+PBI-009,Theme components and palettes,As a user I want themed components,THM-03 to THM-09 backlog rows pass,Medium,8,New,,2026-11-21,2026-11-21
+PBI-010,Shared UI components,As a user I want shared save/cancel pairs and resize bars,UIC-14 to UIC-17; UIC-27 to UIC-37 backlog rows pass,Medium,8,New,,2026-11-21,2026-11-21
+PBI-011,Calendar event drag and resize,As a user I want to move events and resize the calendar,CAL-03.a-d; CAL-04.b-f pass,Low,5,New,,2026-11-21,2026-11-21

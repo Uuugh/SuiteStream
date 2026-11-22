@@ -1,2 +1,7 @@
 id,title,description,acceptance_criteria,priority,size,status,sprint,created_at,updated_at
-PBI-001,(PBI title),(User story description),(Acceptance criteria separated by semicolons),Critical/High/Medium/Low,0,New,,YYYY-MM-DD,YYYY-MM-DD
+PBI-001,Flutter app scaffold and test harness,As a developer I need a buildable Flutter app with a test runner so each requirement has a runnable test,App builds on the target platform; test command runs and reports per requirement ID,Critical,3,Done,001,2026-11-21,2026-11-21
+PBI-002,Time model,As a user I want event times stored in UTC with their zone and shown in my Local zone and format,TIM-01; TIM-02; TIM-03; TIM-04; TIM-05; TIM-06; TIM-10 each pass their tests,Critical,5,Done,001,2026-11-21,2026-11-21
+PBI-003,Theme tokens and fonts,As a user I want the light and dark Soft palette and IBM Plex fonts,THM-01.a-d; THM-02.a-l pass (incl. 4.5:1 muted contrast),High,5,Done,001,2026-11-21,2026-11-21
+PBI-004,Shared dropdown and instant apply,As a user I want one dropdown behaviour and changes shown at once,UIC-12; UIC-13 pass,High,3,Done,001,2026-11-21,2026-11-21
+PBI-005,Month view and navigation,As a user I want a Month calendar I can navigate with today marked,CAL-01.a; CAL-01.b (Month and Week only); CAL-01.d; CAL-01.i pass,High,8,Done,001,2026-11-21,2026-11-21
+PBI-006,Week view hourly grid,As a user I want a Week view with an hourly grid and week navigation,CAL-01.c; CAL-01.h pass,High,5,Done,001,2026-11-21,2026-11-21
