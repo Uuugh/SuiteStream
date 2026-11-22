@@ -23,7 +23,7 @@ Result: about 22 of the 47 planned points were built. The goal is met for the ev
 | Items map to agreed acceptance criteria | Yes, rows above |
 | Pass/fail verification | `flutter test`: 138 pass; `dart run tool/req_coverage.dart` |
 | Code quality | `flutter analyze` clean; Dart and Flutter only |
-| Runtime behavior | Builds for the web and runs at localhost:8080; the Product Owner has not yet used the event dialog |
+| Runtime behavior | Builds for the web and runs at localhost:8080; the Product Owner reviewed the event dialog and requested a readable short end-zone label and horizontally aligned time fields, which were fixed and covered by targeted tests |
 | Security and privacy | Events and settings are kept only on the device; no network access except opening a map or meeting link on a click |
 | Documentation | README unchanged and still correct |
 

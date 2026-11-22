@@ -161,27 +161,29 @@ void main() {
 }
 
 void labelTests() {
-  testWidgets('UIC-40: a label fits its control without cutting a word: Different end time zone in a narrow dialog', (tester) async {
-    for (final width in [1000.0, 800.0, 620.0]) {
+  testWidgets('UIC-40: a long checkbox label abbreviates before truncation and the paired time fields stay aligned', (tester) async {
+    for (final width in [1000.0, 620.0, 520.0]) {
       final size = Size(width, 1400);
       useWindow(tester, size);
       final c = makeController(view: CalendarView.month);
       await tester.pumpWidget(appFor(CalendarPage(controller: c), size: size));
       await tester.tap(find.byKey(const ValueKey('day-2026-7-20')));
       await tester.pumpAndSettle();
-      final label = find.text('Different end time zone');
+      final label = find.byKey(const ValueKey('event-diffzone-label'));
       expect(label, findsOneWidget, reason: '$width');
-      // The text is shown whole (scaled down when needed), inside the dialog.
       final text = tester.widget<Text>(label);
-      expect(text.overflow, isNot(TextOverflow.ellipsis));
-      final scaled = tester.firstWidget<FittedBox>(find.ancestor(of: label, matching: find.byType(FittedBox)));
-      expect(scaled.fit, BoxFit.scaleDown);
+      expect(text.style?.fontSize, 12);
+      expect(text.data, anyOf('Different end time zone', 'Different end TZ'));
+      expect(text.overflow, TextOverflow.ellipsis);
       final dialog = tester.getRect(find.byKey(const ValueKey('event-dialog')));
       final r = tester.getRect(label);
       expect(r.right <= dialog.right && r.left >= dialog.left, isTrue, reason: '$width');
-      // It is not clipped by the end time field's column.
+      final startField = tester.getRect(find.byKey(const ValueKey('event-start-time')));
       final endField = tester.getRect(find.byKey(const ValueKey('event-end-time')));
-      expect(r.right <= endField.right + 1, isTrue, reason: '$width');
+      expect(endField.top, startField.top, reason: '$width');
+      expect(endField.height, startField.height, reason: '$width');
+      expect(endField.width, startField.width, reason: '$width');
+      if (width == 520) expect(text.data, 'Different end TZ');
       await tester.tap(find.byKey(const ValueKey('event-cancel')));
       await tester.pumpAndSettle();
     }

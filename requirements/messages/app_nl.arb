@@ -897,6 +897,7 @@
   "reminders": "Herinneringen",
   "calendarDefault": "Standaard van de agenda",
   "differentEndZone": "Andere eindtijdzone",
+  "differentEndZoneShort": "Andere eind-TZ",
   "openLink": "Openen",
   "openMap": "Kaart",
   "hideButton": "Verbergen",

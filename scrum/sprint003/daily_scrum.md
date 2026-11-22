@@ -17,3 +17,7 @@
 - Dropdowns no longer resize when items are chosen or cleared (UIC-12).
 - Product Owner: Undo will come with History / the log, so there is no Undo button until then.
 - Tests: 138 pass; 43 requirement rows `planned`.
+
+## Follow-up (2026-11-22)
+- The end-time-zone label now uses a localized short form before ellipsis when space is limited; the paired start/end time fields align horizontally.
+- Verification: 41 event-dialog and popup-layout tests pass; `flutter analyze` is clean.

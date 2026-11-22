@@ -897,6 +897,7 @@
   "reminders": "Erinnerungen",
   "calendarDefault": "Kalender-Standard",
   "differentEndZone": "Andere Zeitzone für das Ende",
+  "differentEndZoneShort": "Andere End-TZ",
   "openLink": "Öffnen",
   "openMap": "Karte",
   "hideButton": "Ausblenden",

@@ -424,20 +424,23 @@ class _EventDialogState extends State<EventDialog> {
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 3),
-          child: Row(
-            children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(label, maxLines: 1, style: TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12)),
+          child: SizedBox(
+            height: 20,
+            child: Row(
+              children: [
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(label, maxLines: 1, style: TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12)),
+                  ),
                 ),
-              ),
-              if (required) Text(' *', style: TextStyle(color: t.bad, fontWeight: FontWeight.w700, fontSize: 12)),
-              if (trailing != null) ...[const SizedBox(width: 10), Flexible(child: trailing)],
-              // The note says what is wrong, on this line, next to the label (UIC-19).
-              if (error != null) ...[const SizedBox(width: 10), Expanded(child: ErrorNote(error))],
-            ],
+                if (required) Text(' *', style: TextStyle(color: t.bad, fontWeight: FontWeight.w700, fontSize: 12)),
+                if (trailing != null) ...[const SizedBox(width: 10), Flexible(child: trailing)],
+                // The note says what is wrong, on this line, next to the label (UIC-19).
+                if (error != null) ...[const SizedBox(width: 10), Expanded(child: ErrorNote(error))],
+              ],
+            ),
           ),
         ),
         field,
@@ -461,7 +464,7 @@ class _EventDialogState extends State<EventDialog> {
     );
   }
 
-  Widget _checkbox(String key, String label, bool value, ValueChanged<bool> onChanged) {
+  Widget _checkbox(String key, String label, bool value, ValueChanged<bool> onChanged, {String? shortLabel}) {
     final t = context.tokens;
     return InkWell(
       onTap: () => onChanged(!value),
@@ -474,12 +477,26 @@ class _EventDialogState extends State<EventDialog> {
             child: Checkbox(key: ValueKey(key), value: value, onChanged: (v) => onChanged(v ?? false), visualDensity: VisualDensity.compact, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
           ),
           const SizedBox(width: 6),
-          // A label is never cut off: when it does not fit it shrinks to fit.
           Flexible(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(label, maxLines: 1, style: TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12)),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final style = TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12);
+                final painter = TextPainter(
+                  text: TextSpan(text: label, style: style),
+                  maxLines: 1,
+                  textDirection: Directionality.of(context),
+                  textScaler: MediaQuery.textScalerOf(context),
+                )..layout();
+                final fits = painter.width <= constraints.maxWidth;
+                painter.dispose();
+                return Text(
+                  fits ? label : shortLabel ?? label,
+                  key: ValueKey('$key-label'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: style,
+                );
+              },
             ),
           ),
         ],
@@ -715,10 +732,16 @@ class _EventDialogState extends State<EventDialog> {
                   _timeField(start: false),
                   required: true,
                   error: _allDay ? null : _errors['end'],
-                  trailing: _checkbox('event-diffzone', m('differentEndZone'), _differentEnd, (v) => setState(() {
-                    _differentEnd = v;
-                    if (!_differentEnd) _endZone = _startZone; // unticking sets the end zone back
-                  })),
+                  trailing: _checkbox(
+                    'event-diffzone',
+                    m('differentEndZone'),
+                    _differentEnd,
+                    (v) => setState(() {
+                      _differentEnd = v;
+                      if (!_differentEnd) _endZone = _startZone; // unticking sets the end zone back
+                    }),
+                    shortLabel: m('differentEndZoneShort'),
+                  ),
                 ),
               ),
             ],

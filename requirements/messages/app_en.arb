@@ -1114,6 +1114,7 @@
   "reminders": "Reminders",
   "calendarDefault": "Calendar default",
   "differentEndZone": "Different end time zone",
+  "differentEndZoneShort": "Different end TZ",
   "openLink": "Open",
   "openMap": "Map",
   "hideButton": "Hide",

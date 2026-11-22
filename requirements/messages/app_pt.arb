@@ -897,6 +897,7 @@
   "reminders": "Lembretes",
   "calendarDefault": "Padrão do calendário",
   "differentEndZone": "Fuso horário final diferente",
+  "differentEndZoneShort": "TZ final diferente",
   "openLink": "Abrir",
   "openMap": "Mapa",
   "hideButton": "Ocultar",

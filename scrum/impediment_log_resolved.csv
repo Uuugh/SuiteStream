@@ -1,2 +1,4 @@
 id,title,description,reported_by,reported_at,status,resolved_at,resolution,sprint
 IMP-001,(Impediment title),(Detailed description),(Reported by),YYYY-MM-DD,Open,,(Resolution),sprint001
+IMP-002,Conflicting empty-time requirements,"EVT-01.c says an omitted time blocks saving; EVT-02.h says an empty time means 0:00.",Not recorded,2026-11-21,Resolved,2026-11-22,"Product Owner decision: an empty start uses now and an empty end uses the configured default event length.",sprint003
+IMP-003,Claude usage interrupted sprint,"Sprint execution stopped when Claude usage timed out before the retrospective was recorded.",Manager,2026-11-22,Resolved,2026-11-22,"Resumed from the Sprint 003 records and completed an evidence-only retrospective with Product Owner approval.",sprint003
