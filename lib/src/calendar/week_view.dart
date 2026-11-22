@@ -1,0 +1,243 @@
+import 'package:flutter/material.dart';
+
+import '../theme/suite_theme.dart';
+import '../theme/tokens.dart';
+import '../time/suite_event.dart';
+import '../time/time_format.dart';
+import '../time/zones.dart';
+import 'calendar_controller.dart';
+import 'month_view.dart';
+import 'week_layout.dart';
+
+/// DEF-01: the hourly grid starts at the first event, or at 7 am.
+const int defaultScrollStartHour = 7;
+
+/// DEF-01: the hour height is 2 event lines by default.
+const double eventLineHeight = 20;
+const int defaultHourLines = 2;
+const double hourHeight = eventLineHeight * defaultHourLines;
+
+/// CAL-01.h: the hour the grid scrolls to: the hour of the first timed event in
+/// [days], or [defaultScrollStartHour] when there is none.
+int scrollStartHour(CalendarController c, List<DateTime> days) {
+  int? first;
+  for (final d in days) {
+    for (final e in c.eventsOn(d)) {
+      if (e.allDay) continue;
+      final s = _minutesOn(e, c, d).$1;
+      if (first == null || s < first) first = s;
+    }
+  }
+  return first == null ? defaultScrollStartHour : first ~/ 60;
+}
+
+/// An event's start and end as minutes of the day [d] in the Local zone,
+/// clipped to that day.
+(int, int) _minutesOn(SuiteEvent e, CalendarController c, DateTime d) {
+  final loc = c.localZone.location;
+  final dayStart = TZDateTime(loc, d.year, d.month, d.day);
+  final s = e.startIn(loc);
+  final en = e.endIn(loc);
+  final startMin = s.isBefore(dayStart) ? 0 : s.hour * 60 + s.minute;
+  final dayEnd = TZDateTime(loc, d.year, d.month, d.day + 1);
+  final endMin = en.isAfter(dayEnd) ? 24 * 60 : en.hour * 60 + en.minute;
+  return (startMin, endMin == 0 && en.isAfter(s) ? 24 * 60 : endMin);
+}
+
+/// CAL-01.h: the Week view: an hourly grid, all-day events above.
+class WeekView extends StatefulWidget {
+  const WeekView({super.key, required this.controller});
+
+  final CalendarController controller;
+
+  @override
+  State<WeekView> createState() => _WeekViewState();
+}
+
+class _WeekViewState extends State<WeekView> {
+  late ScrollController _scroll;
+  DateTime? _weekShown;
+
+  List<DateTime> get _days {
+    final s = widget.controller.weekStart;
+    return [for (var i = 0; i < 7; i++) DateTime(s.year, s.month, s.day + i)];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll = ScrollController(initialScrollOffset: _offset());
+    _weekShown = widget.controller.weekStart;
+  }
+
+  double _offset() => scrollStartHour(widget.controller, _days) * hourHeight;
+
+  @override
+  void didUpdateWidget(WeekView old) {
+    super.didUpdateWidget(old);
+    final w = widget.controller.weekStart;
+    if (w != _weekShown) {
+      _weekShown = w;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scroll.hasClients) _scroll.jumpTo(_offset().clamp(0, _scroll.position.maxScrollExtent));
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    final c = widget.controller;
+    final days = _days;
+    const gutter = 52.0;
+    final allDay = [for (final d in days) c.eventsOn(d).where((e) => e.allDay).toList()];
+    final maxAllDay = allDay.fold<int>(0, (m, l) => l.length > m ? l.length : m);
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            const SizedBox(width: gutter),
+            for (final d in days)
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  alignment: Alignment.center,
+                  child: Container(
+                    key: d == c.today ? const ValueKey('today-marker') : null,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: d == c.today
+                        ? BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(12))
+                        : null,
+                    child: Text(
+                      '${weekdayNames[d.weekday % 7]} ${d.day}',
+                      style: SuiteText.label(t).copyWith(color: d == c.today ? t.onAccent : t.text),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        if (maxAllDay > 0)
+          Container(
+            key: const ValueKey('all-day-row'),
+            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: t.line))),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: gutter, child: Text('all-day', textAlign: TextAlign.center, style: SuiteText.note(t))),
+                for (var i = 0; i < 7; i++)
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (final e in allDay[i])
+                          Container(
+                            margin: const EdgeInsets.all(1),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            width: double.infinity,
+                            color: t.runBg,
+                            child: Text(e.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: SuiteText.note(t).copyWith(color: t.run)),
+                          ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        Expanded(
+          child: SingleChildScrollView(
+            key: const ValueKey('hour-grid'),
+            controller: _scroll,
+            child: SizedBox(
+              height: hourHeight * 24,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: gutter,
+                    child: Stack(
+                      children: [
+                        for (var h = 1; h < 24; h++)
+                          Positioned(
+                            top: h * hourHeight - 8,
+                            left: 0,
+                            right: 6,
+                            child: Text(
+                              formatTimeOfDay(h, 0, c.timeFormat),
+                              textAlign: TextAlign.right,
+                              style: SuiteText.note(t),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  for (final d in days) Expanded(child: _DayColumn(controller: c, day: d)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DayColumn extends StatelessWidget {
+  const _DayColumn({required this.controller, required this.day});
+
+  final CalendarController controller;
+  final DateTime day;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    final c = controller;
+    final timed = c.eventsOn(day).where((e) => !e.allDay).toList();
+    final placed = layoutOverlaps<SuiteEvent>(timed, (e) => _minutesOn(e, c, day));
+    return LayoutBuilder(
+      builder: (context, box) {
+        return Container(
+          decoration: BoxDecoration(border: Border(left: BorderSide(color: t.line, width: 0.5))),
+          child: Stack(
+            children: [
+              for (var h = 1; h < 24; h++)
+                Positioned(
+                  top: h * hourHeight,
+                  left: 0,
+                  right: 0,
+                  child: Divider(height: 0.5, thickness: 0.5, color: t.line),
+                ),
+              for (final p in placed)
+                Positioned(
+                  key: ValueKey('event-${p.event.id}'),
+                  top: p.startMinute / 60 * hourHeight,
+                  height: ((p.endMinute - p.startMinute) / 60 * hourHeight).clamp(16, double.infinity),
+                  left: box.maxWidth * p.column / p.columns,
+                  width: box.maxWidth / p.columns - 1,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: t.runBg,
+                      border: Border(left: BorderSide(color: t.run, width: 3)),
+                    ),
+                    child: Text(
+                      '${formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} ${p.event.title}',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: SuiteText.note(t).copyWith(color: t.text),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

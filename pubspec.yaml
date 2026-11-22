@@ -1,0 +1,28 @@
+name: suitestream
+description: "SuiteStream: calendars, feeds and sync in one place."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: IBM Plex Sans
+      fonts:
+        - asset: assets/fonts/IBMPlexSans-Variable.ttf
+    - family: IBM Plex Mono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
