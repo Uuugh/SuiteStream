@@ -883,5 +883,13 @@
   "updaterNotSetUp": "De updater is niet ingesteld.",
   "updaterUnreachable": "De updater is niet bereikbaar: {reason}",
   "updaterRefusedToken": "De updater weigerde het token.",
-  "updaterAnsweredHttp": "De updater antwoordde met HTTP {status}."
+  "updaterAnsweredHttp": "De updater antwoordde met HTTP {status}.",
+  "calendarFilter": "Kalenderfilter",
+  "stateEdited": "Bewerkt",
+  "stateChangedBySource": "Door de bron gewijzigd sinds de bewerking",
+  "stateHiddenFromGoogle": "Verborgen voor Google",
+  "stateDeleted": "Verwijderd",
+  "selectAll": "Alles selecteren",
+  "selectNone": "Niets selecteren",
+  "moreEvents": "+{n} meer"
 }

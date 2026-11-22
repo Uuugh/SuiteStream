@@ -18,7 +18,7 @@ The frame (top bar, modules, navigation), theme and branding, shared widgets.
 | SHL-02.c | backlog | Brazilian Portuguese is offered as a page language. | — |
 | SHL-02.d | backlog | The selected page language is a view setting kept on the device for later visits (SET-01). | — |
 | SHL-02.e | backlog | Translation supports composed and nested messages, including sync-change summaries and download-failure explanations, without translating user event titles. Unknown messages retain their original English wording. | — |
-| SHL-02.f | backlog | Values inserted into translated messages are escaped rather than interpreted as markup. | — |
+| SHL-02.f | done | Values inserted into translated messages are escaped rather than interpreted as markup. | test/l10n/messages_test.dart |
 | SHL-02.g | backlog | The subscription page and Google setup-error guide follow the visitor’s supported browser language. | — |
 | SHL-02.h | backlog | A browser form error presents a localized error page with a way to return to the preceding page; API error responses follow SHL-05. | — |
 | SHL-03 | backlog | The page uses a light, dark or system theme, and starts in the saved one. | — |

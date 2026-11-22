@@ -883,5 +883,13 @@
   "updaterNotSetUp": "Le programme de mise à jour n'est pas configuré.",
   "updaterUnreachable": "Impossible de joindre le programme de mise à jour : {reason}",
   "updaterRefusedToken": "Le programme de mise à jour a refusé le jeton.",
-  "updaterAnsweredHttp": "Le programme de mise à jour a répondu HTTP {status}."
+  "updaterAnsweredHttp": "Le programme de mise à jour a répondu HTTP {status}.",
+  "calendarFilter": "Filtre du calendrier",
+  "stateEdited": "Modifié",
+  "stateChangedBySource": "Modifié par la source depuis la modification",
+  "stateHiddenFromGoogle": "Masqué de Google",
+  "stateDeleted": "Supprimé",
+  "selectAll": "Tout sélectionner",
+  "selectNone": "Tout désélectionner",
+  "moreEvents": "+{n} de plus"
 }

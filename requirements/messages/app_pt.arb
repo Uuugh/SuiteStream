@@ -883,5 +883,13 @@
   "updaterNotSetUp": "O atualizador não está configurado.",
   "updaterUnreachable": "Não foi possível acessar o atualizador: {reason}",
   "updaterRefusedToken": "O atualizador recusou o token.",
-  "updaterAnsweredHttp": "O atualizador respondeu HTTP {status}."
+  "updaterAnsweredHttp": "O atualizador respondeu HTTP {status}.",
+  "calendarFilter": "Filtro do calendário",
+  "stateEdited": "Editado",
+  "stateChangedBySource": "Alterado pela fonte desde a edição",
+  "stateHiddenFromGoogle": "Oculto do Google",
+  "stateDeleted": "Excluído",
+  "selectAll": "Selecionar tudo",
+  "selectNone": "Selecionar nenhum",
+  "moreEvents": "+{n} mais"
 }

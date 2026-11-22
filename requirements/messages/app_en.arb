@@ -1099,5 +1099,14 @@
   "@updaterUnreachable": {"placeholders": {"reason": {"type": "String"}}},
   "updaterRefusedToken": "The updater refused the token.",
   "updaterAnsweredHttp": "The updater answered HTTP {status}.",
-  "@updaterAnsweredHttp": {"placeholders": {"status": {"type": "String"}}}
+  "@updaterAnsweredHttp": {"placeholders": {"status": {"type": "String"}}},
+  "calendarFilter": "Calendar filter",
+  "stateEdited": "Edited",
+  "stateChangedBySource": "Changed by the source since the edit",
+  "stateHiddenFromGoogle": "Hidden from Google",
+  "stateDeleted": "Deleted",
+  "selectAll": "Select all",
+  "selectNone": "Select none",
+  "moreEvents": "+{n} more",
+  "@moreEvents": {"placeholders": {"n": {"type": "String"}}}
 }
