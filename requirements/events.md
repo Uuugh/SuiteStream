@@ -2,96 +2,96 @@
 
 The event pop-up, linked events, hiding and reverting.
 
-| ID | status | statement | test | evidence (temporary) |
-|---|---|---|---|---|
-| EVT-01 | proposed | The user adds, edits and removes events of their own, in a dialog. | — | — |
-| EVT-01.a | proposed | Clicking a day (or the plus) opens the new-event dialog for that date. The dialog follows the shared dialog rules (UIC-01, UIC-02). | — | S26-03, S46-15, S36-57, S67-13 |
-| EVT-01.b | proposed | A new event defaults to the system clock's time zone, or to the calendar's time zone when the calendar has one selected. It can be saved into any calendar chosen in the source selector; with none chosen it goes to the initial Local calendar. A custom event appears on its calendar page. | — | S19-33, S26-30, S36-21, S65-04 |
-| EVT-01.c | proposed | Title, start date and end date are required, and so are start time and end time unless the event is all-day (EVT-02.e); leaving one out blocks saving. | — | S57-03 |
-| EVT-01.d | proposed | The confirmation after saving an event names the event. | — | S36-36, S36-51 |
-| EVT-01.e | proposed | A custom event is deleted (asking first, UIC-06) and leaves its calendar; cancelling leaves it.\ | — | Yes) and leaves its calendar; cancelling leaves it. A deleted event keeps a deletion marker in storage. |
-| EVT-01.f | proposed | Restoring a deleted or externally removed event clears its marker and gives it custom origin. | — | S49-15, S49-19 |
-| EVT-01.g | proposed | The Calendar label has an info text (UIC-07) explaining that changes affect CalendarStream and Google only. | — | S58-01, S58-34 |
-| EVT-01.i | backlog | The event dialog shows ← and the title with its tools in the upper right (Choose from template, Print, Duplicate, Move); the fields on the left and Notes on the right as tall as them (dragging Notes taller grows the dialog); Link to below, closed until Event or Rule; Delete (Hide or Show for a calendar source's event, with its (i)) at the bottom left and Cancel \| Save at the right; one column on a phone. | — | theme.md Clarifications; picture 2·16 |
-| EVT-01.j | backlog | All-day Event sits on the Ends line and Different end time zone on the end Time's line; ticking them never resizes the dialog; the dialog's icons stay on one line, shrinking before they wrap. | — | theme.md Clarifications |
-| EVT-02 | proposed | An event has a start and an end that follow the common time rules. | — | — |
-| EVT-02.a | proposed | Times show in the page's time notation (TIM-10) and accept typed forms: 9:30, 9:30pm, 21:30, 930, 1:30 pm and 1505 are read as the times they mean (13:30 and 15:05 for the last two); an entry such as 13pm or 25:00 is not valid (UIC-19) and blocks saving. | — | S19-05..07, S19-10..12, S19-14, S19-39, changelog_gaps_1801-2100:17 |
-| EVT-02.b | proposed | Changing the start keeps the duration: moving the start moves the end by the same amount, across midnight if needed, and moving an overnight event's start date moves its end date by the same days. Changing the end sets the duration that later start changes keep. | — | S19-34, S19-37, S19-38, changelog_gaps_1801-2100:23 |
-| EVT-02.c | proposed | The end time offers suggestions that show their duration (12:30pm, 1h30); choosing one sets the end. | — | S19-35, S19-36 |
-| EVT-02.d | proposed | The end may be in a different time zone from the start; changing the start keeps the end in its own zone (10am New York start, 11am Los Angeles end), and the event reopens with both zones. | — | S19-43, S19-45, S19-46, S59-11 |
-| EVT-02.e | proposed | An all-day event (TIM-04) is entered without times. | — | S59-18, S65-37 |
-| EVT-03 | proposed | An event has a place, a color, reminders and an online meeting address. | — | — |
-| EVT-03.a | proposed | The location field updates a map link whose address is the URL-encoded location; the map action opens the location in Google Maps. | — | S46-23, changelog_gaps_901-1200:16 |
-| EVT-03.b | proposed | An event color is one of the shared palette colors (UIC-10, UIC-20); the chosen color shows on the calendar and on the edit page. | — | S19-08, S19-11, S19-13, S19-15, S19-17 |
-| EVT-03.c | proposed | An event's own color beats its source color and any rule tag; changing an imported event's color keeps it and marks the event edited, not stale. | — | S19-16, S19-18 |
-| EVT-03.d | proposed | The default color follows the chosen calendar until a color is picked; a picked color survives a later calendar choice. | — | S59-12..14 |
-| EVT-03.e | proposed | An event's reminders are chosen from the offered times, which range from the event start through the longest lead in DEF-01; at most the number in DEF-01 can be set, only valid ones are stored (15, 60, 7 stores 15, 60), and none stores nothing. | — | S36-25, S36-28, S36-29, readme_gaps:44, changelog_gaps_1201-1500:17, readme_gaps:44, changelog_gaps_1201-1500:17 |
-| EVT-03.f | proposed | An online meeting address is read from an event's conference field, else from the first Zoom, Google Meet, Microsoft Teams or Webex link in its notes, location or URL, with its query intact and trailing punctuation removed; plain text yields none. Extraction keeps an online meeting address the user already entered. | — | S63-01, S63-02, readme_gaps:50, changelog_gaps_301-600:21, changelog_gaps_301-600:21 |
-| EVT-03.g | proposed | An event’s online meeting address can be opened. | — | changelog_gaps_301-600:21 |
-| EVT-03.h | proposed | An event’s online meeting address is exported in its ICS URL property; see CON-09.c. | — | readme_gaps:50 |
-| EVT-04 | proposed | An event that comes from a calendar source can be changed, hidden and reverted locally without changing the source. | — | — |
-| EVT-04.a | proposed | An imported event can be hidden (asking first, UIC-06) and shown again. Hide then Show on an unedited event leaves no edit record. A renamed hidden event stays hidden when saved. | — | S57-10..14, S57-16, S57-33, S57-34, S57-36, S26-58 |
-| EVT-04.b | proposed | The footer of an imported event explains that edits persist across downloads and never change CCS+; a custom event shows Delete (with confirmation) and no Hide; a new event shows no Delete or Hide. | — | S57-06, S57-08, S57-17, S58-03, S58-04 |
-| EVT-04.c | proposed | Local edits to an imported event survive subsequent source downloads; the source itself is unchanged (EVT-04). | — | readme_gaps:51, changelog_gaps_2101-2336:27 |
-| EVT-04.d | proposed | An edited imported event identifies that it has local edits and indicates when its source changes after those edits. | — | readme_gaps:51, changelog_gaps_2101-2336:27 |
-| EVT-04.e | proposed | An imported event’s local edits can be reverted to the current source version. | — | changelog_gaps_2101-2336:27 |
-| EVT-04.f | backlog | A deleted event stays struck through and greyed, saying where it was deleted (CalendarStream, Google Calendar, United, the feed), with Restore, until its Undo leaves History; an event added here and deleted here is not drawn at all (History Undo brings it back). | — | theme.md section 15 and Clarifications; picture 2·15 |
-| EVT-05 | proposed | An event can be linked to another event or to a rule, and follows it. | — | — |
-| EVT-05.a | proposed | An event can be linked to another event or to a rule. Choosing the target uses the shared calendar picker (UIC-09), opened on the edited event's month. Picking an event sets the link target, and saving keeps it. | — | S37-50..52, S57-26, S58-10, S58-28, S37-52, S58-30, S58-33 |
-| EVT-05.b | proposed | Removing a link hides its panel and clears the target; cancelling the editor afterwards keeps the stored original link. | — | S57-27, S57-31, S58-27 |
-| EVT-05.c | proposed | A saved linked event shows its link (event or rule, and the target) when reopened, and following the link opens the target. | — | S57-18, S58-13, S45-27, readme_gaps:45, changelog_gaps_301-600:42, changelog_gaps_901-1200:22 |
-| EVT-05.d | proposed | A linked event follows its target: moving the target by two hours moves the linked event by two hours; deleting the target removes the linked event and its link. Linking an imported event alone adds no stored edit. Moving shifts start and end together (an all-day event is a 24-hour event, TIM-04, so it needs no special case). | — | S37-05, S37-14, S37-17..19, S62-10 |
-| EVT-05.e | proposed | A linked event’s delete-with and move-with actions can each be enabled or removed independently through its link rule (RUL-03). | — | readme_gaps:46, changelog_gaps_301-600:31 |
-| EVT-05.f | proposed | Choosing Rule for an event opens its associated rule, or starts a rule for that event when it has none; returning to the event follows EVT-05 and UIC-02. | — | readme_gaps:46 |
-| EVT-05.g | proposed | Starting a new event-derived rule closes the event dialog; closing the rule dialog, with Cancel or Escape (UIC-02), reopens it exactly as it was, unsaved edits included. | — | S67-14, S67-17 |
-| EVT-05.h | proposed | Starting a rule from an unsaved new event uses its currently entered title and date (RUL-06). | — | changelog_gaps_301-600:16 |
-| EVT-06 | proposed | The event dialog offers Duplicate, Move and Print. | — | — |
-| EVT-06.a | proposed | When editing an event, Duplicate (placed as EVT-01.i says) opens an editor holding a copy of the event in the same calendar; the user may then choose a different calendar with the calendar dropdown before saving. The Duplicate icon in the calendar view (the event tools) stays as it is. | — | F62 |
-| EVT-06.b | proposed | The event dialog offers Move for the events CAP-03 allows to move. | — | F62 |
-| EVT-06.c | proposed | Print includes the event card, not only the calendar grid. | — | F62 |
-| EVT-03.i | proposed | An event's color is its own color, else the color of the rule that gave it one, else its calendar's color, else the default event color (THM-09.b). | — | R2 gap |
-| EVT-07 | proposed | Clicking an event on the calendar opens its details in place. | — | R2 gap |
-| EVT-07.a | proposed | The details show the title in bold, the range text, the location with a pin, the notes, the state lines and the tools; they stay open when the calendar is redrawn until Close (msg:closeButton). | — | R2 gap |
-| EVT-07.b | proposed | The range text is "day, start–end" for one day and "day start – day end" across days; an all-day event shows its day, or its first and last days, followed by msg:allDay3. | — | R2 gap |
-| EVT-07.c | proposed | A deleted event's state line says where it was deleted, followed by the date and time when known: msg:deletedInCalendarstream, msg:deletedInGoogleCalendar, msg:deletedByRule, msg:removedByUnited or msg:goneFromFeed. | — | R2 gap |
-| EVT-07.d | proposed | A hidden event shows msg:hiddenFromGoogleCalendar; an edited event whose source changed since shows msg:unitedChangedThisEventAfter2 (United's schedule) or msg:feedChangedThisEventAfter (another source); an edited event shows msg:editedHere. | — | R2 gap |
-| EVT-07.e | proposed | An event added here shows msg:addedHere, followed by msg:notInUnitedSchedule when its calendar is United's schedule or msg:notInCalendarItsFrom when its calendar is another source. | — | R2 gap |
-| EVT-07.f | proposed | An event added by a rule shows msg:addedByRuleChange. | — | R2 gap |
-| EVT-07.g | proposed | A linked event shows msg:linkedTo, where {title} is the title of the event it is linked to. | — | R2 gap |
-| EVT-07.h | proposed | The details name the event's calendar when there is more than one calendar. | — | R2 gap |
-| EVT-07.i | proposed | A deleted event shows a Restore button (msg:restore); when a rule deleted it, the button is replaced by msg:changeOrRemoveRule. | — | R2 gap |
-| EVT-07.j | proposed | The tools row has Close on the left and, on the right, link, reminders, edit, duplicate and delete (hide for an event of a source). | — | R2 gap |
-| EVT-07.k | proposed | Delete asks msg:deleteEventAsk and hide asks msg:hideEventAsk (UIC-06). | — | R2 gap |
-| EVT-01.k | proposed | The event dialog's heading is msg:addEvent for a new event, msg:duplicateEvent for a copy, msg:editEvent for an event of the user's and msg:editUnitedEvent for an event from United's schedule. | — | R3 gap |
-| EVT-01.l | proposed | Title, location, online meeting address and notes are cut to their lengths in DEF-01; the Notes field is as tall as DEF-01 says; required fields carry an asterisk. | — | R3 gap |
-| EVT-01.m | proposed | A new event starts at the start time and length in DEF-01 on the day clicked, or on today when no day was clicked. | — | R3 gap |
-| EVT-01.n | proposed | An event that is no longer in its calendar shows msg:thatEventIsnTIn when opened; an event made by a rule cannot be opened, saved or deleted and shows msg:eventMadeByRule (CAP-01). | — | R3 gap |
-| EVT-01.o | proposed | An event without a title is not valid (UIC-19) and shows msg:theEventNeedsATitle; a color that is not offered shows msg:chooseOneOfTheColors. | — | R3 gap |
-| EVT-01.p | proposed | The online meeting address is empty or a link starting with http:// or https:// with no spaces; otherwise it is not valid (UIC-19) and shows msg:onlineMeetingNeedsLink. Its open button works only for a valid link. | — | R3 gap |
-| EVT-01.q | proposed | Saving an event with no change, when it had no edit before, records no edit. | — | R3 gap |
-| EVT-01.r | proposed | History records a saved new event as msg:added, a saved change to an event of the user's as msg:updated and a saved change to an event from a calendar source as msg:edited ({title}, {date} its start day; for msg:edited the title is the original title). | — | R3 gap |
-| EVT-02.f | proposed | For an all-day event the end date is the last day, included; an end date before the start date is not valid (UIC-19) and shows msg:theLastDayIsBefore; an empty end date means the start date; the time fields are hidden and keep their values. | — | R3 gap |
-| EVT-02.g | proposed | Changing the start date of an all-day event keeps its number of days. | — | R3 gap |
-| EVT-02.h | proposed | An end that is not after the start is not valid (UIC-19) and shows msg:theEndHasToBe; dates and times that cannot be read show msg:checkTheDatesAndTimes; an empty time field means 0:00. | — | R3 gap |
-| EVT-02.i | proposed | A time that cannot be read is outlined and shows msg:typeATimeLike9 (UIC-19). | — | R3 gap |
-| EVT-02.j | proposed | A time field opens a list of times in the steps of DEF-01, highlights the entry nearest to the typed time within the tolerance in DEF-01 (the default start when empty) and scrolls to it; in the end list each entry after the start shows its length as msg:durationShort in brackets; Escape or Tab closes the list, Enter accepts the typed value and a click sets the entry. | — | R3 gap |
-| EVT-02.k | proposed | The time zone label is msg:timeZone, and msg:startTimeZone while a different end zone is shown (msg:theEndIsInA, with its zone msg:endTimeZone); unticking the different end zone sets the end zone back to the start zone. The zone choices are those of UIC-39. | — | R3 gap |
-| EVT-03.j | proposed | An online meeting address is looked for in this order: the event's CONFERENCE, X-GOOGLE-CONFERENCE, X-MICROSOFT-SKYPETEAMSMEETINGURL and X-MICROSOFT-ONLINEMEETINGEXTERNALLINK properties, then its notes, its location and its URL; it is cut to the length in DEF-01. | — | R3 gap |
-| EVT-03.k | proposed | The reminder choices are the list in DEF-01; once the most reminders in DEF-01 are ticked the other choices are disabled. | — | R3 gap |
-| EVT-03.l | proposed | A reminder reads msg:reminderAtStart, msg:reminderMinutesBefore, msg:reminderHourBefore, msg:reminderHoursBefore, msg:reminderDayBefore, msg:reminderDaysBefore or msg:reminderWeekBefore ({n} is the count). | — | R3 gap |
-| EVT-03.m | proposed | An event's reminders are kept by the event's identity across downloads and edits, are sent to Google up to the most in DEF-01, and are written to feeds; History records a change as msg:remindersChanged ({title}, {date}, {list} the reminders separated by commas, or msg:remindersNone). | — | R3 gap |
-| EVT-04.g | proposed | Restoring an event that a rule deletes is not valid (UIC-19) and shows msg:ruleDeletesThisEvent. | — | R3 gap |
-| EVT-04.h | proposed | Hiding or showing an event that does not come from a calendar source is not valid (UIC-19) and shows msg:onlyCalendarSourceEventHide. | — | R3 gap |
-| EVT-04.i | proposed | History records hiding as msg:eventHidFromFeeds, showing as msg:eventShownInFeeds, restoring as msg:eventRestored ({title}, {date}) and reverting as msg:eventReverted ({title}). | — | R3 gap |
-| EVT-04.j | proposed | Restoring an event that is not deleted, or is already gone, is not valid (UIC-19) and shows msg:eventCantBeRestored; deleting an event that is already deleted shows msg:eventAlreadyDeleted. | — | R3 gap |
-| EVT-04.k | proposed | An event of a source that vanishes from the source is kept, struck through, only while it has not ended before today. | — | R3 gap |
-| EVT-04.l | proposed | An edited event is stale when its title, start, end, all-day state, location or notes differ from the source's now; its editor then shows msg:unitedChangedThisEventAfter (United's schedule) or msg:feedChangedThisEventAfter (another source). | — | R3 gap |
-| EVT-04.m | proposed | The editor of a source's event shows the source's version above the form, msg:unitedVersionFromCcs or msg:feedVersionFrom ({name} the source's name), with its title, range and location, and msg:notEditedYet while the event has no edit. | — | R3 gap |
-| EVT-04.n | proposed | Revert is offered only while the event is edited, as msg:revertToUnitedSVersion (United's schedule) or msg:revertToFeedVersion (another source). | — | R3 gap |
-| EVT-05.i | proposed | Choosing Rule in Link to lists the rules that touch the event, highest first, the link rule first and then every rule of its calendar that matches the event, each opening in the rule dialog; msg:linkCreateNewRule starts a rule that applies to the event's calendar with the conditions Title is the event's title and Date is the event's date; an empty list shows msg:linkNoRuleTouches. | — | R3 gap |
-| EVT-05.j | proposed | A picked event shows as its title and date with the note msg:linkEventRuleNote; an event that is already linked opens with Event chosen. | — | R3 gap |
-| EVT-05.k | proposed | The picker does not offer the event being edited (shown as msg:linkThisEvent) or an event made by a rule (shown as msg:linkMadeByRule, CAP-04), and does not show deleted events. | — | R3 gap |
-| EVT-05.l | proposed | Saving with a link makes one link rule for the event on its own calendar with the actions Delete this event and Move this event; choosing the same target again leaves the rule as it is, another target updates it, and clearing the link, or a target that is hidden, deleted or missing, removes it. | — | R3 gap |
-| EVT-06.d | proposed | Print in the event dialog opens Print Preview (PRT-01) in Day view for the event's day; the choices made there are not remembered for later prints. | — | R3 gap |
-| EVT-02.l | proposed | A typed time may be written 9:30, 9.30, 9h30, 930, 21:30, 2130, 9 pm, 9:30pm or 9:30 p.m.; a bare hour means that hour and :00, and an am or pm hour is 1 to 12. | — | R6 gap |
-| EVT-02.m | proposed | The event form shows the start and the end each in its own time zone, with the clock's label. | — | R6 gap |
+| ID | status | statement | test |
+|---|---|---|---|
+| EVT-01 | backlog | The user adds, edits and removes events of their own, in a dialog. | — |
+| EVT-01.a | backlog | Clicking a day (or the plus) opens the new-event dialog for that date. The dialog follows the shared dialog rules (UIC-01, UIC-02). | — |
+| EVT-01.b | backlog | A new event defaults to the system clock's time zone, or to the calendar's time zone when the calendar has one selected. It can be saved into any calendar chosen in the source selector; with none chosen it goes to the initial Local calendar. A custom event appears on its calendar page. | — |
+| EVT-01.c | backlog | Title, start date and end date are required, and so are start time and end time unless the event is all-day (EVT-02.e); leaving one out blocks saving. | — |
+| EVT-01.d | backlog | The confirmation after saving an event names the event. | — |
+| EVT-01.e | backlog | A custom event is deleted (asking first, UIC-06) and leaves its calendar; cancelling leaves it.\ | — |
+| EVT-01.f | backlog | Restoring a deleted or externally removed event clears its marker and gives it custom origin. | — |
+| EVT-01.g | backlog | The Calendar label has an info text (UIC-07) explaining that changes affect SuiteStream and Google only. | — |
+| EVT-01.i | backlog | The event dialog shows ← and the title with its tools in the upper right (Choose from template, Print, Duplicate, Move); the fields on the left and Notes on the right as tall as them (dragging Notes taller grows the dialog); Link to below, closed until Event or Rule; Delete (Hide or Show for a calendar source's event, with its (i)) at the bottom left and Cancel \| Save at the right; one column on a phone. | — |
+| EVT-01.j | backlog | All-day Event sits on the Ends line and Different end time zone on the end Time's line; ticking them never resizes the dialog; the dialog's icons stay on one line, shrinking before they wrap. | — |
+| EVT-02 | backlog | An event has a start and an end that follow the common time rules. | — |
+| EVT-02.a | backlog | Times show in the page's time notation (TIM-10) and accept typed forms: 9:30, 9:30pm, 21:30, 930, 1:30 pm and 1505 are read as the times they mean (13:30 and 15:05 for the last two); an entry such as 13pm or 25:00 is not valid (UIC-19) and blocks saving. | — |
+| EVT-02.b | backlog | Changing the start keeps the duration: moving the start moves the end by the same amount, across midnight if needed, and moving an overnight event's start date moves its end date by the same days. Changing the end sets the duration that later start changes keep. | — |
+| EVT-02.c | backlog | The end time offers suggestions that show their duration (12:30pm, 1h30); choosing one sets the end. | — |
+| EVT-02.d | backlog | The end may be in a different time zone from the start; changing the start keeps the end in its own zone (10am New York start, 11am Los Angeles end), and the event reopens with both zones. | — |
+| EVT-02.e | backlog | An all-day event (TIM-04) is entered without times. | — |
+| EVT-03 | backlog | An event has a place, a color, reminders and an online meeting address. | — |
+| EVT-03.a | backlog | The location field updates a map link whose address is the URL-encoded location; the map action opens the location in Google Maps. | — |
+| EVT-03.b | backlog | An event color is one of the shared palette colors (UIC-10, UIC-20); the chosen color shows on the calendar and on the edit page. | — |
+| EVT-03.c | backlog | An event's own color beats its source color and any rule tag; changing an imported event's color keeps it and marks the event edited, not stale. | — |
+| EVT-03.d | backlog | The default color follows the chosen calendar until a color is picked; a picked color survives a later calendar choice. | — |
+| EVT-03.e | backlog | An event's reminders are chosen from the offered times, which range from the event start through the longest lead in DEF-01; at most the number in DEF-01 can be set, only valid ones are stored (15, 60, 7 stores 15, 60), and none stores nothing. | — |
+| EVT-03.f | backlog | An online meeting address is read from an event's conference field, else from the first Zoom, Google Meet, Microsoft Teams or Webex link in its notes, location or URL, with its query intact and trailing punctuation removed; plain text yields none. Extraction keeps an online meeting address the user already entered. | — |
+| EVT-03.g | backlog | An event’s online meeting address can be opened. | — |
+| EVT-03.h | backlog | An event’s online meeting address is exported in its ICS URL property; see CON-09.c. | — |
+| EVT-04 | backlog | An event that comes from a calendar source can be changed, hidden and reverted locally without changing the source. | — |
+| EVT-04.a | backlog | An imported event can be hidden (asking first, UIC-06) and shown again. Hide then Show on an unedited event leaves no edit record. A renamed hidden event stays hidden when saved. | — |
+| EVT-04.b | backlog | The footer of an imported event explains that edits persist across downloads and never change CCS+; a custom event shows Delete (with confirmation) and no Hide; a new event shows no Delete or Hide. | — |
+| EVT-04.c | backlog | Local edits to an imported event survive subsequent source downloads; the source itself is unchanged (EVT-04). | — |
+| EVT-04.d | backlog | An edited imported event identifies that it has local edits and indicates when its source changes after those edits. | — |
+| EVT-04.e | backlog | An imported event’s local edits can be reverted to the current source version. | — |
+| EVT-04.f | backlog | A deleted event stays struck through and greyed, saying where it was deleted (SuiteStream, Google Calendar, United, the feed), with Restore, until its Undo leaves History; an event added here and deleted here is not drawn at all (History Undo brings it back). | — |
+| EVT-05 | backlog | An event can be linked to another event or to a rule, and follows it. | — |
+| EVT-05.a | backlog | An event can be linked to another event or to a rule. Choosing the target uses the shared calendar picker (UIC-09), opened on the edited event's month. Picking an event sets the link target, and saving keeps it. | — |
+| EVT-05.b | backlog | Removing a link hides its panel and clears the target; cancelling the editor afterwards keeps the stored original link. | — |
+| EVT-05.c | backlog | A saved linked event shows its link (event or rule, and the target) when reopened, and following the link opens the target. | — |
+| EVT-05.d | backlog | A linked event follows its target: moving the target by two hours moves the linked event by two hours; deleting the target removes the linked event and its link. Linking an imported event alone adds no stored edit. Moving shifts start and end together (an all-day event is a 24-hour event, TIM-04, so it needs no special case). | — |
+| EVT-05.e | backlog | A linked event’s delete-with and move-with actions can each be enabled or removed independently through its link rule (RUL-03). | — |
+| EVT-05.f | backlog | Choosing Rule for an event opens its associated rule, or starts a rule for that event when it has none; returning to the event follows EVT-05 and UIC-02. | — |
+| EVT-05.g | backlog | Starting a new event-derived rule closes the event dialog; closing the rule dialog, with Cancel or Escape (UIC-02), reopens it exactly as it was, unsaved edits included. | — |
+| EVT-05.h | backlog | Starting a rule from an unsaved new event uses its currently entered title and date (RUL-06). | — |
+| EVT-06 | backlog | The event dialog offers Duplicate, Move and Print. | — |
+| EVT-06.a | backlog | When editing an event, Duplicate (placed as EVT-01.i says) opens an editor holding a copy of the event in the same calendar; the user may then choose a different calendar with the calendar dropdown before saving. The Duplicate icon in the calendar view (the event tools) stays as it is. | — |
+| EVT-06.b | backlog | The event dialog offers Move for the events CAP-03 allows to move. | — |
+| EVT-06.c | backlog | Print includes the event card, not only the calendar grid. | — |
+| EVT-03.i | backlog | An event's color is its own color, else the color of the rule that gave it one, else its calendar's color, else the default event color (THM-09.b). | — |
+| EVT-07 | backlog | Clicking an event on the calendar opens its details in place. | — |
+| EVT-07.a | backlog | The details show the title in bold, the range text, the location with a pin, the notes, the state lines and the tools; they stay open when the calendar is redrawn until Close (msg:closeButton). | — |
+| EVT-07.b | backlog | The range text is "day, start–end" for one day and "day start – day end" across days; an all-day event shows its day, or its first and last days, followed by msg:allDay3. | — |
+| EVT-07.c | backlog | A deleted event's state line says where it was deleted, followed by the date and time when known: msg:deletedInSuitestream, msg:deletedInGoogleCalendar, msg:deletedByRule, msg:removedByUnited or msg:goneFromFeed. | — |
+| EVT-07.d | backlog | A hidden event shows msg:hiddenFromGoogleCalendar; an edited event whose source changed since shows msg:unitedChangedThisEventAfter2 (United's schedule) or msg:feedChangedThisEventAfter (another source); an edited event shows msg:editedHere. | — |
+| EVT-07.e | backlog | An event added here shows msg:addedHere, followed by msg:notInUnitedSchedule when its calendar is United's schedule or msg:notInCalendarItsFrom when its calendar is another source. | — |
+| EVT-07.f | backlog | An event added by a rule shows msg:addedByRuleChange. | — |
+| EVT-07.g | backlog | A linked event shows msg:linkedTo, where {title} is the title of the event it is linked to. | — |
+| EVT-07.h | backlog | The details name the event's calendar when there is more than one calendar. | — |
+| EVT-07.i | backlog | A deleted event shows a Restore button (msg:restore); when a rule deleted it, the button is replaced by msg:changeOrRemoveRule. | — |
+| EVT-07.j | backlog | The tools row has Close on the left and, on the right, link, reminders, edit, duplicate and delete (hide for an event of a source). | — |
+| EVT-07.k | backlog | Delete asks msg:deleteEventAsk and hide asks msg:hideEventAsk (UIC-06). | — |
+| EVT-01.k | backlog | The event dialog's heading is msg:addEvent for a new event, msg:duplicateEvent for a copy, msg:editEvent for an event of the user's and msg:editUnitedEvent for an event from United's schedule. | — |
+| EVT-01.l | backlog | Title, location, online meeting address and notes are cut to their lengths in DEF-01; the Notes field is as tall as DEF-01 says; required fields carry an asterisk. | — |
+| EVT-01.m | backlog | A new event starts at the start time and length in DEF-01 on the day clicked, or on today when no day was clicked. | — |
+| EVT-01.n | backlog | An event that is no longer in its calendar shows msg:thatEventIsnTIn when opened; an event made by a rule cannot be opened, saved or deleted and shows msg:eventMadeByRule (CAP-01). | — |
+| EVT-01.o | backlog | An event without a title is not valid (UIC-19) and shows msg:theEventNeedsATitle; a color that is not offered shows msg:chooseOneOfTheColors. | — |
+| EVT-01.p | backlog | The online meeting address is empty or a link starting with http:// or https:// with no spaces; otherwise it is not valid (UIC-19) and shows msg:onlineMeetingNeedsLink. Its open button works only for a valid link. | — |
+| EVT-01.q | backlog | Saving an event with no change, when it had no edit before, records no edit. | — |
+| EVT-01.r | backlog | History records a saved new event as msg:added, a saved change to an event of the user's as msg:updated and a saved change to an event from a calendar source as msg:edited ({title}, {date} its start day; for msg:edited the title is the original title). | — |
+| EVT-02.f | backlog | For an all-day event the end date is the last day, included; an end date before the start date is not valid (UIC-19) and shows msg:theLastDayIsBefore; an empty end date means the start date; the time fields are hidden and keep their values. | — |
+| EVT-02.g | backlog | Changing the start date of an all-day event keeps its number of days. | — |
+| EVT-02.h | backlog | An end that is not after the start is not valid (UIC-19) and shows msg:theEndHasToBe; dates and times that cannot be read show msg:checkTheDatesAndTimes; an empty time field means 0:00. | — |
+| EVT-02.i | backlog | A time that cannot be read is outlined and shows msg:typeATimeLike9 (UIC-19). | — |
+| EVT-02.j | backlog | A time field opens a list of times in the steps of DEF-01, highlights the entry nearest to the typed time within the tolerance in DEF-01 (the default start when empty) and scrolls to it; in the end list each entry after the start shows its length as msg:durationShort in brackets; Escape or Tab closes the list, Enter accepts the typed value and a click sets the entry. | — |
+| EVT-02.k | backlog | The time zone label is msg:timeZone, and msg:startTimeZone while a different end zone is shown (msg:theEndIsInA, with its zone msg:endTimeZone); unticking the different end zone sets the end zone back to the start zone. The zone choices are those of UIC-39. | — |
+| EVT-03.j | backlog | An online meeting address is looked for in this order: the event's CONFERENCE, X-GOOGLE-CONFERENCE, X-MICROSOFT-SKYPETEAMSMEETINGURL and X-MICROSOFT-ONLINEMEETINGEXTERNALLINK properties, then its notes, its location and its URL; it is cut to the length in DEF-01. | — |
+| EVT-03.k | backlog | The reminder choices are the list in DEF-01; once the most reminders in DEF-01 are ticked the other choices are disabled. | — |
+| EVT-03.l | backlog | A reminder reads msg:reminderAtStart, msg:reminderMinutesBefore, msg:reminderHourBefore, msg:reminderHoursBefore, msg:reminderDayBefore, msg:reminderDaysBefore or msg:reminderWeekBefore ({n} is the count). | — |
+| EVT-03.m | backlog | An event's reminders are kept by the event's identity across downloads and edits, are sent to Google up to the most in DEF-01, and are written to feeds; History records a change as msg:remindersChanged ({title}, {date}, {list} the reminders separated by commas, or msg:remindersNone). | — |
+| EVT-04.g | backlog | Restoring an event that a rule deletes is not valid (UIC-19) and shows msg:ruleDeletesThisEvent. | — |
+| EVT-04.h | backlog | Hiding or showing an event that does not come from a calendar source is not valid (UIC-19) and shows msg:onlyCalendarSourceEventHide. | — |
+| EVT-04.i | backlog | History records hiding as msg:eventHidFromFeeds, showing as msg:eventShownInFeeds, restoring as msg:eventRestored ({title}, {date}) and reverting as msg:eventReverted ({title}). | — |
+| EVT-04.j | backlog | Restoring an event that is not deleted, or is already gone, is not valid (UIC-19) and shows msg:eventCantBeRestored; deleting an event that is already deleted shows msg:eventAlreadyDeleted. | — |
+| EVT-04.k | backlog | An event of a source that vanishes from the source is kept, struck through, only while it has not ended before today. | — |
+| EVT-04.l | backlog | An edited event is stale when its title, start, end, all-day state, location or notes differ from the source's now; its editor then shows msg:unitedChangedThisEventAfter (United's schedule) or msg:feedChangedThisEventAfter (another source). | — |
+| EVT-04.m | backlog | The editor of a source's event shows the source's version above the form, msg:unitedVersionFromCcs or msg:feedVersionFrom ({name} the source's name), with its title, range and location, and msg:notEditedYet while the event has no edit. | — |
+| EVT-04.n | backlog | Revert is offered only while the event is edited, as msg:revertToUnitedSVersion (United's schedule) or msg:revertToFeedVersion (another source). | — |
+| EVT-05.i | backlog | Choosing Rule in Link to lists the rules that touch the event, highest first, the link rule first and then every rule of its calendar that matches the event, each opening in the rule dialog; msg:linkCreateNewRule starts a rule that applies to the event's calendar with the conditions Title is the event's title and Date is the event's date; an empty list shows msg:linkNoRuleTouches. | — |
+| EVT-05.j | backlog | A picked event shows as its title and date with the note msg:linkEventRuleNote; an event that is already linked opens with Event chosen. | — |
+| EVT-05.k | backlog | The picker does not offer the event being edited (shown as msg:linkThisEvent) or an event made by a rule (shown as msg:linkMadeByRule, CAP-04), and does not show deleted events. | — |
+| EVT-05.l | backlog | Saving with a link makes one link rule for the event on its own calendar with the actions Delete this event and Move this event; choosing the same target again leaves the rule as it is, another target updates it, and clearing the link, or a target that is hidden, deleted or missing, removes it. | — |
+| EVT-06.d | backlog | Print in the event dialog opens Print Preview (PRT-01) in Day view for the event's day; the choices made there are not remembered for later prints. | — |
+| EVT-02.l | backlog | A typed time may be written 9:30, 9.30, 9h30, 930, 21:30, 2130, 9 pm, 9:30pm or 9:30 p.m.; a bare hour means that hour and :00, and an am or pm hour is 1 to 12. | — |
+| EVT-02.m | backlog | The event form shows the start and the end each in its own time zone, with the clock's label. | — |

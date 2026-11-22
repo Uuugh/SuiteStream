@@ -2,7 +2,7 @@
 
 The Sources section: a container for the connections that are sources. Everything about how a connection works is in its connection file (`connections.md`, `connections.d/`).
 
-| ID | status | statement | test | evidence (temporary) |
-|---|---|---|---|---|
-| SRC-01 | backlog | The Sources section contains the connections that are sources; each connection supplies its own header, settings and operation, and the section adds nothing about them. | — | — |
-| SRC-01.a | proposed | The section is called Sources and is a section as UIC-05 says, with its own border color (THM-02.l). | — | theme.md Clarifications |
+| ID | status | statement | test |
+|---|---|---|---|
+| SRC-01 | backlog | The Sources section contains the connections that are sources; each connection supplies its own header, settings and operation, and the section adds nothing about them. | — |
+| SRC-01.a | backlog | The section is called Sources and is a section as UIC-05 says, with its own border color (THM-02.l). | — |

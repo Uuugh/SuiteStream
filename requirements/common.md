@@ -1,131 +1,131 @@
 # Requirements: common
 
-| ID | status | statement | test | was |
-|---|---|---|---|---|
-| TIM-01 | backlog | Every event's start and end are stored in UTC together with the time zone each was recorded in. | — | Developer, Nov 17 |
-| TIM-02 | backlog | An event's time zone is set when it is created (imported: from the source, or the zone the source's calendar reports; added: the system zone, or the calendar's zone if one is selected, EVT-01) and stays as recorded until the user edits the event with Edit Event. | — | Developer, Nov 17 |
-| TIM-03 | backlog | The calendar shows every event in the Local time zone: the system (device) zone, or the fixed zone chosen in Settings > Time Zones (SET-02). Changing the Local zone changes only how times are shown. | — | Developer, Nov 17 |
-| TIM-04 | backlog | An all-day event is a 24-hour event, local midnight to the next local midnight in its own time zone, stored in UTC like any other. It is shown like any other event, so it is one day in its own zone and can span two days in another. When it is sent to an outside calendar that has an all-day type (Google, calendar feeds), it is sent as an all-day event for its stored time zone, with that zone's local dates. | — | Developer, Nov 17 |
-| TIM-05 | backlog | Rules do not depend on a time zone. A rule is applied to an event, and the event's recorded time zone decides what "Friday" or "22:00" means. Only a rule that is literally about a time zone uses a zone. | — | Developer, Nov 17 |
-| TIM-06 | backlog | Syncing with an outside calendar reads the time zone of that calendar and of each incoming event and records it with the event (TIM-02), and sends each event's recorded time zone with its times. | — | Developer, Nov 17 |
-| TIM-07 | backlog | Calendar feeds carry each event's times with its time zone. | — | Developer, Nov 17 |
-| TIM-10 | backlog | The time format (12-hour, such as 1:30pm, or 24-hour, such as 13:30) is a user setting (SET-01) and applies to every time shown in every feature. Until the user chooses, it defaults to 12-hour when the device is in a US time zone and 24-hour elsewhere. One control switches it (CAL-06.a). The notation inside each format is a Theme setting (SET-03). | — | Developer, Nov 17; F15.2, F43, S19-03, S19-04, S21-05, S21-07, S21-08, S21-09, S66-16, S79-10..13 |
-| UIC-12 | backlog | One shared dropdown (the language and view menus and the Calendar filter use it): it opens from a single icon; the feature says whether it selects one item or several; a single click or tap chooses or toggles an item and takes effect at once; where several can be selected, Ctrl and Shift select several on a keyboard; choosing outside the dropdown (losing focus) closes it. | — | Developer |
-| UIC-13 | backlog | A change the user makes (a filter, a view, a theme, a setting) is shown at once: nothing needs a page reload or an Apply step. | — | Developer |
-| UIC-14 | backlog | Every row of controls has left, center and right zones, aligned left, centered and right by default, each keeping its own alignment; a feature stipulates the order of the items in each zone. A row that is too narrow is handled in this order: (1) the zones stack, left on top, then center, then right; (2) fonts and icons scale down within their zone, never below readable text and a 24×24 px target (scaling is always tried before clipping); (3) what still does not fit depends on the zone's kind: a control zone clips it at its edge and ends the text with a triple dot, a content zone (calendar grid, list, table, log) scrolls it. The layout does not mirror for right-to-left languages. No component has its own responsive rule (build_rules/theme.md, 13a). | — | Developer, Nov 17 |
-| UIC-15 | backlog | A badge or other overlay on an image or control is placed by one of nine anchor points of its parent (the corners, the edge middles and the center) plus an offset relative to the parent's size, both defined in the theme (build_rules/theme.md, 13b); no component places its own badge. | — | Developer, Nov 17 |
-| UIC-16 | backlog | One shared resize bar. The UI defines its look and operation: a bar centered at the bottom of what it resizes, drawn as two rows of six dots like a slider's; dragging it, or pressing the up and down keys, resizes in whole units; beside it one arrow collapses to the fewest units needed (arrow up when expanded) or expands to the bottom of the visible window (arrow down when collapsed). Collapse and expand are single actions: the size is kept when the window is resized. The feature that uses the bar defines its unit and what is resized in each of its views. | — | Developer, Nov 17; F51 |
-| UIC-17 | backlog | UI components are kept separate from the features that use them: a component's look comes only from the theme, and a feature supplies only its content and what the component does there. So changing the theme restyles every feature at once, and a new feature reuses the components as they are. | — | Developer, Nov 17 |
-| UIC-18 | proposed | One shared strength bar appears directly beneath any field where the user enters a secret (a password, a feed token), showing how strong the entry is as they type. It measures randomness (bits), not length alone; the bar only shows, and the field's feature decides whether an entry is accepted. Beside it, a hint recommends what to do (for example, the recommended minimum, or to use the generated value). The field's feature supplies the recommendation. | — | Developer, Nov 18 |
-| UIC-19 | proposed | An entry that is not valid is marked at its own field with a note saying what is wrong, and it does not affect the other fields' valid values. A feature row says which entries are valid, and refers here for how the problem is shown. | — | SET-04, SET-06, SET-04 |
-| UIC-20 | proposed | A color that is not in the shared palette (from an older rule, an import, or a destination that supports fewer colors) is represented by the nearest palette color wherever it is shown or sent (UIC-10). | — | RUL-58, CGOW-03, CGOW-03 |
-| UIC-21 | proposed | One shared filter, used by the Calendar filter and History (and any feature with a filter). It is built on the shared dropdown (UIC-12): the user can select one, several, all or none of its choices; Select all shows everything and Select none shows nothing; the filter shows when it is active; the choices are saved and kept; a change applies at once (UIC-13). A feature supplies only the choices and what they filter. | — | FLT-01, FLT-01 |
-| UIC-24 | proposed | A section whose items can be added has a + control as the rightmost item of its header's right zone; it opens the dialog for adding (UIC-01). | — | Developer, Nov 19 |
-| UIC-25 | proposed | A button that does one thing and shows no state (an icon button, +, Copy, Open, Expand, Close) just does it; Copy then shows "Copied" in place of its icon for the time in DEF-01. | — | theme.md section 5; picture 2·5 |
-| UIC-26 | proposed | A field that saves in place shows ✓ once saved, and ✕ \| ✓ while the user types: ✕ puts the saved value back, ✓ saves. | — | theme.md section 5 |
-| UIC-27 | proposed | A Cancel \| Save pair sits at the bottom of what it saves and works as the rows below say. | — | theme.md section 6; picture 2·6 |
-| UIC-27.a | backlog | Pressing a side fills the pair with its word ("Saved" or "Cancelled") for the time in DEF-01; then the pair is idle. | — | theme.md section 6 |
-| UIC-27.b | backlog | With nothing to save both sides are disabled: not focusable and announced as unavailable. A pop-up's Cancel, which only closes it, and the buttons of a + Add pop-up, which can be saved with its defaults, stay available. | — | theme.md section 6 |
-| UIC-27.c | backlog | The first change turns the pair on, and Save pulses for the time in DEF-01 and then stays in full color; saving or cancelling returns the pair to idle. | — | theme.md section 6 |
-| UIC-27.d | backlog | A question's answers can be the same pair (No \| Yes, UIC-06). | — | theme.md section 6 |
-| UIC-27.e | backlog | Adding something (+ Add a calendar…) ends with the same Cancel \| Save pair as editing it. | — | theme.md Clarifications |
-| UIC-28 | proposed | A Status/Action button shows a status chip over the action that updates it (Sync Now, Check now, Update now, Connect, Fix), and a status looks one way for one meaning everywhere. | — | theme.md section 7; picture 2·7 |
-| UIC-28.a | backlog | The four meanings are: done or OK; in action, or waiting on the user; a problem outside CalendarStream, or an entry that was refused; CalendarStream itself failed. Each has its one look (THM-05), whether it appears as a chip, a button, a done or failed state, or a line of text. | — | theme.md section 7 |
-| UIC-28.b | backlog | Every copy of an action (the top bar and Settings; Feeds and Settings) shows the same words at the same moment and ends together. | — | theme.md section 7 |
-| UIC-28.c | backlog | Inside a Status/Action button a status word always shows its icon and words together and never loses a word. Elsewhere a status word shows its icon and words for the time in DEF-01, then collapses to its icon (the words stay as its tooltip and accessible name); a one-off confirmation (such as "Saved") then vanishes and gives its line back, while an ongoing health status stays. | — | theme.md section 8 |
-| UIC-28.d | backlog | While an update runs only the words of the top-bar Update now change, never a blank pill, and a bar slides under them until the app restarts. | — | theme.md section 7 |
-| UIC-29 | proposed | Every connection is a module: a header that is all a folded module shows, with its details below when expanded. | — | theme.md section 9; picture 2·9 |
-| UIC-29.a | backlog | The header's first line shows the color box, the kind (fixed text), the status line (CON-03.g) and the Status/Action buttons on the right. Its second line shows the label, with an (i), and the next-check line (CON-03.g) on the right when the connection has one. | — | theme.md section 9 |
-| UIC-29.b | backlog | Expand sits in the module's bottom border (▸ Expand ◂, pointing at the words); when open, a Close line sits under the header (its triangles point up). While expanded the label is a field of the same size. | — | theme.md section 9 |
-| UIC-29.c | backlog | Status lines are unboxed, right-aligned next to their Status/Action button, and visible only while the module is collapsed. | — | theme.md section 9 |
-| UIC-29.d | backlog | Default sits right of a CalendarStream calendar's title; while expanded, the other local calendars offer it as a button and read-only calendars show it disabled (CLCL-03). | — | theme.md section 9 |
-| UIC-29.e | backlog | On \| Off sits inline before an expanded module's note; Off dims the module and keeps its settings. | — | theme.md section 9 |
-| UIC-29.f | backlog | (i) is info about the module: what it is, then its note when it has one. (?) is help (UIC-07.a). | — | theme.md section 9 |
-| UIC-30 | proposed | A list of modules, rule lines or the Then actions of a rule can be reordered with one handle in the margin on the left of each line: ▲ above, a grip, ▼ below. | — | theme.md section 10; picture 2·10 |
-| UIC-30.a | backlog | The handle is always visible and takes no extra space; there is none when there is nothing to reorder (a list of one). | — | theme.md section 10 |
-| UIC-30.b | backlog | Dragging the grip reorders; ▲ and ▼ reorder with the keyboard. The grips are on the left, or on the right when the user chooses (SET-03). | — | theme.md section 10 |
-| UIC-31 | proposed | Every + opens a dialog (UIC-01) centered; a question is a dialog too, never the browser's own alert or confirm box. | — | theme.md section 11; picture 2·11 |
-| UIC-31.a | backlog | A question's answers are on one line, or one under the other when they are sentences; a second line under the question is a note, muted and not bold. | — | theme.md section 11 |
-| UIC-31.b | backlog | A choice of calendars is a drop-down of ticks. | — | theme.md section 11 |
-| UIC-31.c | backlog | The anchored month, view and language menus do not dim the page and do not fill the phone; they keep their compact panel. | — | theme.md section 11 |
-| UIC-32 | proposed | In-page words are click paths and short lines (Place › Place › Field: value › Button), with no paragraphs; the why goes in a (?). Status words are a word or two (UIC-28). No sentence on the page is longer than 20 words, apart from a (?), the calendar and the log. | — | theme.md section 13; picture 2·13 |
-| UIC-33 | proposed | The Import row is the same in every calendar: the heading, the file field (a file icon and "Choose Calendar.ics…", filling the line), the dates (UIC-23) and the button on the right. For CCS+ it is Manual Upload, which replaces the schedule, so it has no dates. | — | theme.md section 14; picture 2·14 |
-| UIC-34 | proposed | A box means the user can change it: fixed text (a title, the release channel) is plain text, never in a field box. A part that looks like a module but has nothing to fold (Settings > Updates) uses the module header layout, always open, with no Expand. | — | theme.md Clarifications |
-| UIC-35 | proposed | A Copy button sits inside its field, like the password box's eye. A pair of credential fields (client ID and secret) is laid out like a login, connected or not. | — | theme.md Clarifications |
-| UIC-36 | proposed | In every dialog and form a field has a muted label over it and a value that cannot be changed (an event's calendar) is plain text; related fields share a line (Calendar \| Title; Starts \| Ends, each with its Time under it). | — | theme.md Clarifications |
-| UIC-37 | backlog | One shared image editor sets an image for a place in the app (the logo, the favicon): the user picks a file, crops it, and the editor saves it as a PNG that fits the limits in DEF-01 for that place. | — |
-| UIC-37.a | proposed | The editor accepts PNG, SVG, WebP, JPEG and ICO files. | — |
-| UIC-37.b | proposed | The crop frame keeps the shape within the minimum and maximum aspect ratio of the place (DEF-01); the user moves and zooms the picture under the frame and sees the result before saving. | — |
-| UIC-37.c | backlog | The saved image is always a PNG, redrawn as pixels (so nothing in an uploaded file can run), with its long side at most the output size in DEF-01 and its file no larger than the place's file size in DEF-01; if the file is still too large the image is scaled down until it fits. | — |
-| UIC-37.d | backlog | The crop frame starts centered at the largest size the shape allows and stays inside the picture. | — |
-| UIC-37.e | backlog | An uploaded file larger than the input size in DEF-01 is not valid (UIC-19). | — |
-| UIC-38 | proposed | Every password box has a Show/Hide button (msg:showPassword, msg:hidePassword); the box is hidden again when its form is sent. | — | R1 gap |
-| UIC-39 | proposed | The time zone picker lists a Common group of the zones in DEF-01, in that order, then msg:allTimeZones (region and city names only), without names that start with Etc/, SystemV/, posix/ or right/; the default zone is marked ★; a value that is not UTC or in the list is not valid (msg:unknownTimeZone, UIC-19); choosing the default or nothing clears the stored choice. | — | R1 gap |
-| UIC-40 | proposed | A label in every supported language fits its control without cutting a word. | — | old rule: longest translated words checked against control widths |
-| UIC-23 | proposed | Wherever a range of dates is asked for (Print Preview, search, feeds, destinations, import) one shared control is used: From | To | All. Either end may be left empty; All means an empty range and clears both dates; the fields show hints in the date's format; an end before the start is not valid (UIC-19). | — | CFED-01 and CFED-14 (S evidence), SRH-01, theme.md section 14 |
-| UIC-16.a | proposed | The resize bar's handle is exposed to assistive tools as a vertical slider named msg:stretchCalendar; its collapse and expand arrows are named msg:collapseCalendar and msg:expandCalendar. | — | R2 gap |
+| ID | status | statement | test |
+|---|---|---|---|
+| TIM-01 | done | Every event's start and end are stored in UTC together with the time zone each was recorded in. | test/time/time_model_test.dart |
+| TIM-02 | done | An event's time zone is set when it is created (imported: from the source, or the zone the source's calendar reports; added: the system zone, or the calendar's zone if one is selected, EVT-01) and stays as recorded until the user edits the event with Edit Event. | test/time/time_model_test.dart |
+| TIM-03 | done | The calendar shows every event in the Local time zone: the system (device) zone, or the fixed zone chosen in Settings > Time Zones (SET-02). Changing the Local zone changes only how times are shown. | test/time/time_model_test.dart |
+| TIM-04 | done | An all-day event is a 24-hour event, local midnight to the next local midnight in its own time zone, stored in UTC like any other. It is shown like any other event, so it is one day in its own zone and can span two days in another. When it is sent to an outside calendar that has an all-day type (Google, calendar feeds), it is sent as an all-day event for its stored time zone, with that zone's local dates. | test/time/time_model_test.dart |
+| TIM-05 | done | Rules do not depend on a time zone. A rule is applied to an event, and the event's recorded time zone decides what "Friday" or "22:00" means. Only a rule that is literally about a time zone uses a zone. | test/time/time_model_test.dart |
+| TIM-06 | done | Syncing with an outside calendar reads the time zone of that calendar and of each incoming event and records it with the event (TIM-02), and sends each event's recorded time zone with its times. | test/time/time_model_test.dart |
+| TIM-07 | done | Calendar feeds carry each event's times with its time zone. | test/time/time_model_test.dart |
+| TIM-10 | done | The time format (12-hour, such as 1:30pm, or 24-hour, such as 13:30) is a user setting (SET-01) and applies to every time shown in every feature. Until the user chooses, it defaults to 12-hour when the device is in a US time zone and 24-hour elsewhere. One control switches it (CAL-06.a). The notation inside each format is a Theme setting (SET-03). | test/time/time_model_test.dart |
+| UIC-12 | done | One shared dropdown (the language and view menus and the Calendar filter use it): it opens from a single icon; the feature says whether it selects one item or several; a single click or tap chooses or toggles an item and takes effect at once; where several can be selected, Ctrl and Shift select several on a keyboard; choosing outside the dropdown (losing focus) closes it. | test/calendar/calendar_test.dart |
+| UIC-13 | done | A change the user makes (a filter, a view, a theme, a setting) is shown at once: nothing needs a page reload or an Apply step. | test/calendar/calendar_test.dart |
+| UIC-14 | backlog | Every row of controls has left, center and right zones, aligned left, centered and right by default, each keeping its own alignment; a feature stipulates the order of the items in each zone. A row that is too narrow is handled in this order: (1) the zones stack, left on top, then center, then right; (2) fonts and icons scale down within their zone, never below readable text and a 24×24 px target (scaling is always tried before clipping); (3) what still does not fit depends on the zone's kind: a control zone clips it at its edge and ends the text with a triple dot, a content zone (calendar grid, list, table, log) scrolls it. The layout does not mirror for right-to-left languages. No component has its own responsive rule (build_rules/theme.md, 13a). | — |
+| UIC-15 | backlog | A badge or other overlay on an image or control is placed by one of nine anchor points of its parent (the corners, the edge middles and the center) plus an offset relative to the parent's size, both defined in the theme (build_rules/theme.md, 13b); no component places its own badge. | — |
+| UIC-16 | backlog | One shared resize bar. The UI defines its look and operation: a bar centered at the bottom of what it resizes, drawn as two rows of six dots like a slider's; dragging it, or pressing the up and down keys, resizes in whole units; beside it one arrow collapses to the fewest units needed (arrow up when expanded) or expands to the bottom of the visible window (arrow down when collapsed). Collapse and expand are single actions: the size is kept when the window is resized. The feature that uses the bar defines its unit and what is resized in each of its views. | — |
+| UIC-17 | backlog | UI components are kept separate from the features that use them: a component's look comes only from the theme, and a feature supplies only its content and what the component does there. So changing the theme restyles every feature at once, and a new feature reuses the components as they are. | — |
+| UIC-18 | backlog | One shared strength bar appears directly beneath any field where the user enters a secret (a password, a feed token), showing how strong the entry is as they type. It measures randomness (bits), not length alone; the bar only shows, and the field's feature decides whether an entry is accepted. Beside it, a hint recommends what to do (for example, the recommended minimum, or to use the generated value). The field's feature supplies the recommendation. | — |
+| UIC-19 | backlog | An entry that is not valid is marked at its own field with a note saying what is wrong, and it does not affect the other fields' valid values. A feature row says which entries are valid, and refers here for how the problem is shown. | — |
+| UIC-20 | backlog | A color that is not in the shared palette (from an older rule, an import, or a destination that supports fewer colors) is represented by the nearest palette color wherever it is shown or sent (UIC-10). | — |
+| UIC-21 | backlog | One shared filter, used by the Calendar filter and History (and any feature with a filter). It is built on the shared dropdown (UIC-12): the user can select one, several, all or none of its choices; Select all shows everything and Select none shows nothing; the filter shows when it is active; the choices are saved and kept; a change applies at once (UIC-13). A feature supplies only the choices and what they filter. | — |
+| UIC-24 | backlog | A section whose items can be added has a + control as the rightmost item of its header's right zone; it opens the dialog for adding (UIC-01). | — |
+| UIC-25 | backlog | A button that does one thing and shows no state (an icon button, +, Copy, Open, Expand, Close) just does it; Copy then shows "Copied" in place of its icon for the time in DEF-01. | — |
+| UIC-26 | backlog | A field that saves in place shows ✓ once saved, and ✕ \| ✓ while the user types: ✕ puts the saved value back, ✓ saves. | — |
+| UIC-27 | backlog | A Cancel \| Save pair sits at the bottom of what it saves and works as the rows below say. | — |
+| UIC-27.a | backlog | Pressing a side fills the pair with its word ("Saved" or "Cancelled") for the time in DEF-01; then the pair is idle. | — |
+| UIC-27.b | backlog | With nothing to save both sides are disabled: not focusable and announced as unavailable. A pop-up's Cancel, which only closes it, and the buttons of a + Add pop-up, which can be saved with its defaults, stay available. | — |
+| UIC-27.c | backlog | The first change turns the pair on, and Save pulses for the time in DEF-01 and then stays in full color; saving or cancelling returns the pair to idle. | — |
+| UIC-27.d | backlog | A question's answers can be the same pair (No \| Yes, UIC-06). | — |
+| UIC-27.e | backlog | Adding something (+ Add a calendar…) ends with the same Cancel \| Save pair as editing it. | — |
+| UIC-28 | backlog | A Status/Action button shows a status chip over the action that updates it (Sync Now, Check now, Update now, Connect, Fix), and a status looks one way for one meaning everywhere. | — |
+| UIC-28.a | backlog | The four meanings are: done or OK; in action, or waiting on the user; a problem outside SuiteStream, or an entry that was refused; SuiteStream itself failed. Each has its one look (THM-05), whether it appears as a chip, a button, a done or failed state, or a line of text. | — |
+| UIC-28.b | backlog | Every copy of an action (the top bar and Settings; Feeds and Settings) shows the same words at the same moment and ends together. | — |
+| UIC-28.c | backlog | Inside a Status/Action button a status word always shows its icon and words together and never loses a word. Elsewhere a status word shows its icon and words for the time in DEF-01, then collapses to its icon (the words stay as its tooltip and accessible name); a one-off confirmation (such as "Saved") then vanishes and gives its line back, while an ongoing health status stays. | — |
+| UIC-28.d | backlog | While an update runs only the words of the top-bar Update now change, never a blank pill, and a bar slides under them until the app restarts. | — |
+| UIC-29 | backlog | Every connection is a module: a header that is all a folded module shows, with its details below when expanded. | — |
+| UIC-29.a | backlog | The header's first line shows the color box, the kind (fixed text), the status line (CON-03.g) and the Status/Action buttons on the right. Its second line shows the label, with an (i), and the next-check line (CON-03.g) on the right when the connection has one. | — |
+| UIC-29.b | backlog | Expand sits in the module's bottom border (▸ Expand ◂, pointing at the words); when open, a Close line sits under the header (its triangles point up). While expanded the label is a field of the same size. | — |
+| UIC-29.c | backlog | Status lines are unboxed, right-aligned next to their Status/Action button, and visible only while the module is collapsed. | — |
+| UIC-29.d | backlog | Default sits right of a SuiteStream calendar's title; while expanded, the other local calendars offer it as a button and read-only calendars show it disabled (CLCL-03). | — |
+| UIC-29.e | backlog | On \| Off sits inline before an expanded module's note; Off dims the module and keeps its settings. | — |
+| UIC-29.f | backlog | (i) is info about the module: what it is, then its note when it has one. (?) is help (UIC-07.a). | — |
+| UIC-30 | backlog | A list of modules, rule lines or the Then actions of a rule can be reordered with one handle in the margin on the left of each line: ▲ above, a grip, ▼ below. | — |
+| UIC-30.a | backlog | The handle is always visible and takes no extra space; there is none when there is nothing to reorder (a list of one). | — |
+| UIC-30.b | backlog | Dragging the grip reorders; ▲ and ▼ reorder with the keyboard. The grips are on the left, or on the right when the user chooses (SET-03). | — |
+| UIC-31 | backlog | Every + opens a dialog (UIC-01) centered; a question is a dialog too, never the browser's own alert or confirm box. | — |
+| UIC-31.a | backlog | A question's answers are on one line, or one under the other when they are sentences; a second line under the question is a note, muted and not bold. | — |
+| UIC-31.b | backlog | A choice of calendars is a drop-down of ticks. | — |
+| UIC-31.c | backlog | The anchored month, view and language menus do not dim the page and do not fill the phone; they keep their compact panel. | — |
+| UIC-32 | backlog | In-page words are click paths and short lines (Place › Place › Field: value › Button), with no paragraphs; the why goes in a (?). Status words are a word or two (UIC-28). No sentence on the page is longer than 20 words, apart from a (?), the calendar and the log. | — |
+| UIC-33 | backlog | The Import row is the same in every calendar: the heading, the file field (a file icon and "Choose Calendar.ics…", filling the line), the dates (UIC-23) and the button on the right. For CCS+ it is Manual Upload, which replaces the schedule, so it has no dates. | — |
+| UIC-34 | backlog | A box means the user can change it: fixed text (a title, the release channel) is plain text, never in a field box. A part that looks like a module but has nothing to fold (Settings > Updates) uses the module header layout, always open, with no Expand. | — |
+| UIC-35 | backlog | A Copy button sits inside its field, like the password box's eye. A pair of credential fields (client ID and secret) is laid out like a login, connected or not. | — |
+| UIC-36 | backlog | In every dialog and form a field has a muted label over it and a value that cannot be changed (an event's calendar) is plain text; related fields share a line (Calendar \| Title; Starts \| Ends, each with its Time under it). | — |
+| UIC-37 | backlog | One shared image editor sets an image for a place in the app (the logo, the favicon): the user picks a file, crops it, and the editor saves it as a PNG that fits the limits in DEF-01 for that place. |
+| UIC-37.a | backlog | The editor accepts PNG, SVG, WebP, JPEG and ICO files. |
+| UIC-37.b | backlog | The crop frame keeps the shape within the minimum and maximum aspect ratio of the place (DEF-01); the user moves and zooms the picture under the frame and sees the result before saving. |
+| UIC-37.c | backlog | The saved image is always a PNG, redrawn as pixels (so nothing in an uploaded file can run), with its long side at most the output size in DEF-01 and its file no larger than the place's file size in DEF-01; if the file is still too large the image is scaled down until it fits. |
+| UIC-37.d | backlog | The crop frame starts centered at the largest size the shape allows and stays inside the picture. |
+| UIC-37.e | backlog | An uploaded file larger than the input size in DEF-01 is not valid (UIC-19). |
+| UIC-38 | backlog | Every password box has a Show/Hide button (msg:showPassword, msg:hidePassword); the box is hidden again when its form is sent. | — |
+| UIC-39 | backlog | The time zone picker lists a Common group of the zones in DEF-01, in that order, then msg:allTimeZones (region and city names only), without names that start with Etc/, SystemV/, posix/ or right/; the default zone is marked ★; a value that is not UTC or in the list is not valid (msg:unknownTimeZone, UIC-19); choosing the default or nothing clears the stored choice. | — |
+| UIC-40 | backlog | A label in every supported language fits its control without cutting a word. | — |
+| UIC-23 | backlog | Wherever a range of dates is asked for (Print Preview, search, feeds, destinations, import) one shared control is used: From | To | All. Either end may be left empty; All means an empty range and clears both dates; the fields show hints in the date's format; an end before the start is not valid (UIC-19). | — |
+| UIC-16.a | backlog | The resize bar's handle is exposed to assistive tools as a vertical slider named msg:stretchCalendar; its collapse and expand arrows are named msg:collapseCalendar and msg:expandCalendar. | — |
 
 ## Time (TIM)
 
 | ID | status | statement |
 |---|---|---|
-| TIM-08 | backlog | An imported event that carries no time zone gets the installation's default zone (DEP-05). | — | Developer, Nov 17 |
-| TIM-09 | proposed | A time zone is always one of the real zones: the zone picker offers only real zones, and an imported event that names a zone that does not exist is given the default zone (TIM-08) instead. |
-| TIM-11 | proposed | The display time zone can be cleared, and "today" everywhere is the day in the display zone. | — | R6 gap |
-| TIM-11.a | proposed | Choosing no zone, or the server zone, clears the display zone; a zone that does not exist is not saved and shows msg:unknownTimeZone. | — | R6 gap |
-| TIM-11.b | proposed | A saved zone that is not valid is ignored and the server zone is used. | — | R6 gap |
-| TIM-11.c | proposed | "Today" in the calendar, the event pages and Print is the current day in the display zone. | — | R6 gap |
-| TIM-11.d | proposed | A time shown with a date is a clock time alone when the day is today, otherwise the short date and the clock time. | — | R6 gap |
+| TIM-08 | done | An imported event that carries no time zone gets the installation's default zone (DEP-05). | test/time/time_model_test.dart |
+| TIM-09 | backlog | A time zone is always one of the real zones: the zone picker offers only real zones, and an imported event that names a zone that does not exist is given the default zone (TIM-08) instead. |
+| TIM-11 | backlog | The display time zone can be cleared, and "today" everywhere is the day in the display zone. | — | R6 gap |
+| TIM-11.a | backlog | Choosing no zone, or the server zone, clears the display zone; a zone that does not exist is not saved and shows msg:unknownTimeZone. | — | R6 gap |
+| TIM-11.b | backlog | A saved zone that is not valid is ignored and the server zone is used. | — | R6 gap |
+| TIM-11.c | backlog | "Today" in the calendar, the event pages and Print is the current day in the display zone. | — | R6 gap |
+| TIM-11.d | backlog | A time shown with a date is a clock time alone when the day is today, otherwise the short date and the clock time. | — | R6 gap |
 
 ## UI (UI)
 
-| ID | status | statement | evidence |
-|---|---|---|---|
-| UIC-01 | proposed | A dialog opens centered over a dimmed backdrop. In a phone-width window it fills the screen and shows a Back control instead of the dialog header. | S44-27, S57-20, S36-57, S57-37 |
-| UIC-02 | proposed | Back closes the dialog. Escape closes only the topmost open layer (a menu, time list or picker) and a second Escape closes the dialog. A dialog opened from another returns to it when closed. | S57-28..30, S58-32, S37-36, S67-15..17 |
-| UIC-03 | proposed | A dialog fits the window height; its content area grows with a taller field (such as Notes). | S57-23, S57-24 |
-| UIC-05 | proposed | A section (Calendar, Sources, Feeds, All Rules, Event Templates, History...) is a header and a body; its body stays hidden until expanded, and clicking the title alone does not expand it. | S33-24, S38-01, S38-13, S61-02 |
-| UIC-05.a | backlog | Every section's header reads: icon, title, space, status lines, health, Print (PRT-01.h), + (UIC-24). Calendars and Feeds have no status lines; All Rules and Event Templates have up to three (the conflicts or errors, otherwise how many); + is in the top right corner. | theme.md Clarifications |
-| UIC-05.b | backlog | A folded section says "Expand to Configure" (Calendars, Feeds, All Rules, Event Templates) or "Expand for Details" (History). | theme.md Clarifications |
-| UIC-05.c | proposed | A section the user left open folds by itself after the time in DEF-01; each section is judged on its own. | S61-13, S61-14 |
-| UIC-05.d | proposed | The open or closed state of a section is a user setting (SET-01). | changelog_gaps_2101-2336:24 |
-| UIC-05.e | proposed | A section that contains modules lists them in their saved order and reorders them as UIC-30 says; the new order is saved immediately. | — |
-| UIC-05.f | proposed | The + of a section opens a dialog listing the kinds of connection the section can add, by their kind text (CON-02.d); choosing one opens that connection's own setup. | — |
-| UIC-05.g | backlog | A section's health is Healthy when all its items are healthy and Unhealthy when any one of them is in error; what puts an item in error is stated by its own feature. An item whose health is disabled (turned off, or with nothing to sync) does not count. | — |
-| UIC-06 | proposed | An action that hides or deletes something asks first with a No \| Yes pair; cancelling changes nothing. | S57-33, S58-24, S58-25, S58-35, S44-26 |
-| UIC-07 | backlog | One shared popover, like the info dot: clicking or tapping an info dot, or the triple dot that ends clipped text (UIC-14), shows its full text in a popover next to it, above or below as space allows. The popover is never wider than the window and its text wraps inside it, so it adds no horizontal scroll bar; if it is taller than the window it scrolls vertically. It closes when the user chooses outside it. The item's own click still works. The triple dot's click area is at least 24×24 px. This is the global definition of the triple dot;. | — | Developer, Nov 17; S58-01, S58-34, S57-35, S66-18 |
-| UIC-07.a | backlog | A (?) is help: how to do something. It sits right after the word it explains; hover, focus or a click shows it. Its pop-up opens with its upper left at the icon; past the window's right edge, its upper right sits at that edge; past the bottom, its lower corners sit at the bottom. Explanations live in an (i) or a (?), never on the page. | — | theme.md section 12; picture 2·12 |
-| UIC-08 | proposed | A checkbox's label ticks it when clicked; empty space beside the label does not. | S21-19, S21-20 |
-| UIC-09 | proposed | The calendar picker is a small month calendar with previous/next month and Today; it opens on a given month, can mark items unselectable, and closes when an item is picked. | S58-07..12, S58-28..30 |
-| UIC-10 | proposed | One shared color palette of named colors (Google's eleven event colors) is used wherever a color is chosen (rule action, event, calendar); the event editor adds a "calendar default" choice. A picked color shows and closes the palette. | S19-08, S19-41, S19-44, S40-09..11 |
-| UIC-10.a | backlog | A click opens the palette (in a module, while it is expanded); the choice goes with the module's Save. The colors are THM-09. | — | theme.md section 11 |
-| UIC-11 | proposed | One shared emoji picker, with search, is used wherever an emoji is chosen. | S44-41 |
-| UIC-11.a | backlog | The common emoji sit beside the field; a rounded "Search for more emojis" field opens every emoji (up to Emoji 13.0, no flags, drawn by the device), ten a line, scrolling, filtered as the user types. | — | theme.md section 11 |
-| UIC-11.b | proposed | Newer emoji display older-Windows compatibility guidance, while older compatible choices do not. Editing or choosing an older emoji clears the compatibility warning; choosing a newer one displays it. Shared explanatory help follows UIC-07. | S55-37, S55-41, S55-43, S55-44, S55-45, S55-46, S55-47 |
-| UIC-11.c | proposed | The quick emoji beside the field are the ones in DEF-01; Enter in the search field picks the first match. | R3 gap |
+| ID | status | statement |
+|---|---|---|
+| UIC-01 | backlog | A dialog opens centered over a dimmed backdrop. In a phone-width window it fills the screen and shows a Back control instead of the dialog header. |
+| UIC-02 | backlog | Back closes the dialog. Escape closes only the topmost open layer (a menu, time list or picker) and a second Escape closes the dialog. A dialog opened from another returns to it when closed. |
+| UIC-03 | backlog | A dialog fits the window height; its content area grows with a taller field (such as Notes). |
+| UIC-05 | backlog | A section (Calendar, Sources, Feeds, All Rules, Event Templates, History...) is a header and a body; its body stays hidden until expanded, and clicking the title alone does not expand it. |
+| UIC-05.a | backlog | Every section's header reads: icon, title, space, status lines, health, Print (PRT-01.h), + (UIC-24). Calendars and Feeds have no status lines; All Rules and Event Templates have up to three (the conflicts or errors, otherwise how many); + is in the top right corner. |
+| UIC-05.b | backlog | A folded section says "Expand to Configure" (Calendars, Feeds, All Rules, Event Templates) or "Expand for Details" (History). |
+| UIC-05.c | backlog | A section the user left open folds by itself after the time in DEF-01; each section is judged on its own. |
+| UIC-05.d | backlog | The open or closed state of a section is a user setting (SET-01). |
+| UIC-05.e | backlog | A section that contains modules lists them in their saved order and reorders them as UIC-30 says; the new order is saved immediately. |
+| UIC-05.f | backlog | The + of a section opens a dialog listing the kinds of connection the section can add, by their kind text (CON-02.d); choosing one opens that connection's own setup. |
+| UIC-05.g | backlog | A section's health is Healthy when all its items are healthy and Unhealthy when any one of them is in error; what puts an item in error is stated by its own feature. An item whose health is disabled (turned off, or with nothing to sync) does not count. |
+| UIC-06 | backlog | An action that hides or deletes something asks first with a No \| Yes pair; cancelling changes nothing. |
+| UIC-07 | backlog | One shared popover, like the info dot: clicking or tapping an info dot, or the triple dot that ends clipped text (UIC-14), shows its full text in a popover next to it, above or below as space allows. The popover is never wider than the window and its text wraps inside it, so it adds no horizontal scroll bar; if it is taller than the window it scrolls vertically. It closes when the user chooses outside it. The item's own click still works. The triple dot's click area is at least 24×24 px. This is the global definition of the triple dot;. | — |
+| UIC-07.a | backlog | A (?) is help: how to do something. It sits right after the word it explains; hover, focus or a click shows it. Its pop-up opens with its upper left at the icon; past the window's right edge, its upper right sits at that edge; past the bottom, its lower corners sit at the bottom. Explanations live in an (i) or a (?), never on the page. | — |
+| UIC-08 | backlog | A checkbox's label ticks it when clicked; empty space beside the label does not. |
+| UIC-09 | backlog | The calendar picker is a small month calendar with previous/next month and Today; it opens on a given month, can mark items unselectable, and closes when an item is picked. |
+| UIC-10 | backlog | One shared color palette of named colors (Google's eleven event colors) is used wherever a color is chosen (rule action, event, calendar); the event editor adds a "calendar default" choice. A picked color shows and closes the palette. |
+| UIC-10.a | backlog | A click opens the palette (in a module, while it is expanded); the choice goes with the module's Save. The colors are THM-09. | — |
+| UIC-11 | backlog | One shared emoji picker, with search, is used wherever an emoji is chosen. |
+| UIC-11.a | backlog | The common emoji sit beside the field; a rounded "Search for more emojis" field opens every emoji (up to Emoji 13.0, no flags, drawn by the device), ten a line, scrolling, filtered as the user types. | — |
+| UIC-11.b | backlog | Newer emoji display older-Windows compatibility guidance, while older compatible choices do not. Editing or choosing an older emoji clears the compatibility warning; choosing a newer one displays it. Shared explanatory help follows UIC-07. |
+| UIC-11.c | backlog | The quick emoji beside the field are the ones in DEF-01; Enter in the search field picks the first match. |
 
 ## Capabilities (CAP)
 
 What a user may do with a calendar or an event follows from where it comes from, stated once here. Features reference these rows
-instead of listing "never for read-only", "not for rule events" and similar exceptions. Origins: **imported** (from a source CalendarStream only reads, such as CCS+), **custom** (added in
-CalendarStream), **rule** (made by a rule).
+instead of listing "never for read-only", "not for rule events" and similar exceptions. Origins: **imported** (from a source SuiteStream only reads, such as CCS+), **custom** (added in
+SuiteStream), **rule** (made by a rule).
 
 | ID | status | statement |
 |---|---|---|
-| CAP-01 | proposed | Imported and custom events can be edited; a rule event cannot be opened for editing, because its rule controls it (remote edits to it are corrected on sync, CGTW-01). |
-| CAP-02 | proposed | An imported event can be hidden and shown again, never deleted from its source; a custom event can be deleted, and a deletion can be undone. |
-| CAP-03 | proposed | Only custom events can be moved to another calendar; an imported event of a read-only source never is (EVT-06). |
-| CAP-04 | proposed | Imported and custom events can be link targets; a rule event cannot. |
-| CAP-05 | proposed | Any calendar CalendarStream owns (a Local calendar) can be the default calendar; a read-only source calendar cannot. |
-| CAP-06 | proposed | Sync Now is offered only for calendars that download from outside; a Local calendar has nothing to download. |
+| CAP-01 | backlog | Imported and custom events can be edited; a rule event cannot be opened for editing, because its rule controls it (remote edits to it are corrected on sync, CGTW-01). |
+| CAP-02 | backlog | An imported event can be hidden and shown again, never deleted from its source; a custom event can be deleted, and a deletion can be undone. |
+| CAP-03 | backlog | Only custom events can be moved to another calendar; an imported event of a read-only source never is (EVT-06). |
+| CAP-04 | backlog | Imported and custom events can be link targets; a rule event cannot. |
+| CAP-05 | backlog | Any calendar SuiteStream owns (a Local calendar) can be the default calendar; a read-only source calendar cannot. |
+| CAP-06 | backlog | Sync Now is offered only for calendars that download from outside; a Local calendar has nothing to download. |
 
 ## Defaults and limits (DEF)
 
-| ID | status | statement | test | was |
-|---|---|---|---|---|
-| DEF-01 | backlog | Every default and limit is defined once, in the table below, and a feature row refers to it instead of repeating the number. A value that an admin setting exposes is stored in the database and overrides the default (DEP-05); the others stay as the defaults. | — | Developer, Nov 17 |
-| DEF-02 | proposed | Every list that grows with use (logs, failure records, pending sign-ins) has a stated limit in the table below, and entries no longer needed are forgotten first, so memory cannot fill. A feature row refers to the limit instead of repeating it. | — | Developer, Nov 18 |
-| DEF-03 | proposed | Wherever a limit or a count is in characters (a password length, a name length, a token length), a character is what the user sees as one character (a Unicode extended grapheme cluster), not a code unit; a special character is any character that is not a letter or a digit. | — | Developer, Nov 19 |
+| ID | status | statement | test |
+|---|---|---|---|
+| DEF-01 | backlog | Every default and limit is defined once, in the table below, and a feature row refers to it instead of repeating the number. A value that an admin setting exposes is stored in the database and overrides the default (DEP-05); the others stay as the defaults. | — |
+| DEF-02 | backlog | Every list that grows with use (logs, failure records, pending sign-ins) has a stated limit in the table below, and entries no longer needed are forgotten first, so memory cannot fill. A feature row refers to the limit instead of repeating it. | — |
+| DEF-03 | backlog | Wherever a limit or a count is in characters (a password length, a name length, a token length), a character is what the user sees as one character (a Unicode extended grapheme cluster), not a code unit; a special character is any character that is not a letter or a digit. | — |
 
 | Name | Default | Limit | Stored |
 |---|---|---|---|

@@ -1,7 +1,7 @@
 # Requirements
 
-One file per feature: the checkable rules of behavior the app must meet. This is the spec for both the Python app
-(the reference) and the Dart port. Defined in the old process notes (Inputs; moved with the old app); the plan is the old layer map (moved with the old app).
+One file per feature: the checkable rules of behavior the app must meet. This is the spec for the Dart/Flutter app.
+Defined in the old process notes (Inputs; moved with the old app); the plan is the old layer map (moved with the old app).
 
 ## Rules for writing and changing requirements (any agent or person)
 
@@ -14,8 +14,8 @@ These apply to every row in `requirements/`.
 5. **A row says what to build, once, in the user's words.** One checkable rule per row. No history ("the Python app does…"), no test or script wording, no web-page mechanics, no "is refused" for a control that cannot produce a wrong value. A requirement's own statement is general; its sub-requirements hold the detail and the values. **Test:** `req_check.sh` lists history and script wording; review: the row holds one checkable rule.
 6. **Define every term** the first time a file uses it, or point to where it is defined. **Test:** review: a reader who knows only this folder can follow every term.
 7. **State limits.** Anything that grows with use (a log, a list, a table of records) has a limit in DEF-01 (DEF-02). **Test:** review: for each list that grows, find its limit in DEF-01.
-8. **Questions** are rows marked `(?)` and appear in `SCRUM.d/defects.md`. Look for the answer first in the other requirements, the decisions, the code of the running app, and the Flutter and Dart documentation (https://docs.flutter.dev/ and https://dart.dev/), and only then ask the Product Owner. **Test:** `req_check.sh` reports a `(?)` row with no question, and a question with no `(?)` row.
-9. **Nothing you write names an agent or a tool.** Name a person by role, as `SCRUM.d/README.md` defines the roles. **Test:** `req_check.sh` lists any agent or tool name.
+8. **Questions** are rows marked `(?)` and appear in `scrum/defects.md`. Look for the answer first in the other requirements, the decisions, the code of the running app, and the Flutter and Dart documentation (https://docs.flutter.dev/ and https://dart.dev/), and only then ask the Product Owner. **Test:** `req_check.sh` reports a `(?)` row with no question, and a question with no `(?)` row.
+9. **Nothing you write names an agent or a tool.** Name a person by role, as `scrum/README.md` defines the roles. **Test:** `req_check.sh` lists any agent or tool name.
 10. **Prefixes.** A feature's prefix is three letters. A module in a subfolder adds that folder's letter before its three letters: C for `connections.d` (CGOW is Google one-way) and P for `plugins.d` (PGAP is the Google API plugin); a folder inside a folder adds its letter in turn. **Test:** `req_check.sh` reports a row whose prefix does not match its folder.
 11. **Every requirement has a test.** A row with no sub-requirements: its test cell names the test or says `see <ID>`; `—` stays only until a test exists, and a row with status `planned` or `done` has a test. **Test:** `req_check.sh` counts rows whose test cell is `—` and reports a `planned` or `done` row with no sub-requirements and `—` as an error.
 11.a **A row with sub-requirements passes when all its sub-requirements pass;** its own test cell may be `—` or name a test of the whole. **Test:** `req_check.sh` skips the test-cell error of rule 11 for a row that has sub-requirements; review: each sub-requirement of such a row has a test.
@@ -33,20 +33,16 @@ These apply to every row in `requirements/`.
 - **Shared requirements** (`common.md`): behavior several features use, written once and referenced: time (TIM), shared UI (UI), what an origin allows (CAP), defaults and limits (DEF).
 - **Parent tests**: a requirement that has sub-requirements passes when all its sub-requirements pass; its own test cell may be `—` or name a test of the whole.
 - **Test cell**: a list of tests, or `see <ID>` links to the tests of another requirement or sub-requirement, or `—` while there is none. A sub-test is simply the test the sub-requirement uses; it may be its own, its parent's, or another requirement's. A test says which requirements it verifies and how it runs when several call it (once, or once per requirement); failures are reported per requirement (the old layer map, moved with the old app: testing decisions).
-- **Evidence (temporary)**: the S keys pointing at the Python suites; deleted when the conversion ends.
-- **Oracle**: the existing Python app and its suites, used once as the reference for what the app does.
 - **`oldkey.md`**: the record of old IDs to new IDs.
 - **Stories, epics, sprints and the backlog** are defined in the process rules. A story names the requirement and sub-requirement IDs it will meet and is done when their tests pass; requirements never refer to a story.
 
 ## Line format
 
-`| ID | status | statement | test | evidence (temporary) |`
+`| ID | status | statement | test |`
 
 - **ID**: a feature prefix and a number (CAL-03). A requirement may have sub-requirements (ACC-06, ACC-06.a, ACC-06.b); a link points at the requirement unless it means exactly one sub-requirement. When IDs change, `oldkey.md` records old to new.
-- **status**: `proposed` (drafted, not yet agreed), `backlog` (the Product Owner agreed: it is a Requirement, waiting for a story), `planned` (it is in a story), `done` (its story was accepted at the Review) or `defect` (an agent cannot act on it; the Orchestrator changes it and sets it to `proposed`). The Product Owner agrees to a row by deleting `proposed`; a blank status is read as `backlog` and the Orchestrator writes the word. `SCRUM.d/sprint.md` records which story holds a planned requirement. A status moves up this order; the moves down are `planned` to `backlog`, when a requirement leaves its story, and `planned` to `defect`, when an agent cannot act on it; a `defect` row returns to `proposed` after the Orchestrator changes it.
-- **test**: the test that verifies it (path and name), once one exists. `—` until the inventory of the Python suites
-  (`requirements/inventory/`) has been matched to requirements.
-- **evidence (temporary)**: the Python-suite keys (and old Dashboard items) a row came from; deleted when the conversion ends.
+- **status**: `proposed` (drafted, not yet agreed), `backlog` (the Product Owner agreed: it is a Requirement, waiting for a story), `planned` (it is in a story), `done` (its story was accepted at the Review) or `defect` (an agent cannot act on it; the Orchestrator changes it and sets it to `proposed`). The Product Owner agrees to a row by deleting `proposed`; a blank status is read as `backlog` and the Orchestrator writes the word. `scrum/sprint.md` records which story holds a planned requirement. A status moves up this order; the moves down are `planned` to `backlog`, when a requirement leaves its story, and `planned` to `defect`, when an agent cannot act on it; a `defect` row returns to `proposed` after the Orchestrator changes it.
+- **test**: the test that verifies it (path and name), once one exists. `—` until a test is written.
 
 ## Prefixes
 
