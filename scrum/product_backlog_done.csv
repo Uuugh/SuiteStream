@@ -1,0 +1,2 @@
+id,title,description,acceptance_criteria,priority,size,status,sprint,created_at,updated_at
+PBI-001,(PBI title),(User story description),(Acceptance criteria separated by semicolons),Critical/High/Medium/Low,0,New,,YYYY-MM-DD,YYYY-MM-DD
