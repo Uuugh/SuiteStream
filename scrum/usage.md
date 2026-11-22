@@ -20,6 +20,7 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 | Sprint | Story or round | Date | Model | Estimate session % | Before s / w | After s / w | Actual session % | Notes |
 |---|---|---|---|---|---|---|---|---|
 | sprint001 | planning, then T01 to T12 (build and tests) | 2026-11-21 | Sonnet 5.5 | – | – / – | 9 / 90 | ? | Only an after-reading was supplied (session 9%, resets 3:40 AM; weekly 90%, resets Wed Nov 25 5:00 PM); the 5-hour window had reset, so the session actual is unknown |
+| sprint002 | T01 to T10 (messages, five views, header, date picker, Calendar filter) | 2026-11-21 | Sonnet 5.5 | – | 9 / 90 | 20 / 92 | 11 | Before-reading is the sprint 001 after-reading (9 / 90); after-reading 20 / 92 supplied by the Product Owner; the week rose 2 points. Includes the Product Owner's three review changes and the legend removal |
 
 ## Baseline
 

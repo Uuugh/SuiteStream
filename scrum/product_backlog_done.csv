@@ -5,3 +5,6 @@ PBI-003,Theme tokens and fonts,As a user I want the light and dark Soft palette 
 PBI-004,Shared dropdown and instant apply,As a user I want one dropdown behaviour and changes shown at once,UIC-12; UIC-13 pass,High,3,Done,001,2026-11-21,2026-11-21
 PBI-005,Month view and navigation,As a user I want a Month calendar I can navigate with today marked,CAL-01.a; CAL-01.b (Month and Week only); CAL-01.d; CAL-01.i pass,High,8,Done,001,2026-11-21,2026-11-21
 PBI-006,Week view hourly grid,As a user I want a Week view with an hourly grid and week navigation,CAL-01.c; CAL-01.h pass,High,5,Done,001,2026-11-21,2026-11-21
+PBI-007,Remaining views and view picker,As a user I want 5-day Day and List views and an icon view picker,Rest of CAL-01.b; CAL-06.c; CAL-01.j pass,High,5,Done,002,2026-11-21,2026-11-21
+PBI-008,Calendar filter,As a user I want to filter calendars,FLT backlog rows (9) pass,High,5,Done,002,2026-11-21,2026-11-21
+PBI-012,Message keys and localization,As a user I want every message in my language from the message files,Messages are read from requirements/messages/*.arb by key; a missing key falls back to English (msg: rows SHL-02.a-b); the picker/header messages in sprint 002 are cited by key,High,5,Done,002,2026-11-21,2026-11-21

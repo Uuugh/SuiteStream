@@ -1,7 +1,7 @@
 id,title,description,acceptance_criteria,priority,size,status,sprint,created_at,updated_at
-PBI-007,Remaining views and view picker,As a user I want 5-day Day and List views and an icon view picker,Rest of CAL-01.b; CAL-06.c; CAL-01.j pass,High,5,Selected,002,2026-11-21,2026-11-21
-PBI-008,Calendar filter,As a user I want to filter calendars,FLT backlog rows (9) pass,High,5,Selected,002,2026-11-21,2026-11-21
-PBI-009,Theme components and palettes,As a user I want themed components,THM-03 to THM-09 backlog rows pass,Medium,8,New,,2026-11-21,2026-11-21
-PBI-010,Shared UI components,As a user I want shared save/cancel pairs and resize bars,UIC-14 to UIC-17; UIC-27 to UIC-37 backlog rows pass,Medium,8,New,,2026-11-21,2026-11-21
-PBI-011,Calendar event drag and resize,As a user I want to move events and resize the calendar,CAL-03.a-d; CAL-04.b-f pass,Low,5,New,,2026-11-21,2026-11-21
-PBI-012,Message keys and localization,As a user I want every message in my language from the message files,Messages are read from requirements/messages/*.arb by key; a missing key falls back to English (msg: rows SHL-02.a-b); the picker/header messages in sprint 002 are cited by key,High,5,Selected,002,2026-11-21,2026-11-21
+PBI-009,Theme components and palettes,As a user I want themed components,THM-03 to THM-09 backlog rows pass,Medium,8,Selected,003,2026-11-21,2026-11-21
+PBI-010,Shared UI components,As a user I want shared save/cancel pairs and resize bars,UIC-14 to UIC-17; UIC-27 to UIC-37 backlog rows pass,Medium,8,Selected,003,2026-11-21,2026-11-21
+PBI-011,Calendar event drag and resize,As a user I want to move events and resize the calendar,CAL-03.a-d; CAL-04.b-f pass,Low,5,Selected,003,2026-11-21,2026-11-21
+PBI-013,Event dialog,As a user I want to open an event and add edit and remove my own events in a dialog,EVT-01 to EVT-03 and EVT-07 and their sub-rows pass; clicking an event opens its details,Critical,13,Selected,003,2026-11-21,2026-11-21
+PBI-014,Local event store,As a user I want my events kept on my device,Events persist across restarts in UTC with their zones (TIM-01); a removed custom event can be undone (CAP-02),High,5,Selected,003,2026-11-21,2026-11-21
+PBI-015,Header time zone and clock controls,As a user I want to look at another time zone and switch 12h or 24h from the calendar header,CAL-02; CAL-06.a; CAL-06.b; CAL-06.c; CAL-06.d; CAL-06.e; SET-02.a pass,High,8,Selected,003,2026-11-21,2026-11-21
