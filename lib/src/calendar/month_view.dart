@@ -7,6 +7,8 @@ import '../theme/tokens.dart';
 import '../time/suite_event.dart';
 import '../time/time_format.dart';
 import 'calendar_controller.dart';
+import 'event_dialog.dart';
+import 'event_drag.dart';
 
 /// Height of one event line in a day cell, and of the date number's row.
 const double monthLineHeight = 16;
@@ -86,11 +88,29 @@ class _DayCell extends StatelessWidget {
       key: ValueKey('day-${day.year}-${day.month}-${day.day}'),
       decoration: BoxDecoration(
         border: Border.all(color: t.line, width: 0.5),
-        color: inMonth ? t.card : t.soft,
+        // The day a dragged event is over is highlighted (CAL-03).
+        color: c.dropTarget?.day == day ? t.runBg : (inMonth ? t.card : t.soft),
       ),
-      foregroundDecoration: isToday ? BoxDecoration(border: Border.all(color: t.accent, width: 2)) : null,
+      // Always present (a border only for today or a drop), so the cell keeps its widget
+      // structure while an event is dragged over it.
+      foregroundDecoration: BoxDecoration(
+        border: isToday
+            ? Border.all(color: t.accent, width: 2)
+            : (c.dropTarget?.day == day ? Border.all(color: t.run, width: 2) : null),
+      ),
       padding: const EdgeInsets.all(2),
-      child: LayoutBuilder(
+      // EVT-01.a: clicking a day opens the new-event dialog for that date.
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        // The start time follows where the click is down the day: the top of the block is
+        // midnight, the bottom the end of the day, snapped to the nearest drag step.
+        onTapUp: (d) {
+          final box = context.findRenderObject() as RenderBox;
+          final dy = box.globalToLocal(d.globalPosition).dy;
+          final minute = box.size.height <= 0 ? null : (dy / box.size.height * 24 * 60 / dragStepMinutes).round() * dragStepMinutes;
+          openEventDialog(context, c, day: day, startMinute: minute?.clamp(0, 24 * 60 - dragStepMinutes));
+        },
+        child: LayoutBuilder(
         builder: (context, box) {
           // CAL-01.g: the cell shows how many of its visible events do not fit.
           final lines = ((box.maxHeight - 4 - monthDateRowHeight) / monthLineHeight).floor();
@@ -115,7 +135,7 @@ class _DayCell extends StatelessWidget {
                   ),
                 ),
               ),
-              for (final e in events.take(fit)) _EventLine(event: e, controller: c),
+              for (final e in events.take(fit)) _EventLine(event: e, controller: c, day: day, cell: Size(box.maxWidth + 4, box.maxHeight + 4)),
               if (hidden > 0)
                 SizedBox(
                   key: ValueKey('more-${day.year}-${day.month}-${day.day}'),
@@ -124,17 +144,20 @@ class _DayCell extends StatelessWidget {
                 ),
             ],
           );
-        },
+          },
+        ),
       ),
     );
   }
 }
 
 class _EventLine extends StatelessWidget {
-  const _EventLine({required this.event, required this.controller});
+  const _EventLine({required this.event, required this.controller, required this.day, required this.cell});
 
   final SuiteEvent event;
   final CalendarController controller;
+  final DateTime day;
+  final Size cell;
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +166,30 @@ class _EventLine extends StatelessWidget {
     final s = event.startIn(c.localZone.location);
     final text = event.allDay ? event.title : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} ${event.title}';
     final color = c.colorOf(event);
-    return SizedBox(
+    return DragMovable(
+      key: ValueKey('event-${event.id}'),
+      longPress: c.longPress,
+      enabled: canMove(event),
+      // While dragging, the day it would land on is highlighted.
+      onPreview: (d) {
+        if (d == null) {
+          c.setDropTarget(null);
+          return;
+        }
+        final cols = (d.dx / cell.width).round();
+        final rows = (d.dy / cell.height).round();
+        c.setDropTarget(DropTarget(eventId: event.id, day: DateTime(day.year, day.month, day.day + cols + 7 * rows)));
+      },
+      // CAL-03.c: in Month the event moves to the day it is dropped on and keeps its time.
+      onMoved: (d) {
+        final cols = (d.dx / cell.width).round();
+        final rows = (d.dy / cell.height).round();
+        if (cols == 0 && rows == 0) return;
+        c.move(event.id, day: DateTime(day.year, day.month, day.day + cols + 7 * rows));
+      },
+      // EVT-07: clicking an event opens its details in place.
+      onTap: () => c.selectEvent(event.id),
+      child: SizedBox(
       height: monthLineHeight,
       child: Row(
         children: [
@@ -161,6 +207,7 @@ class _EventLine extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

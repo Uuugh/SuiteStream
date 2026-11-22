@@ -22,6 +22,8 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 | sprint001 | planning, then T01 to T12 (build and tests) | 2026-11-21 | Sonnet 5.5 | – | – / – | 9 / 90 | ? | Only an after-reading was supplied (session 9%, resets 3:40 AM; weekly 90%, resets Wed Nov 25 5:00 PM); the 5-hour window had reset, so the session actual is unknown |
 | sprint002 | T01 to T10 (messages, five views, header, date picker, Calendar filter) | 2026-11-21 | Sonnet 5.5 | – | 9 / 90 | 20 / 92 | 11 | Before-reading is the sprint 001 after-reading (9 / 90); after-reading 20 / 92 supplied by the Product Owner; the week rose 2 points. Includes the Product Owner's three review changes and the legend removal |
 
+| sprint003 | T01 to T14 and the Product Owner's review changes (event dialog, store, header, drag, popups, settings) | 2026-11-21 to 22 | Sonnet 5.5 | 30–40 (est.) | 20 / 92 | 66 / 98 | 46 | Before-reading is the sprint 002 after-reading; after-reading supplied by the Product Owner on 2026-11-22. The week rose 6 points and is above the 85% Warning level: no new job should start until the weekly reset (Wed Nov 25, 5:00 PM) |
+
 ## Baseline
 
 None yet. The retired CalendarStream repository (https://github.com/Uuugh/CalendarStream, `scrum/usage.md`) holds an earlier usage baseline only: about 1.3 session % per changed file for a code story (plus or minus 30%), later measured at 0.35 per file in one sprint. Different task type and models; use it only until this project has three finished sprints of its own.

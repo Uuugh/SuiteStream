@@ -7,7 +7,7 @@ enum TimeFormat { twelveHour, twentyFourHour }
 TimeFormat defaultTimeFormat(String deviceZoneName) =>
     isUsZone(deviceZoneName) ? TimeFormat.twelveHour : TimeFormat.twentyFourHour;
 
-/// Formats a time of day, such as `1:30pm` or `13:30`.
+/// Formats a time of day as `hh:mm am` (12-hour, such as `01:30 pm`) or `hh:mm` (24-hour, such as `13:30`).
 String formatTimeOfDay(int hour, int minute, TimeFormat format) {
   final mm = minute.toString().padLeft(2, '0');
   switch (format) {
@@ -16,6 +16,6 @@ String formatTimeOfDay(int hour, int minute, TimeFormat format) {
     case TimeFormat.twelveHour:
       final h12 = hour % 12 == 0 ? 12 : hour % 12;
       final suffix = hour < 12 ? 'am' : 'pm';
-      return minute == 0 ? '$h12$suffix' : '$h12:$mm$suffix';
+      return '${h12.toString().padLeft(2, '0')}:$mm $suffix';
   }
 }

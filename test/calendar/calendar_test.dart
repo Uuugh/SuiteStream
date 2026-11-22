@@ -77,12 +77,12 @@ void main() {
     addTearDown(tester.view.reset);
     final c = _controller(events: [_event('a', 15, 22, title: 'Late')]);
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
-    expect(find.text('10pm Late a'), findsOneWidget);
+    expect(find.text('10:00 pm Late a'), findsOneWidget);
     // Seen from Tokyo, 22:00 New York on the 15th is the 16th at 11 am.
     c.localZone = const LocalZone.fixed('Asia/Tokyo', systemZone: _zone);
     await tester.pump();
-    expect(find.text('11am Late a'), findsOneWidget);
-    expect(find.descendant(of: find.byKey(const ValueKey('day-2026-7-16')), matching: find.text('11am Late a')), findsOneWidget);
+    expect(find.text('11:00 am Late a'), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('day-2026-7-16')), matching: find.text('11:00 am Late a')), findsOneWidget);
   });
 
   testWidgets('CAL-01.i: today is a filled date with an accent border around its whole day', (tester) async {
@@ -99,7 +99,7 @@ void main() {
     expect(border.top.width, 2);
     expect(border.top.color, SuiteTokensLight.accent);
     final other = tester.widget<Container>(find.byKey(const ValueKey('day-2026-7-16')));
-    expect(other.foregroundDecoration, isNull);
+    expect((other.foregroundDecoration! as BoxDecoration).border, isNull);
   });
 
   test('CAL-01.c: Week view shows its date range and moves a week at a time', () {
@@ -137,7 +137,7 @@ void main() {
     expect(c.focused, DateTime(2026, 7, 15));
   });
 
-  testWidgets('CAL-01.d: the title opens a month picker that closes when a month is picked', (tester) async {
+  testWidgets('CAL-01.p: selecting a month in the date picker goes back down to the days of that month, and a day closes it', (tester) async {
     tester.view.physicalSize = const Size(1000, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -150,7 +150,11 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('year-next')));
     await tester.tap(find.byKey(const ValueKey('month-3')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('month-3')), findsNothing);
+    expect(find.byKey(const ValueKey('month-3')), findsNothing); // a month goes back down to its days
+    expect(find.byKey(const ValueKey('pick-day-1')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pick-day-1')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('pick-day-1')), findsNothing);
     expect(c.focused, DateTime(2027, 3, 1));
     expect(find.text('March 2027'), findsOneWidget);
   });
@@ -316,7 +320,7 @@ void main() {
     addTearDown(tester.view.reset);
     final c = _controller(events: [_event('a', 15, 13)]);
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
-    expect(find.text('1pm Event a'), findsOneWidget);
+    expect(find.text('01:00 pm Event a'), findsOneWidget);
     c.timeFormat = TimeFormat.twentyFourHour;
     await tester.pump();
     expect(find.text('13:00 Event a'), findsOneWidget);
@@ -375,6 +379,8 @@ void yearPickerTests() {
     await tester.tap(find.byKey(const ValueKey('year-2031')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('month-9')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pick-day-1')));
     await tester.pumpAndSettle();
     expect(c.focused, DateTime(2031, 9));
   });

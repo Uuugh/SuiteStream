@@ -208,7 +208,7 @@ void main() {
     expect(c.focused, DateTime(2026, 7, 15));
   });
 
-  test('CAL-01.p: selecting a month puts the calendar on the 1st, or on today for the current month', () {
+  test('goToMonth: a month puts the calendar on the 1st, or on today for the current month', () {
     final c = makeController();
     c.goToMonth(2026, 11);
     expect(c.focused, DateTime(2026, 11, 1));
@@ -247,6 +247,8 @@ void main() {
     expect(find.descendant(of: find.byKey(const ValueKey('year-title')), matching: find.text('2102')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('month-1')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pick-day-15')));
+    await tester.pumpAndSettle();
     // Out of the supported years: the calendar goes to today.
     expect(c.focused, DateTime(2026, 7, 15));
     // The year starts at the displayed month's year each time the picker opens.
@@ -275,9 +277,14 @@ void main() {
     final other = tester.widget<TextButton>(find.byKey(const ValueKey('month-8')));
     expect(marked.style, isNotNull);
     expect(other.style, isNull);
-    await tester.tap(find.byKey(const ValueKey('month-8'))); // picking closes it
+    await tester.tap(find.byKey(const ValueKey('month-8'))); // a month goes back down to its days
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('month-8')), findsNothing);
+    expect(find.text('August 2026'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pick-day-3')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('pick-day-3')), findsNothing);
+    expect(c.focused, DateTime(2026, 8, 3));
     // In French the names are French.
     final fr = makeController();
     await tester.pumpWidget(appFor(CalendarPage(controller: fr), locale: 'fr'));

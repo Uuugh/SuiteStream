@@ -1,5 +1,12 @@
 import 'zones.dart';
 
+/// DEF-01: the limits of an event's fields.
+const int eventTitleLength = 200;
+const int eventLocationLength = 200;
+const int eventMeetingLength = 500;
+const int eventNotesLength = 4000;
+const int remindersPerEvent = 5;
+
 /// An event. TIM-01: start and end are stored in UTC together with the time
 /// zone each was recorded in.
 class SuiteEvent {
@@ -16,6 +23,12 @@ class SuiteEvent {
     this.changedBySource = false,
     this.hiddenFromGoogle = false,
     this.deleted = false,
+    this.custom = true,
+    this.location = '',
+    this.notes = '',
+    this.color,
+    this.reminders = const [],
+    this.meetingUrl = '',
   })  : startUtc = _plainUtc(startUtc),
         endUtc = _plainUtc(endUtc) {
     if (this.endUtc.isBefore(this.startUtc)) {
@@ -37,6 +50,23 @@ class SuiteEvent {
   final bool changedBySource;
   final bool hiddenFromGoogle;
   final bool deleted;
+
+  /// CAP-02: a custom event is the user's own and can be deleted; an event that
+  /// comes from a calendar source can only be hidden.
+  final bool custom;
+
+  final String location;
+  final String notes;
+
+  /// EVT-03.b: ARGB color value, or null for the calendar's color.
+  final int? color;
+
+  /// EVT-03.e: minutes before the start (0 = at the start), at most
+  /// [remindersPerEvent].
+  final List<int> reminders;
+
+  /// EVT-03: an online meeting address (empty or an http(s) link).
+  final String meetingUrl;
 
   /// An event given as wall-clock times in [zone] (TIM-02: the zone it is recorded in).
   factory SuiteEvent.zoned({
@@ -113,6 +143,12 @@ class SuiteEvent {
         if (changedBySource) 'changedBySource': true,
         if (hiddenFromGoogle) 'hiddenFromGoogle': true,
         if (deleted) 'deleted': true,
+        if (!custom) 'custom': false,
+        if (location.isNotEmpty) 'location': location,
+        if (notes.isNotEmpty) 'notes': notes,
+        if (color != null) 'color': color,
+        if (reminders.isNotEmpty) 'reminders': reminders,
+        if (meetingUrl.isNotEmpty) 'meetingUrl': meetingUrl,
       };
 
   /// TIM-06, TIM-08: reads an incoming event. An event that carries no time
@@ -139,13 +175,62 @@ class SuiteEvent {
       changedBySource: (json['changedBySource'] as bool?) ?? false,
       hiddenFromGoogle: (json['hiddenFromGoogle'] as bool?) ?? false,
       deleted: (json['deleted'] as bool?) ?? false,
+      custom: (json['custom'] as bool?) ?? true,
+      location: (json['location'] as String?) ?? '',
+      notes: (json['notes'] as String?) ?? '',
+      color: json['color'] as int?,
+      reminders: ((json['reminders'] as List?) ?? const []).cast<int>(),
+      meetingUrl: (json['meetingUrl'] as String?) ?? '',
     );
   }
 
   /// TIM-01: the stored form.
   Map<String, Object?> toJson() => toWire();
-  factory SuiteEvent.fromJson(Map<String, Object?> json) =>
-      SuiteEvent.fromWire(json, defaultZone: 'UTC');
+  factory SuiteEvent.fromJson(Map<String, Object?> json) => SuiteEvent.fromWire(json, defaultZone: 'UTC');
+
+  /// A copy with some fields changed. [color] and [calendarId] can be set to
+  /// null with [clearColor] and [clearCalendar].
+  SuiteEvent copyWith({
+    String? title,
+    DateTime? startUtc,
+    DateTime? endUtc,
+    String? startZone,
+    String? endZone,
+    bool? allDay,
+    String? calendarId,
+    bool clearCalendar = false,
+    bool? edited,
+    bool? changedBySource,
+    bool? hiddenFromGoogle,
+    bool? deleted,
+    bool? custom,
+    String? location,
+    String? notes,
+    int? color,
+    bool clearColor = false,
+    List<int>? reminders,
+    String? meetingUrl,
+  }) =>
+      SuiteEvent(
+        id: id,
+        title: title ?? this.title,
+        startUtc: startUtc ?? this.startUtc,
+        endUtc: endUtc ?? this.endUtc,
+        startZone: startZone ?? this.startZone,
+        endZone: endZone ?? this.endZone,
+        allDay: allDay ?? this.allDay,
+        calendarId: clearCalendar ? null : (calendarId ?? this.calendarId),
+        edited: edited ?? this.edited,
+        changedBySource: changedBySource ?? this.changedBySource,
+        hiddenFromGoogle: hiddenFromGoogle ?? this.hiddenFromGoogle,
+        deleted: deleted ?? this.deleted,
+        custom: custom ?? this.custom,
+        location: location ?? this.location,
+        notes: notes ?? this.notes,
+        color: clearColor ? null : (color ?? this.color),
+        reminders: reminders ?? this.reminders,
+        meetingUrl: meetingUrl ?? this.meetingUrl,
+      );
 
   /// TIM-02: a changed event keeps its recorded zones unless the user edits
   /// them (Edit Event passes new zones).
@@ -156,19 +241,13 @@ class SuiteEvent {
     String? startZone,
     String? endZone,
   }) =>
-      SuiteEvent(
-        id: id,
-        title: title ?? this.title,
-        startUtc: startUtc ?? this.startUtc,
-        endUtc: endUtc ?? this.endUtc,
-        startZone: startZone ?? this.startZone,
-        endZone: endZone ?? this.endZone,
-        allDay: allDay,
-        calendarId: calendarId,
+      copyWith(
+        title: title,
+        startUtc: startUtc,
+        endUtc: endUtc,
+        startZone: startZone,
+        endZone: endZone,
         edited: true,
-        changedBySource: changedBySource,
-        hiddenFromGoogle: hiddenFromGoogle,
-        deleted: deleted,
       );
 
   /// TIM-07: the event's times for a calendar feed (iCalendar), with each
@@ -187,6 +266,16 @@ class SuiteEvent {
   }
 }
 
+extension SuiteEventStates on SuiteEvent {
+  /// A copy with its Calendar-filter states set (FLT-01.a).
+  SuiteEvent withState({bool? edited, bool? changedBySource, bool? hiddenFromGoogle, bool? deleted}) => copyWith(
+        edited: edited,
+        changedBySource: changedBySource,
+        hiddenFromGoogle: hiddenFromGoogle,
+        deleted: deleted,
+      );
+}
+
 /// TIM-02: the zone a new event is recorded in. An imported event takes the zone
 /// of its source (or the zone its source calendar reports); an added event takes
 /// the zone of the selected calendar, otherwise the system zone.
@@ -200,33 +289,18 @@ String zoneForNewEvent({
   return calendarZone ?? systemZone;
 }
 
-/// A plain UTC [DateTime] (not a zoned subclass), so equal instants compare equal.
-DateTime _plainUtc(DateTime t) => DateTime.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch, isUtc: true);
-
 /// A calendar events belong to: its name and color follow its source (FLT-01.e).
 class SuiteCalendar {
-  const SuiteCalendar({required this.id, required this.name, required this.color});
+  const SuiteCalendar({required this.id, required this.name, required this.color, this.zone});
   final String id;
   final String name;
 
   /// ARGB color value.
   final int color;
+
+  /// The calendar's own time zone, when it has one (EVT-01.b).
+  final String? zone;
 }
 
-extension SuiteEventStates on SuiteEvent {
-  /// A copy with its Calendar-filter states set (FLT-01.a).
-  SuiteEvent withState({bool? edited, bool? changedBySource, bool? hiddenFromGoogle, bool? deleted}) => SuiteEvent(
-        id: id,
-        title: title,
-        startUtc: startUtc,
-        endUtc: endUtc,
-        startZone: startZone,
-        endZone: endZone,
-        allDay: allDay,
-        calendarId: calendarId,
-        edited: edited ?? this.edited,
-        changedBySource: changedBySource ?? this.changedBySource,
-        hiddenFromGoogle: hiddenFromGoogle ?? this.hiddenFromGoogle,
-        deleted: deleted ?? this.deleted,
-      );
-}
+/// A plain UTC [DateTime] (not a zoned subclass), so equal instants compare equal.
+DateTime _plainUtc(DateTime t) => DateTime.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch, isUtc: true);

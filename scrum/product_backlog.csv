@@ -1,7 +1,9 @@
 id,title,description,acceptance_criteria,priority,size,status,sprint,created_at,updated_at
-PBI-009,Theme components and palettes,As a user I want themed components,THM-03 to THM-09 backlog rows pass,Medium,8,Selected,003,2026-11-21,2026-11-21
-PBI-010,Shared UI components,As a user I want shared save/cancel pairs and resize bars,UIC-14 to UIC-17; UIC-27 to UIC-37 backlog rows pass,Medium,8,Selected,003,2026-11-21,2026-11-21
-PBI-011,Calendar event drag and resize,As a user I want to move events and resize the calendar,CAL-03.a-d; CAL-04.b-f pass,Low,5,Selected,003,2026-11-21,2026-11-21
-PBI-013,Event dialog,As a user I want to open an event and add edit and remove my own events in a dialog,EVT-01 to EVT-03 and EVT-07 and their sub-rows pass; clicking an event opens its details,Critical,13,Selected,003,2026-11-21,2026-11-21
-PBI-014,Local event store,As a user I want my events kept on my device,Events persist across restarts in UTC with their zones (TIM-01); a removed custom event can be undone (CAP-02),High,5,Selected,003,2026-11-21,2026-11-21
-PBI-015,Header time zone and clock controls,As a user I want to look at another time zone and switch 12h or 24h from the calendar header,CAL-02; CAL-06.a; CAL-06.b; CAL-06.c; CAL-06.d; CAL-06.e; SET-02.a pass,High,8,Selected,003,2026-11-21,2026-11-21
+PBI-009,Theme components and palettes,As a user I want themed components,THM-03 to THM-09 backlog rows pass,Medium,8,New,,2026-11-21,2026-11-21
+PBI-010,Shared UI components,As a user I want shared save/cancel pairs and resize bars,UIC-14 to UIC-17; UIC-27 to UIC-37 backlog rows pass,Medium,8,New,,2026-11-21,2026-11-21
+PBI-011,Calendar event drag and resize,As a user I want to move events and resize the calendar,CAL-03.a-d; CAL-04.b-f pass,Low,5,In Review (CAL-03 only),003,2026-11-21,2026-11-21
+PBI-013,Event dialog,As a user I want to open an event and add edit and remove my own events in a dialog,EVT-01 to EVT-03 and EVT-07 and their sub-rows pass; clicking an event opens its details,Critical,13,In Review (partly built),003,2026-11-21,2026-11-21
+PBI-014,Local event store,As a user I want my events kept on my device,Events persist across restarts in UTC with their zones (TIM-01); a removed custom event can be undone (CAP-02),High,5,In Review,003,2026-11-21,2026-11-21
+PBI-015,Header time zone and clock controls,As a user I want to look at another time zone and switch 12h or 24h from the calendar header,CAL-02; CAL-06.a; CAL-06.b; CAL-06.c; CAL-06.d; CAL-06.e; SET-02.a pass,High,8,In Review (partly built),003,2026-11-21,2026-11-21
+PBI-016,Calendar height and Full page,As a user I want to change how tall the calendar is and use Full page,CAL-04.a-l pass; UIC-16 resize bar,Medium,5,New,,2026-11-21,2026-11-21
+PBI-017,Location address autocomplete,As a user I want addresses suggested while I type a location,EVT-03.n passes; suggestions come from Photon (Product Owner decision 2026-11-22; hosting public or self-hosted still to decide); the map button keeps opening Google Maps (EVT-03.a),Medium,5,New,,2026-11-22,2026-11-22

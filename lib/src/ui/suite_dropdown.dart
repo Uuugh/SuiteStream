@@ -67,7 +67,20 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
   final LayerLink _link = LayerLink();
   int? _anchor;
 
-  void _toggleOpen() => _portal.toggle();
+  double _maxMenuWidth = 480;
+
+  void _toggleOpen() {
+    if (!_portal.isShowing) {
+      // The menu hangs from the trigger's left edge; it is never wider than the room to the
+      // right of it (long labels wrap), so it always fits in the window.
+      final box = context.findRenderObject() as RenderBox?;
+      if (box != null) {
+        final left = box.localToGlobal(Offset.zero).dx;
+        _maxMenuWidth = (MediaQuery.sizeOf(context).width - left - 8).clamp(140.0, 480.0);
+      }
+    }
+    _portal.toggle();
+  }
 
   void _choose(int index) {
     final item = widget.items[index];
@@ -126,7 +139,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
                     side: BorderSide(color: t.line),
                   ),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 140),
+                    constraints: BoxConstraints(minWidth: 140, maxWidth: _maxMenuWidth),
                     child: IntrinsicWidth(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -161,7 +174,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
       key: ValueKey('dropdown-item-${item.value}'),
       onTap: () => _choose(i),
       child: Container(
-        height: 40,
+        constraints: const BoxConstraints(minHeight: 40),
         // The menu hangs from the trigger's left edge, and the trigger's icon sits
         // [triggerIconInset] inside it, so every item icon (same size) lines up
         // vertically with the trigger icon.
@@ -171,8 +184,9 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
           children: [
             if (item.leading != null) ...[SizedBox(width: triggerIconSize, height: triggerIconSize, child: Center(child: item.leading)), const SizedBox(width: 12)]
             else if (item.icon != null) ...[Icon(item.icon, size: triggerIconSize), const SizedBox(width: 12)],
-            Expanded(child: Text(item.label)),
-            if (selected) Icon(Icons.check, size: 18, color: t.accent, semanticLabel: 'selected'),
+            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis))),
+            // The check's place is always reserved, so choosing or clearing an item never resizes the menu.
+            SizedBox(width: 18, child: selected ? Icon(Icons.check, size: 18, color: t.accent, semanticLabel: 'selected') : null),
           ],
         ),
       ),

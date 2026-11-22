@@ -45,6 +45,9 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
 
   static const double _width = 280;
 
+  /// The weekday row and six weeks of days.
+  static const double gridHeight = 28 + 6 * 36;
+
   void _shiftMonth(int by) => setState(() {
         final d = DateTime(_year, _month + by);
         _year = d.year;
@@ -65,13 +68,22 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (_mode == _PickerMode.days) _daysHeader(t, m) else _yearHeader(t, m),
-              switch (_mode) {
-                _PickerMode.days => _dayGrid(t, m.locale),
-                _PickerMode.months => _monthGrid(t, m.locale),
-                _PickerMode.years => _yearGrid(t),
-              },
-              if (_mode == _PickerMode.days)
-                Align(
+              // Days, months and years are one size (selecting a view only shows or hides things;
+              // a popup is not resized once drawn).
+              SizedBox(
+                height: gridHeight,
+                child: switch (_mode) {
+                  _PickerMode.days => _dayGrid(t, m.locale),
+                  _PickerMode.months => _monthGrid(t, m.locale),
+                  _PickerMode.years => _yearGrid(t),
+                },
+              ),
+              Visibility(
+                visible: _mode == _PickerMode.days,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     key: const ValueKey('picker-today'),
@@ -79,6 +91,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                     child: Text(m('today')),
                   ),
                 ),
+              ),
             ],
           ),
         ),
@@ -149,7 +162,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
     final first = DateTime(_year, _month);
     final lead = first.weekday % 7; // weeks start on Sunday
     final count = DateTime(_year, _month + 1, 0).day;
-    final rows = ((lead + count) / 7).ceil();
+    const rows = 6; // always six weeks, so every month is the same size
     const cell = _width / 7;
     return Column(
       children: [
@@ -215,7 +228,10 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                 style: (_year == widget.focused.year && mo == widget.focused.month)
                     ? TextButton.styleFrom(backgroundColor: t.accent, foregroundColor: t.onAccent)
                     : null,
-                onPressed: () => Navigator.of(context).pop((_year, mo, null)),
+                onPressed: () => setState(() {
+                  _month = mo;
+                  _mode = _PickerMode.days; // back down to the days of that month
+                }),
                 child: Text(monthAbbreviation(locale, mo)),
               ),
             ),
@@ -227,7 +243,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
     final rowOfYear = (_year.clamp(firstSupportedYear, lastSupportedYear) - firstSupportedYear) ~/ cols;
     return SizedBox(
       key: const ValueKey('year-grid'),
-      height: 240,
+      height: gridHeight,
       child: GridView.count(
         crossAxisCount: cols,
         childAspectRatio: 1.6,
@@ -247,4 +263,16 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
       ),
     );
   }
+}
+
+/// Picks one date with the date picker (used by the event dialog's date fields).
+/// Picking a month alone gives the 1st of that month.
+Future<DateTime?> pickDay(BuildContext context, {required DateTime initial, required DateTime today}) async {
+  final msgs = context.msg;
+  final picked = await showDialog<(int, int, int?)>(
+    context: context,
+    builder: (_) => MessagesScope(messages: msgs, child: DatePickerDialog(focused: initial, today: today)),
+  );
+  if (picked == null) return null;
+  return DateTime(picked.$1, picked.$2, picked.$3 ?? 1);
 }

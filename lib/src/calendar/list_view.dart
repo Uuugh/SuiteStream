@@ -6,6 +6,7 @@ import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/time_format.dart';
 import 'calendar_controller.dart';
+import 'event_dialog.dart';
 
 /// CAL-01.b: the List view: the events of the focused month, a day at a time.
 class AgendaView extends StatelessWidget {
@@ -26,12 +27,17 @@ class AgendaView extends StatelessWidget {
       final events = c.eventsOn(day);
       if (events.isEmpty) continue;
       final isToday = day == c.today;
-      rows.add(Container(
+      // Clicking a day's title adds an event on that day.
+      rows.add(InkWell(
         key: ValueKey('list-day-${day.day}'),
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
-        child: Text(
-          dayTitle(locale, day),
-          style: SuiteText.label(t).copyWith(color: isToday ? t.accent : t.text),
+        onTap: () => openEventDialog(context, c, day: day),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+          child: Text(
+            dayTitle(locale, day),
+            style: SuiteText.label(t).copyWith(color: isToday ? t.accent : t.text),
+          ),
         ),
       ));
       for (final e in events) {
@@ -41,7 +47,10 @@ class AgendaView extends StatelessWidget {
             ? context.msg('allDay')
             : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} – ${formatTimeOfDay(en.hour, en.minute, c.timeFormat)}';
         final color = c.colorOf(e);
-        rows.add(Padding(
+        rows.add(InkWell(
+          key: ValueKey('event-${e.id}'),
+          onTap: () => c.selectEvent(e.id), // EVT-07
+          child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
           child: Row(
             children: [
@@ -55,6 +64,7 @@ class AgendaView extends StatelessWidget {
                 ),
               ),
             ],
+          ),
           ),
         ));
       }

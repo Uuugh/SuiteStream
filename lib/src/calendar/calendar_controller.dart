@@ -1,11 +1,15 @@
 // ignore_for_file: prefer_initializing_formals
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../time/length_input.dart';
 import '../time/local_zone.dart';
 import '../time/suite_event.dart';
 import '../time/time_format.dart';
 import '../time/zones.dart';
+import 'event_drag.dart';
 import 'event_filter.dart';
+import 'event_store.dart';
 
 /// CAL-01.b: the calendar's views.
 enum CalendarView { month, week, fiveDay, day, list }
@@ -22,23 +26,31 @@ class CalendarController extends ChangeNotifier {
     List<SuiteEvent> events = const [],
     List<SuiteCalendar> calendars = const [],
     EventFilter? filter,
+    EventStore? store,
     DateTime Function()? clock,
     DateTime? focused,
     CalendarView? view,
-  })  : _localZone = localZone,
+    SharedPreferences? prefs,
+  })  : _prefs = prefs,
+        _localZone = localZone,
         _timeFormat = timeFormat,
-        _events = List.of(events),
+        _store = store,
+        _events = store == null ? List.of(events) : [...store.load(), ...events],
         _calendars = List.of(calendars),
         filter = filter ?? EventFilter(),
         _clock = clock ?? DateTime.now,
         _view = view ?? CalendarView.month,
         _viewChosen = view != null {
+    _loadViewSettings(view == null);
     _focused = _supported(focused ?? today) ? _dateOnly(focused ?? today) : today;
     this.filter.addListener(notifyListeners); // FLT-01.d: every view follows the filter
   }
 
   final DateTime Function() _clock;
   final EventFilter filter;
+  final EventStore? _store;
+  final SharedPreferences? _prefs;
+  String? _viewZone;
   LocalZone _localZone;
   TimeFormat _timeFormat;
   List<SuiteEvent> _events;
@@ -48,7 +60,21 @@ class CalendarController extends ChangeNotifier {
   bool _phone = false;
   late DateTime _focused;
 
-  LocalZone get localZone => _localZone;
+  /// TIM-03: the Local zone is the system zone or a fixed zone from Settings;
+  /// CAL-02.a: the calendar's own time zone picker shows another zone for now.
+  LocalZone get localZone =>
+      _viewZone == null ? _localZone : LocalZone.fixed(_viewZone!, systemZone: _localZone.systemZoneName);
+
+  /// The zone from Settings (SET-02): the system zone or a fixed zone.
+  LocalZone get baseZone => _localZone;
+
+  /// CAL-02.a: the zone chosen in the calendar's own picker, or null.
+  String? get viewZone => _viewZone;
+  set viewZone(String? z) {
+    _viewZone = z;
+    _prefs?.setString(_zoneKey, z ?? '');
+    notifyListeners();
+  }
   TimeFormat get timeFormat => _timeFormat;
   List<SuiteEvent> get events => List.unmodifiable(_events);
   List<SuiteCalendar> get calendars => List.unmodifiable(_calendars);
@@ -66,8 +92,37 @@ class CalendarController extends ChangeNotifier {
 
   /// Today's date in the Local zone.
   DateTime get today {
-    final now = TZDateTime.from(_clock().toUtc(), _localZone.location);
+    final now = TZDateTime.from(_clock().toUtc(), localZone.location);
     return DateTime(now.year, now.month, now.day);
+  }
+
+  static const _lengthKey = 'event.defaultLength';
+  static const _pressKey = 'view.longPressMs';
+  static const _zoneKey = 'view.zone';
+  static const _viewKey = 'view.mode';
+  static const _formatKey = 'view.timeFormat';
+
+  /// CAL-06.b: the time zone, the view and the time format are kept on the device.
+  void _loadViewSettings(bool loadView) {
+    final p = _prefs;
+    if (p == null) return;
+    final press = p.getInt(_pressKey);
+    if (press != null) _longPress = clampLongPress(Duration(milliseconds: press));
+    final len = p.getInt(_lengthKey);
+    if (len != null) _defaultLength = clampEventLength(Duration(minutes: len));
+    final z = p.getString(_zoneKey);
+    if (z != null && z.isNotEmpty && isKnownZone(z)) _viewZone = z;
+    final f = p.getString(_formatKey);
+    if (f != null) _timeFormat = f == '24' ? TimeFormat.twentyFourHour : TimeFormat.twelveHour;
+    final v = p.getString(_viewKey);
+    if (loadView && v != null) {
+      for (final x in CalendarView.values) {
+        if (x.name == v) {
+          _view = x;
+          _viewChosen = true;
+        }
+      }
+    }
   }
 
   static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
@@ -85,6 +140,7 @@ class CalendarController extends ChangeNotifier {
     if (_viewChosen && v == _view) return;
     _view = v;
     _viewChosen = true;
+    _prefs?.setString(_viewKey, v.name);
     notifyListeners();
   }
 
@@ -95,6 +151,7 @@ class CalendarController extends ChangeNotifier {
 
   set timeFormat(TimeFormat f) {
     _timeFormat = f;
+    _prefs?.setString(_formatKey, f == TimeFormat.twentyFourHour ? '24' : '12');
     notifyListeners();
   }
 
@@ -103,8 +160,100 @@ class CalendarController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addEvent(SuiteEvent e) {
-    _events = [..._events, e];
+  void addEvent(SuiteEvent e) => upsertEvent(e);
+
+  /// EVT-01: adds an event, or replaces the one with the same id; it is kept
+  /// at once (UIC-13).
+  void upsertEvent(SuiteEvent e) {
+    final i = _events.indexWhere((x) => x.id == e.id);
+    _events = i < 0 ? [..._events, e] : [for (final x in _events) x.id == e.id ? e : x];
+    _changed();
+  }
+
+  /// DEF-02: how many deletions can be undone.
+  static const int undoLimit = 100;
+  final List<SuiteEvent> _removed = [];
+
+  bool get canUndoDelete => _removed.isNotEmpty;
+
+  /// CAP-02: a custom event is deleted and leaves its calendar; an event from a
+  /// calendar source cannot be deleted (use [setHidden]). Returns whether it was deleted.
+  bool deleteEvent(String id) {
+    final e = _events.where((x) => x.id == id).firstOrNull;
+    if (e == null || !e.custom) return false;
+    _events = [for (final x in _events) if (x.id != id) x];
+    _removed.add(e);
+    if (_removed.length > undoLimit) _removed.removeAt(0);
+    if (_selectedId == id) _selectedId = null;
+    _changed();
+    return true;
+  }
+
+  /// The current instant (UTC), from the calendar's clock.
+  DateTime get nowUtc => _clock().toUtc();
+
+  /// EVT-02.n: the length of an event whose end is left open; a user setting kept
+  /// on the device (5 minutes to 24 hours, one hour until changed).
+  Duration _defaultLength = standardEventLength;
+  Duration get defaultLength => _defaultLength;
+  set defaultLength(Duration d) {
+    _defaultLength = clampEventLength(d);
+    _prefs?.setInt(_lengthKey, _defaultLength.inMinutes);
+    notifyListeners();
+  }
+
+  /// Where a dragged event would land if it were released now (CAL-03).
+  DropTarget? _drop;
+  DropTarget? get dropTarget => _drop;
+  void setDropTarget(DropTarget? t) {
+    if (_drop == t) return;
+    _drop = t;
+    notifyListeners();
+  }
+
+  /// CAL-03.d: how long a press is held before it drags an event.
+  Duration _longPress = defaultLongPress;
+  Duration get longPress => _longPress;
+  set longPress(Duration d) {
+    _longPress = clampLongPress(d);
+    _prefs?.setInt(_pressKey, _longPress.inMilliseconds);
+    notifyListeners();
+  }
+
+  /// CAL-03: moves an event to start on [day] (at [minuteOfDay], or keeping its
+  /// time of day), in the Local zone; its length and zones are kept.
+  bool move(String id, {required DateTime day, int? minuteOfDay}) {
+    final e = _events.where((x) => x.id == id).firstOrNull;
+    if (e == null || !canMove(e)) return false;
+    upsertEvent(moveEvent(e, localZone.location, day: day, minuteOfDay: minuteOfDay));
+    return true;
+  }
+
+  /// CAP-02: undoes the last deletion.
+  bool undoDelete() {
+    if (_removed.isEmpty) return false;
+    _events = [..._events, _removed.removeLast()];
+    _changed();
+    return true;
+  }
+
+  /// CAP-02: an event from a calendar source is hidden and shown again, never deleted.
+  void setHidden(String id, bool hidden) {
+    _events = [for (final x in _events) x.id == id ? x.copyWith(hiddenFromGoogle: hidden) : x];
+    _changed();
+  }
+
+  void _changed() {
+    _store?.save(_events);
+    notifyListeners();
+  }
+
+  /// EVT-07: the event whose details are open on the calendar, until Close.
+  String? _selectedId;
+  SuiteEvent? get selectedEvent => _selectedId == null ? null : _events.where((x) => x.id == _selectedId).firstOrNull;
+
+  void selectEvent(String? id) {
+    _selectedId = id;
     notifyListeners();
   }
 
@@ -201,7 +350,7 @@ class CalendarController extends ChangeNotifier {
   /// after the Calendar filter (FLT-01.d). An all-day event shows on the dates
   /// it covers in its own recorded zone.
   List<SuiteEvent> eventsOn(DateTime day) {
-    final loc = _localZone.location;
+    final loc = localZone.location;
     final start = TZDateTime(loc, day.year, day.month, day.day);
     final end = TZDateTime(loc, day.year, day.month, day.day + 1);
     final out = _events.where(filter.shows).where((e) {
@@ -222,11 +371,28 @@ class CalendarController extends ChangeNotifier {
     return out;
   }
 
-  /// The color of an event's calendar, or null.
+  /// EVT-03.i: an event's own color, else its calendar's color, or null (the
+  /// caller then uses the default event color).
   int? colorOf(SuiteEvent e) {
+    if (e.color != null) return e.color;
     for (final c in _calendars) {
       if (c.id == e.calendarId) return c.color;
     }
     return null;
   }
+}
+
+/// The day (and, in Week and Day, the minute of the day) a dragged event is over.
+class DropTarget {
+  const DropTarget({required this.eventId, required this.day, this.minute});
+  final String eventId;
+  final DateTime day;
+  final int? minute;
+
+  @override
+  bool operator ==(Object other) =>
+      other is DropTarget && other.eventId == eventId && other.day == day && other.minute == minute;
+
+  @override
+  int get hashCode => Object.hash(eventId, day, minute);
 }

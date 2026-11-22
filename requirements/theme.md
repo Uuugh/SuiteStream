@@ -63,9 +63,9 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-08.a | backlog | In a phone-width window a dialog's corners are square and edge to edge (UIC-01). | — |
 | THM-08.b | backlog | The grip of a handle is two columns of three faint dots, centered on the module's 50 px header or on the rule line. | — |
 | THM-08.c | backlog | The (?) icon is 15 px, raised after the word it explains. | — |
-| THM-09 | backlog | The event color palette (UIC-10) is Google Calendar's eleven colors. | — |
-| THM-09.a | backlog | Tomato #d50000, Flamingo #e67c73, Tangerine #f4511e, Banana #f6bf26, Sage #33b679, Basil #0b8043, Peacock #039be5, Blueberry #3f51b5, Lavender #7986cb, Grape #8e24aa, Graphite #616161. | — |
-| THM-09.b | backlog | The default event color is #1d4ed8. | — |
+| THM-09 | planned | The event color palette (UIC-10) is Google Calendar's eleven colors. | — |
+| THM-09.a | planned | Tomato #d50000, Flamingo #e67c73, Tangerine #f4511e, Banana #f6bf26, Sage #33b679, Basil #0b8043, Peacock #039be5, Blueberry #3f51b5, Lavender #7986cb, Grape #8e24aa, Graphite #616161. | test/events/event_logic_test.dart |
+| THM-09.b | planned | The default event color is #1d4ed8. | test/events/event_logic_test.dart |
 | THM-10 | backlog | An event on the calendar has the look below. | — |
 | THM-10.a | backlog | An event's bar is its color mixed with the card color at 18% in the dark palette and 12% in the light palette; its text is its color mixed with the text color at 70% in dark and 60% in light. | — |
 | THM-10.b | backlog | The custom look of an event added here or by a rule is, in dark, #2e1a47 with text #e9d5ff and, in light, #f4eef8 with text #5e3f7a. | — |

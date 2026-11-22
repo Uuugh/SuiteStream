@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'src/calendar/calendar_controller.dart';
 import 'src/calendar/calendar_page.dart';
 import 'src/calendar/event_filter.dart';
+import 'src/calendar/event_store.dart';
+import 'src/calendar/settings_dialog.dart';
 import 'src/l10n/messages.dart';
 import 'src/theme/suite_theme.dart';
 import 'src/theme/tokens.dart';
@@ -45,7 +47,10 @@ Future<void> main() async {
         calendarId: calendarId,
       ).withState(edited: edited, hiddenFromGoogle: hiddenFromGoogle);
 
+  final store = PrefsEventStore(prefs);
   final controller = CalendarController(
+    store: store,
+    prefs: prefs,
     localZone: LocalZone.system(zone),
     timeFormat: defaultTimeFormat(zone),
     filter: EventFilter(prefs: prefs),
@@ -53,7 +58,8 @@ Future<void> main() async {
       SuiteCalendar(id: 'work', name: 'Work', color: 0xFF5B6F9A),
       SuiteCalendar(id: 'home', name: 'Home', color: 0xFF2A9D8F),
     ],
-    events: [
+    // The first start shows a few sample events; later starts show what the user kept.
+    events: store.load().isNotEmpty ? const [] : [
       sample('demo-1', 'Sample event', 10, calendarId: 'work'),
       sample('demo-2', 'Lunch', 12, calendarId: 'home', edited: true),
       sample('demo-3', 'Hidden from Google', 15, calendarId: 'work', hiddenFromGoogle: true),
@@ -82,6 +88,14 @@ class SuiteStreamApp extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               backgroundColor: t.card,
+              actions: [
+                IconButton(
+                  key: const ValueKey('settings-button'),
+                  tooltip: context.msg('settings'),
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () => openSettingsDialog(context, controller),
+                ),
+              ],
               title: Text.rich(TextSpan(children: [
                 TextSpan(text: 'Suite', style: TextStyle(color: t.titleCalendar, fontWeight: FontWeight.w700)),
                 TextSpan(text: 'Stream', style: TextStyle(color: t.titleStream, fontWeight: FontWeight.w700)),

@@ -4,9 +4,14 @@ import '../l10n/dates.dart';
 import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
+import '../time/time_format.dart';
 import '../ui/suite_dropdown.dart';
+import '../ui/zone_picker.dart';
+import '../ui/zoned_row.dart';
 import 'calendar_controller.dart';
 import 'date_picker.dart';
+import 'event_details.dart';
+import 'event_dialog.dart';
 import 'filter_panel.dart' show CalendarFilterButton;
 import 'list_view.dart';
 import 'month_view.dart';
@@ -41,7 +46,9 @@ class CalendarPage extends StatelessWidget {
     final c = controller;
     // CAL-01.f: the starting view depends on the window width.
     c.layout(phone: MediaQuery.sizeOf(context).width <= phoneMaxWidth);
-    return ListenableBuilder(
+    return EventDetailsHost(
+      controller: c,
+      child: ListenableBuilder(
       listenable: c,
       builder: (context, _) {
         final t = context.tokens;
@@ -58,6 +65,7 @@ class CalendarPage extends StatelessWidget {
               Divider(height: 1, color: t.line),
               Expanded(
                 child: SwipeDetector(
+                  holdTime: c.longPress,
                   onNext: c.next,
                   onPrevious: c.previous,
                   child: switch (c.view) {
@@ -71,6 +79,7 @@ class CalendarPage extends StatelessWidget {
           ),
         );
       },
+      ),
     );
   }
 }
@@ -112,48 +121,96 @@ class _Header extends StatelessWidget {
     final (prevKey, nextKey) = _stepKeys();
     final viewName = m(viewMessageKey(c.view));
     // UIC-14: left, center and right zones; CAL-01.l: previous, next, Today, then the title.
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 40, top: 4, bottom: 4),
-      child: Row(
-        children: [
-          IconButton(key: const ValueKey('previous'), tooltip: m(prevKey), icon: const Icon(Icons.chevron_left), onPressed: c.previous),
-          IconButton(key: const ValueKey('next'), tooltip: m(nextKey), icon: const Icon(Icons.chevron_right), onPressed: c.next),
-          TextButton(key: const ValueKey('today'), onPressed: c.goToToday, child: Text(m('today'))),
-          const SizedBox(width: 8),
-          Flexible(
-            child: InkWell(
-              key: const ValueKey('title'),
-              borderRadius: BorderRadius.circular(6),
-              onTap: () => pickDate(context, controller),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+    final left = <Widget>[
+      IconButton(key: const ValueKey('previous'), tooltip: m(prevKey), icon: const Icon(Icons.chevron_left), onPressed: c.previous),
+      IconButton(key: const ValueKey('next'), tooltip: m(nextKey), icon: const Icon(Icons.chevron_right), onPressed: c.next),
+      TextButton(key: const ValueKey('today'), onPressed: c.goToToday, child: Text(m('today'))),
+      const SizedBox(width: 8),
+      Flexible(
+        child: InkWell(
+          key: const ValueKey('title'),
+          borderRadius: BorderRadius.circular(6),
+          onTap: () => pickDate(context, controller),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+            child: Text(
+              _title(context),
+              overflow: TextOverflow.ellipsis,
+              style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width),
+            ),
+          ),
+        ),
+      ),
+    ];
+    // CAL-06.a: the right zone holds Time Zone, View and the 12/24 clock, in this order.
+    final right = <Widget>[
+      CalendarFilterButton(controller: c),
+      IconButton(
+        key: const ValueKey('zone-button'),
+        tooltip: m('timesIn', {'tz': c.localZone.name}),
+        icon: Icon(Icons.public, color: c.viewZone == null ? null : t.accent),
+        onPressed: () async {
+          final picked = await pickZone(context, current: c.localZone.name, defaultZone: c.baseZone.name);
+          if (picked == null) return;
+          // UIC-39: choosing the default clears the stored choice.
+          c.viewZone = picked == c.baseZone.name ? null : picked;
+        },
+      ),
+      // CAL-06.c: the view picker shows icons; its tooltip names the current view.
+      Semantics(
+        label: m('viewName'),
+        child: SuiteDropdown<CalendarView>(
+          icon: viewIcon(c.view),
+          tooltip: m('viewTooltip', {'name': viewName}),
+          items: [
+            for (final v in CalendarView.values) DropdownItem(value: v, label: m(viewMessageKey(v)), icon: viewIcon(v)),
+          ],
+          selected: {c.view},
+          onChanged: (s) => c.view = s.first,
+        ),
+      ),
+      // CAL-06.e: one clock icon with the current format as a badge; it sets 12-hour or
+      // 24-hour and never returns to the default.
+      IconButton(
+        key: const ValueKey('clock-button'),
+        tooltip: '${m('timeFormat')}: ${c.timeFormat == TimeFormat.twelveHour ? m('m12Hour130pm') : m('m24Hour1330')}',
+        icon: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            const Icon(Icons.schedule_outlined, size: 24),
+            Positioned(
+              right: -8,
+              bottom: -6,
+              child: Container(
+                key: const ValueKey('clock-badge'),
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(6)),
                 child: Text(
-                  _title(context),
-                  overflow: TextOverflow.ellipsis,
-                  style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width),
+                  c.timeFormat == TimeFormat.twelveHour ? '12' : '24',
+                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: t.onAccent),
                 ),
               ),
             ),
-          ),
-          const Spacer(),
-          CalendarFilterButton(controller: c),
-          // CAL-06.c: the view picker shows icons; its tooltip names the current view.
-          Semantics(
-            label: m('viewName'),
-            child: SuiteDropdown<CalendarView>(
-              icon: viewIcon(c.view),
-              tooltip: m('viewTooltip', {'name': viewName}),
-              items: [
-                for (final v in CalendarView.values)
-                  DropdownItem(value: v, label: m(viewMessageKey(v)), icon: viewIcon(v)),
-              ],
-              selected: {c.view},
-              onChanged: (s) => c.view = s.first,
-            ),
-          ),
-        ],
+          ],
+        ),
+        onPressed: () => c.timeFormat = c.timeFormat == TimeFormat.twelveHour ? TimeFormat.twentyFourHour : TimeFormat.twelveHour,
       ),
+      // CAL-06.a: + comes last: it adds an event on the day the calendar is on.
+      IconButton(
+        key: const ValueKey('add-event-button'),
+        tooltip: m('addEvent'),
+        icon: const Icon(Icons.add),
+        onPressed: () => openEventDialog(context, c, day: c.focused),
+      ),
+    ];
+    // The header has a left, a center and a right zone (UIC-14): the dates and their
+    // navigation stay left, the buttons are in the right zone (CAL-06.a), flush right.
+    // When the line is too narrow the zones stack: left on top, then right.
+    return ZonedRow(
+      left: left,
+      right: right,
+      leftMinWidth: 48 + 48 + 80 + 8 + 160, // previous, next, Today, gap, a short title
+      rightMinWidth: 48.0 * 5, // the five right-zone buttons
     );
   }
-
 }

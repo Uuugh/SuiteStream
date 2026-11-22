@@ -117,9 +117,13 @@ void main() {
     expect(defaultTimeFormat('Pacific/Honolulu'), TimeFormat.twelveHour);
     expect(defaultTimeFormat('Europe/Paris'), TimeFormat.twentyFourHour);
     expect(defaultTimeFormat('America/Toronto'), TimeFormat.twentyFourHour);
-    expect(formatTimeOfDay(13, 30, TimeFormat.twelveHour), '1:30pm');
+    // 12-hour is hh:mm am, 24-hour is hh:mm.
+    expect(formatTimeOfDay(13, 30, TimeFormat.twelveHour), '01:30 pm');
     expect(formatTimeOfDay(13, 30, TimeFormat.twentyFourHour), '13:30');
-    expect(formatTimeOfDay(0, 5, TimeFormat.twelveHour), '12:05am');
-    expect(formatTimeOfDay(12, 0, TimeFormat.twelveHour), '12pm');
+    expect(formatTimeOfDay(0, 5, TimeFormat.twelveHour), '12:05 am');
+    expect(formatTimeOfDay(12, 0, TimeFormat.twelveHour), '12:00 pm');
+    expect(formatTimeOfDay(9, 0, TimeFormat.twelveHour), '09:00 am');
+    expect(formatTimeOfDay(9, 0, TimeFormat.twentyFourHour), '09:00');
+    expect(formatTimeOfDay(23, 59, TimeFormat.twelveHour), '11:59 pm');
   });
 }

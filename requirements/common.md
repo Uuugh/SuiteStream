@@ -9,8 +9,8 @@
 | TIM-05 | done | Rules do not depend on a time zone. A rule is applied to an event, and the event's recorded time zone decides what "Friday" or "22:00" means. Only a rule that is literally about a time zone uses a zone. | test/time/time_model_test.dart |
 | TIM-06 | done | Syncing with an outside calendar reads the time zone of that calendar and of each incoming event and records it with the event (TIM-02), and sends each event's recorded time zone with its times. | test/time/time_model_test.dart |
 | TIM-07 | done | Calendar feeds carry each event's times with its time zone. | test/time/time_model_test.dart |
-| TIM-10 | done | The time format (12-hour, such as 1:30pm, or 24-hour, such as 13:30) is a user setting (SET-01) and applies to every time shown in every feature. Until the user chooses, it defaults to 12-hour when the device is in a US time zone and 24-hour elsewhere. One control switches it (CAL-06.a). The notation inside each format is a Theme setting (SET-03). | test/time/time_model_test.dart |
-| UIC-12 | done | One shared dropdown (the language and view menus and the Calendar filter use it): it opens from a single icon; the feature says whether it selects one item or several; a single click or tap chooses or toggles an item and takes effect at once; where several can be selected, Ctrl and Shift select several on a keyboard; choosing outside the dropdown (losing focus) closes it. | test/calendar/calendar_test.dart |
+| TIM-10 | backlog | The time format is a user setting (SET-01): 12-hour is written hh:mm am (such as 01:30 pm) and 24-hour hh:mm (such as 13:30), and it applies to every time shown in every feature. Until the user chooses, it defaults to 12-hour in a US time zone and 24-hour in every other time zone. One control switches it (CAL-06.a). The choice is remembered across the user's devices (it is stored with the account, not on one device). The notation inside each format is a Theme setting (SET-03). | test/time/time_model_test.dart |
+| UIC-12 | done | One shared dropdown (the language and view menus and the Calendar filter use it): it opens from a single icon; the feature says whether it selects one item or several; a single click or tap chooses or toggles an item and takes effect at once; where several can be selected, Ctrl and Shift select several on a keyboard; choosing outside the dropdown (losing focus) closes it; once open it never changes size, so choosing or clearing an item does not move the others. | test/calendar/calendar_test.dart |
 | UIC-13 | done | A change the user makes (a filter, a view, a theme, a setting) is shown at once: nothing needs a page reload or an Apply step. | test/calendar/calendar_test.dart |
 | UIC-14 | backlog | Every row of controls has left, center and right zones, aligned left, centered and right by default, each keeping its own alignment; a feature stipulates the order of the items in each zone. A row that is too narrow is handled in this order: (1) the zones stack, left on top, then center, then right; (2) fonts and icons scale down within their zone, never below readable text and a 24×24 px target (scaling is always tried before clipping); (3) what still does not fit depends on the zone's kind: a control zone clips it at its edge and ends the text with a triple dot, a content zone (calendar grid, list, table, log) scrolls it. The layout does not mirror for right-to-left languages. No component has its own responsive rule (build_rules/theme.md, 13a). | — |
 | UIC-15 | backlog | A badge or other overlay on an image or control is placed by one of nine anchor points of its parent (the corners, the edge middles and the center) plus an offset relative to the parent's size, both defined in the theme (build_rules/theme.md, 13b); no component places its own badge. | — |
@@ -23,10 +23,10 @@
 | UIC-24 | backlog | A section whose items can be added has a + control as the rightmost item of its header's right zone; it opens the dialog for adding (UIC-01). | — |
 | UIC-25 | backlog | A button that does one thing and shows no state (an icon button, +, Copy, Open, Expand, Close) just does it; Copy then shows "Copied" in place of its icon for the time in DEF-01. | — |
 | UIC-26 | backlog | A field that saves in place shows ✓ once saved, and ✕ \| ✓ while the user types: ✕ puts the saved value back, ✓ saves. | — |
-| UIC-27 | backlog | A Cancel \| Save pair sits at the bottom of what it saves and works as the rows below say. | — |
+| UIC-27 | planned | A Cancel \| Save pair sits at the bottom of what it saves and works as the rows below say. | test/calendar/ux_test.dart |
 | UIC-27.a | backlog | Pressing a side fills the pair with its word ("Saved" or "Cancelled") for the time in DEF-01; then the pair is idle. | — |
-| UIC-27.b | backlog | With nothing to save both sides are disabled: not focusable and announced as unavailable. A pop-up's Cancel, which only closes it, and the buttons of a + Add pop-up, which can be saved with its defaults, stay available. | — |
-| UIC-27.c | backlog | The first change turns the pair on, and Save pulses for the time in DEF-01 and then stays in full color; saving or cancelling returns the pair to idle. | — |
+| UIC-27.b | planned | With nothing to save both sides are disabled: not focusable and announced as unavailable. A pop-up's Cancel, which only closes it, and the buttons of a + Add pop-up, which can be saved with its defaults, stay available. Save is available only once something has changed; until then it has the same look as Cancel. | test/calendar/ux_test.dart |
+| UIC-27.c | backlog | The first change turns Save on, in a dimmed accent look that brightens to the full accent on hover, and Save pulses for the time in DEF-01 and then stays in full color; saving or cancelling returns the pair to idle. | — |
 | UIC-27.d | backlog | A question's answers can be the same pair (No \| Yes, UIC-06). | — |
 | UIC-27.e | backlog | Adding something (+ Add a calendar…) ends with the same Cancel \| Save pair as editing it. | — |
 | UIC-28 | backlog | A Status/Action button shows a status chip over the action that updates it (Sync Now, Check now, Update now, Connect, Fix), and a status looks one way for one meaning everywhere. | — |
@@ -61,7 +61,9 @@
 | UIC-37.e | backlog | An uploaded file larger than the input size in DEF-01 is not valid (UIC-19). |
 | UIC-38 | backlog | Every password box has a Show/Hide button (msg:showPassword, msg:hidePassword); the box is hidden again when its form is sent. | — |
 | UIC-39 | backlog | The time zone picker lists a Common group of the zones in DEF-01, in that order, then msg:allTimeZones (region and city names only), without names that start with Etc/, SystemV/, posix/ or right/; the default zone is marked ★; a value that is not UTC or in the list is not valid (msg:unknownTimeZone, UIC-19); choosing the default or nothing clears the stored choice. | — |
-| UIC-40 | backlog | A label in every supported language fits its control without cutting a word. | — |
+| UIC-42 | planned | A popup is not resized once it is drawn. Choosing or unchoosing something (all-day, a different end time zone, a view in the date picker) only shows or hides fields, and a hidden field keeps its place; adding or removing a row the user lists (a reminder) may grow or shrink the popup; an error line does not resize it. | test/calendar/popup_size_test.dart |
+| UIC-40 | planned | A label in every supported language fits its control without cutting a word. | test/calendar/popup_size_test.dart |
+| UIC-41 | planned | Every time or number text field offers up and down arrows (and the Up and Down keys) that step its value: a time by the drag step in DEF-01, a number by one, a length by 15 minutes and a delay by 0.1 seconds, never past the field's limits. | test/calendar/ux_test.dart |
 | UIC-23 | backlog | Wherever a range of dates is asked for (Print Preview, search, feeds, destinations, import) one shared control is used: From | To | All. Either end may be left empty; All means an empty range and clears both dates; the fields show hints in the date's format; an end before the start is not valid (UIC-19). | — |
 | UIC-16.a | backlog | The resize bar's handle is exposed to assistive tools as a vertical slider named msg:stretchCalendar; its collapse and expand arrows are named msg:collapseCalendar and msg:expandCalendar. | — |
 
@@ -92,7 +94,7 @@
 | UIC-05.e | backlog | A section that contains modules lists them in their saved order and reorders them as UIC-30 says; the new order is saved immediately. |
 | UIC-05.f | backlog | The + of a section opens a dialog listing the kinds of connection the section can add, by their kind text (CON-02.d); choosing one opens that connection's own setup. |
 | UIC-05.g | backlog | A section's health is Healthy when all its items are healthy and Unhealthy when any one of them is in error; what puts an item in error is stated by its own feature. An item whose health is disabled (turned off, or with nothing to sync) does not count. |
-| UIC-06 | backlog | An action that hides or deletes something asks first with a No \| Yes pair; cancelling changes nothing. |
+| UIC-06 | planned | An action that hides or deletes something asks first with a No \| Yes pair; cancelling changes nothing. |
 | UIC-07 | backlog | One shared popover, like the info dot: clicking or tapping an info dot, or the triple dot that ends clipped text (UIC-14), shows its full text in a popover next to it, above or below as space allows. The popover is never wider than the window and its text wraps inside it, so it adds no horizontal scroll bar; if it is taller than the window it scrolls vertically. It closes when the user chooses outside it. The item's own click still works. The triple dot's click area is at least 24×24 px. This is the global definition of the triple dot;. | — |
 | UIC-07.a | backlog | A (?) is help: how to do something. It sits right after the word it explains; hover, focus or a click shows it. Its pop-up opens with its upper left at the icon; past the window's right edge, its upper right sits at that edge; past the bottom, its lower corners sit at the bottom. Explanations live in an (i) or a (?), never on the page. | — |
 | UIC-08 | backlog | A checkbox's label ticks it when clicked; empty space beside the label does not. |
@@ -113,7 +115,7 @@ SuiteStream), **rule** (made by a rule).
 | ID | status | statement |
 |---|---|---|
 | CAP-01 | backlog | Imported and custom events can be edited; a rule event cannot be opened for editing, because its rule controls it (remote edits to it are corrected on sync, CGTW-01). |
-| CAP-02 | backlog | An imported event can be hidden and shown again, never deleted from its source; a custom event can be deleted, and a deletion can be undone. |
+| CAP-02 | planned | An imported event can be hidden and shown again, never deleted from its source; a custom event can be deleted, and a deletion can be undone. |
 | CAP-03 | backlog | Only custom events can be moved to another calendar; an imported event of a read-only source never is (EVT-06). |
 | CAP-04 | backlog | Imported and custom events can be link targets; a rule event cannot. |
 | CAP-05 | backlog | Any calendar SuiteStream owns (a Local calendar) can be the default calendar; a read-only source calendar cannot. |
@@ -167,7 +169,7 @@ SuiteStream), **rule** (made by a rule).
 | Password minimum special characters | 1 | 0 or more | database (Site Admin) |
 | Unlock link valid | 24 hours | | default only |
 | Drag step in Week and Day | 15 minutes | | default only |
-| Long-press time | 0.5 seconds | 0.3 to 1.5 seconds | device |
+| Long-press time | 0.3 seconds | 0.2 to 1.5 seconds | device |
 | Hour height | 2 event lines | 1 to 6 | device |
 | Hourly grid scroll start | the first event, or 7 am | | default only |
 | Search results per feature | 6 | | device |
@@ -325,9 +327,10 @@ SuiteStream), **rule** (made by a rule).
 | Online meeting address length | | at most 500 characters | default only |
 | Event notes length | | at most 4,000 characters | default only |
 | Event notes field height | 10 lines | | default only |
-| New event start and length | 9:00, 1 hour | | default only |
+| New event start | 9:00 | | default only |
+| Default event length | 1 hour | 5 minutes to 24 hours | device |
 | Event time list | every 15 minutes (96 entries); entry within 8 minutes of the typed time highlighted; 9:00 when empty | | default only |
-| Reminder choices | at the start, 5, 10, 15, 30 minutes, 1, 2 hours, 1, 2 days, 1 week | | default only |
+| Reminder units | minutes, hours, days, weeks | | default only |
 | Event templates kept | | at most 30 | default only |
 | Event template title length | | at most 200 characters | default only |
 | Event template location length | | at most 200 characters | default only |

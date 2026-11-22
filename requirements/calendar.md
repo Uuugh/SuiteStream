@@ -18,12 +18,12 @@ Terms: the **Local time zone** is defined in TIM-03; an **event line** is one ev
 | CAL-01.i | done | Today is marked by a filled date and an accent border around its whole day (THM-04.e). | test/calendar/calendar_test.dart |
 | CAL-01.j | done | On a touch screen a horizontal swipe on the calendar turns the page (left: next, right: previous); a vertical swipe still scrolls. A swipe counts only when it meets the swipe size in DEF-01; a swipe with more than one finger is ignored. | test/calendar/views_test.dart |
 | CAL-02 | backlog | The calendar shows times in the Local time zone (TIM-03), and the user can look at another zone. | — |
-| CAL-02.a | backlog | Selecting a time zone in the calendar's own picker shows event times in that zone as a view choice kept on the device (CAL-06.b); the Time Zones setting (SET-02) is not changed. | — |
+| CAL-02.a | planned | Selecting a time zone in the calendar's own picker shows event times in that zone as a view choice kept on the device (CAL-06.b); the Time Zones setting (SET-02) is not changed. | test/calendar/header_test.dart |
 | CAL-03 | backlog | The user can move an event they may edit by pressing and dragging it. | — |
-| CAL-03.a | backlog | A long-press-drag moves an event, for the events that can be edited (CAP-01). | — |
-| CAL-03.b | backlog | In Week and Day the start snaps to the drag step in DEF-01. | — |
-| CAL-03.c | backlog | In Month the event moves to the day it is dropped on and keeps its time. | — |
-| CAL-03.d | backlog | The press must be held for the long-press time set in Settings > Theme (SET-03, DEF-01). | — |
+| CAL-03.a | planned | A long-press-drag moves an event, for the events that can be edited (CAP-01); while it is dragged the event follows the pointer, the original is dimmed and the day (and in Week and Day the time) it would land on is shown. | test/calendar/drag_test.dart |
+| CAL-03.b | planned | In Week and Day the start snaps to the drag step in DEF-01. | test/calendar/drag_test.dart |
+| CAL-03.c | planned | In Month the event moves to the day it is dropped on and keeps its time. | test/calendar/drag_test.dart |
+| CAL-03.d | planned | The press must be held for the long-press time set in Settings > Theme (SET-03, DEF-01). | test/calendar/drag_test.dart |
 | CAL-04 | backlog | The user can change how tall the calendar is, and Full page gives it the whole window. | — |
 | CAL-04.a | backlog | The Full page icon hides every other section and becomes the restore-down icon (two squares) while it is on. Full page always resizes to the available window; that is its definition. | — |
 | CAL-04.b | backlog | The calendar uses the shared resize bar (UIC-16). Its height is measured in event lines, not pixels, changes by whole lines, is saved, and has no fixed pixel minimum or maximum. | — |
@@ -38,7 +38,7 @@ Terms: the **Local time zone** is defined in TIM-03; an **event line** is one ev
 | CAL-05.d | backlog | Print All uses the empty date range (UIC-23, All), which prints from the first event through the last event. | — |
 | CAL-05.e | backlog | Printing one event uses Day view for that print (EVT-06). | — |
 | CAL-06 | backlog | The calendar header's right zone holds the view controls in a fixed order, and what the user chooses with them stays on the device until the user changes it. | — |
-| CAL-06.a | backlog | The right zone holds, in this order: Time Zone, View, 12/24 clock, Print, Full page, and + last (UIC-24). Zone alignment and stacking follow UIC-14; what each control does is in its own requirement (CAL-02.a, CAL-01.b, TIM-10, CAL-05, CAL-04). | — |
+| CAL-06.a | backlog | The header has a left, a center and a right zone (UIC-14): the previous and next buttons, Today and the title are in the left zone (CAL-01.l) and the buttons are in the right zone, flush right. The right zone holds, in this order: Time Zone, View, 12/24 clock, Print, Full page, and + last (UIC-24). Zone alignment and stacking follow UIC-14; what each control does is in its own requirement (CAL-02.a, CAL-01.b, TIM-10, CAL-05, CAL-04). | — |
 | CAL-06.b | backlog | The state of each right-zone control that holds one (the time zone, the view, the time format, Full page) is a user setting (SET-01). A default is stated in the control's own requirement. | — |
 | CAL-06.c | backlog | The view picker shows icons, not words: closed it shows only the current view's icon (Month calendar_month, Week view_week, Day view_day, List view_list); open, each choice shows its icon left of its word. Its tooltip is msg:viewTooltip, where {name} is the current view's name (msg:viewMonth, msg:viewWeek, msg:viewFiveDay, msg:viewDay or msg:viewList), and its accessible name is msg:viewName. The 12h \| 24h control is one hollow clock icon with the current format as a badge, and its tooltip names the mode. Time Zone is a globe whose tooltip names the zone and which opens the zone picker. When the right zone's controls do not fit on one line the right group drops to a second line. | — |
 | CAL-01.k | done | Until the user chooses a view, the calendar is in Month view (CAL-01.f says what a phone-width window starts with). | test/calendar/views_test.dart |
@@ -46,7 +46,7 @@ Terms: the **Local time zone** is defined in TIM-03; an **event line** is one ev
 | CAL-01.m | done | Previous and next move by one month in Month and List (to the last day of the previous month, or the first day of the next), by one week in Week and by one day in Day. | test/calendar/views_test.dart |
 | CAL-01.n | done | The tooltip and accessible name of previous and next name the step of the view: msg:previousMonth and msg:nextMonth (Month, List), msg:previousWeek and msg:nextWeek (Week), msg:previousDay and msg:nextDay (Day). | test/calendar/views_test.dart |
 | CAL-01.o | done | The calendar shows only dates in the supported years in DEF-01; a date outside them, or none, puts the calendar on today. | test/calendar/views_test.dart |
-| CAL-01.p | done | Selecting a month in the picker puts the calendar on the 1st of that month, or on today when it is the current month. | test/calendar/views_test.dart |
+| CAL-01.p | planned | Selecting a month in the date picker (CAL-01.s) goes back down to the days of that month, and selecting a year in the year list goes back to the month list; picking a day goes to that date and closes the picker (CAL-01.t). | test/calendar/calendar_test.dart |
 | CAL-01.q | done | The title of Month and List is the month name and year, first letter capitalised, in the page language; the title of Day is the weekday, month, day and year in the page language. | test/calendar/views_test.dart |
 | CAL-01.r | done | The month picker's year row has msg:previousYear and msg:nextYear buttons that change the shown year by one with no limit; the shown year starts at the displayed month's year each time the picker opens. | test/calendar/views_test.dart |
 | CAL-01.s | done | The month picker shows the page language's twelve abbreviated month names in calendar order, with the displayed year and month marked. | test/calendar/views_test.dart |
@@ -58,7 +58,7 @@ Terms: the **Local time zone** is defined in TIM-03; an **event line** is one ev
 | CAL-04.k | backlog | Full page is fitted again when the window is resized (after the delay in DEF-01) and when fonts finish loading. | — |
 | CAL-04.l | backlog | In Full page a Month day cell has no minimum height and scrolls its own content. | — |
 | CAL-06.d | backlog | The right zone decides again whether its controls fit on one line when the window is resized (after the delay in DEF-01) and when fonts finish loading. | — |
-| CAL-06.e | backlog | The 12h \| 24h control sets 12-hour or 24-hour and never returns to the default of TIM-10. | — |
+| CAL-06.e | planned | The 12h \| 24h control sets 12-hour or 24-hour and never returns to the default of TIM-10. | test/calendar/header_test.dart |
 | CAL-07 | backlog | Each view shows its days and cells as the rows below say. | — |
 | CAL-07.a | backlog | Month shows whole weeks, Sunday first, from the Sunday on or before the 1st to the Saturday on or after the last day: 4 to 6 weeks. | — |
 | CAL-07.b | backlog | Week shows the seven days, Sunday to Saturday, that contain the date. | — |

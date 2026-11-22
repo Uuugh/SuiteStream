@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/event_filter.dart';
+import 'package:suitestream/src/calendar/event_store.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/time/local_zone.dart';
@@ -30,6 +31,7 @@ CalendarController makeController({
   DateTime? focused,
   List<SuiteCalendar> cals = calendars,
   EventFilter? filter,
+  EventStore? store,
 }) =>
     CalendarController(
       localZone: const LocalZone.system(zone),
@@ -39,6 +41,7 @@ CalendarController makeController({
       view: view,
       focused: focused,
       filter: filter,
+      store: store,
       clock: () => DateTime.utc(2026, 7, 15, 16),
     );
 
@@ -77,4 +80,11 @@ void useWindow(WidgetTester tester, [Size size = const Size(1000, 800)]) {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
+}
+
+/// Whether a field is hidden (kept in the layout but not shown), as all-day hides the times.
+bool isHidden(WidgetTester tester, String key) {
+  final v = find.ancestor(of: find.byKey(ValueKey(key)), matching: find.byType(Visibility));
+  if (v.evaluate().isEmpty) return false;
+  return !tester.widget<Visibility>(v.first).visible;
 }

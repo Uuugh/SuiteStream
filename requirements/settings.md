@@ -66,6 +66,8 @@
 | SET-06.g | backlog | Resetting the logo or the favicon removes its custom image and restores the default. It does not change any other setting. | — |
 | SET-06.h | backlog | The saved logo and favicon are served without sign-in, cached by the browser privately for the time in DEF-01, with a policy that lets them run nothing; the address carries the image's fingerprint, and a place with no custom image answers not found. | — |
 | SET-06.i | backlog | Saving the look records msg:lookChanged in History. | — |
+| SET-08 | planned | The user chooses the default length of an event, from 5 minutes to 24 hours (one hour until changed, DEF-01); it is a user setting kept on the device and is the length a new event is offered and the length given to an event whose end time is left empty (EVT-02.n). | test/calendar/ux_test.dart |
+| SET-09 | planned | The user chooses the press-and-hold delay, from 0.2 to 1.5 seconds (0.3 seconds until changed, DEF-01); it is a user setting kept on the device and is how long an event is pressed before it can be dragged (CAL-03.d). | test/calendar/ux_test.dart |
 | SET-07 | backlog | The Product Owner can choose which release, port and channel an installation uses. | — |
 | SET-07.a | backlog | Settings lets the Developer select another release (a build), including one typed by hand, for a temporary release made to solve one user's problem. | — |
 | SET-07.b | backlog | Settings can show an alternate port, and write it to `.env`; a change takes effect when the container is recreated. | — |
