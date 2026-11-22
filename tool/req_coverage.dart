@@ -43,7 +43,7 @@ void main(List<String> args) {
       final testFile = tested[id];
       if (testFile != null) {
         withTest++;
-        if (apply) {
+        if (apply && m.group(2) != "done") {
           final cells = lines[i].split(RegExp(r'(?<!\\)\|'));
           // cells: '', ' ID ', ' status ', ' statement ', ' test ', ''
           if (cells.length == 6) {

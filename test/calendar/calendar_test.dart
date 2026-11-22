@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
+import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/calendar/week_layout.dart';
 import 'package:suitestream/src/calendar/week_view.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
@@ -36,15 +41,22 @@ SuiteEvent _event(String id, int day, int hour, {int minutes = 60, String title 
       zone: _zone,
     );
 
-Widget _app(Widget child, {Size size = const Size(1000, 800)}) => MaterialApp(
+Map<String, dynamic> _arb(String code) =>
+    jsonDecode(File('requirements/messages/app_$code.arb').readAsStringSync()) as Map<String, dynamic>;
+
+Widget _app(Widget child, {Size size = const Size(1000, 800), String locale = 'en'}) => MaterialApp(
       theme: buildSuiteTheme(Brightness.light),
+      builder: (context, c) => MessagesScope(messages: Messages.fromMaps(locale, _arb(locale), _arb('en')), child: c!),
       home: Scaffold(body: SizedBox(width: size.width, height: size.height, child: child)),
     );
 
 void main() {
   alignmentTests();
   yearPickerTests();
-  setUpAll(initZones);
+  setUpAll(() async {
+    initZones();
+    await initializeDateFormatting();
+  });
 
   testWidgets('CAL-01.a: the calendar displays the events of its source calendars', (tester) async {
     tester.view.physicalSize = const Size(1000, 800);
@@ -133,6 +145,8 @@ void main() {
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
     await tester.tap(find.byKey(const ValueKey('title')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('picker-title'))); // the title opens the month list
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('year-next')));
     await tester.tap(find.byKey(const ValueKey('month-3')));
     await tester.pumpAndSettle();
@@ -147,14 +161,14 @@ void main() {
     addTearDown(tester.view.reset);
     final c = _controller();
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
-    expect(find.byType(WeekView), findsNothing);
+    expect(find.byType(HourlyView), findsNothing);
     await tester.tap(find.byIcon(Icons.calendar_month).last);
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.check), findsOneWidget); // the chosen view is indicated
     await tester.tap(find.byKey(const ValueKey('dropdown-item-CalendarView.week')));
     await tester.pumpAndSettle();
     expect(c.view, CalendarView.week);
-    expect(find.byType(WeekView), findsOneWidget);
+    expect(find.byType(HourlyView), findsOneWidget);
     expect(find.byKey(const ValueKey('dropdown-item-CalendarView.week')), findsNothing); // the menu closed
   });
 
@@ -344,6 +358,8 @@ void yearPickerTests() {
     final c = _controller();
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
     await tester.tap(find.byKey(const ValueKey('title')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('picker-title'))); // the title opens the month list
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('year-title')));
     await tester.pumpAndSettle();

@@ -40,9 +40,9 @@ void main() {
     const local = LocalZone.fixed('Asia/Tokyo', systemZone: 'Europe/Paris');
     local.show(meeting.startUtc);
     expect(meeting.startZone, 'America/New_York');
-    final renamed = meeting.edited(title: 'Renamed');
+    final renamed = meeting.withEdits(title: 'Renamed');
     expect(renamed.startZone, 'America/New_York');
-    final moved = meeting.edited(startZone: 'Europe/London', endZone: 'Europe/London');
+    final moved = meeting.withEdits(startZone: 'Europe/London', endZone: 'Europe/London');
     expect(moved.startZone, 'Europe/London');
   });
 

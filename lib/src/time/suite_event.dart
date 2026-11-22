@@ -12,6 +12,10 @@ class SuiteEvent {
     required this.endZone,
     this.allDay = false,
     this.calendarId,
+    this.edited = false,
+    this.changedBySource = false,
+    this.hiddenFromGoogle = false,
+    this.deleted = false,
   })  : startUtc = _plainUtc(startUtc),
         endUtc = _plainUtc(endUtc) {
     if (this.endUtc.isBefore(this.startUtc)) {
@@ -27,6 +31,12 @@ class SuiteEvent {
   final String endZone;
   final bool allDay;
   final String? calendarId;
+
+  /// Event states the Calendar filter can show or hide (FLT-01.a).
+  final bool edited;
+  final bool changedBySource;
+  final bool hiddenFromGoogle;
+  final bool deleted;
 
   /// An event given as wall-clock times in [zone] (TIM-02: the zone it is recorded in).
   factory SuiteEvent.zoned({
@@ -99,6 +109,10 @@ class SuiteEvent {
         'end': {'utc': endUtc.toIso8601String(), 'zone': endZone},
         'allDay': allDay,
         if (calendarId != null) 'calendarId': calendarId,
+        if (edited) 'edited': true,
+        if (changedBySource) 'changedBySource': true,
+        if (hiddenFromGoogle) 'hiddenFromGoogle': true,
+        if (deleted) 'deleted': true,
       };
 
   /// TIM-06, TIM-08: reads an incoming event. An event that carries no time
@@ -121,6 +135,10 @@ class SuiteEvent {
       endZone: zoneOf(e),
       allDay: (json['allDay'] as bool?) ?? false,
       calendarId: json['calendarId'] as String?,
+      edited: (json['edited'] as bool?) ?? false,
+      changedBySource: (json['changedBySource'] as bool?) ?? false,
+      hiddenFromGoogle: (json['hiddenFromGoogle'] as bool?) ?? false,
+      deleted: (json['deleted'] as bool?) ?? false,
     );
   }
 
@@ -131,7 +149,7 @@ class SuiteEvent {
 
   /// TIM-02: a changed event keeps its recorded zones unless the user edits
   /// them (Edit Event passes new zones).
-  SuiteEvent edited({
+  SuiteEvent withEdits({
     String? title,
     DateTime? startUtc,
     DateTime? endUtc,
@@ -147,6 +165,10 @@ class SuiteEvent {
         endZone: endZone ?? this.endZone,
         allDay: allDay,
         calendarId: calendarId,
+        edited: true,
+        changedBySource: changedBySource,
+        hiddenFromGoogle: hiddenFromGoogle,
+        deleted: deleted,
       );
 
   /// TIM-07: the event's times for a calendar feed (iCalendar), with each
@@ -180,3 +202,31 @@ String zoneForNewEvent({
 
 /// A plain UTC [DateTime] (not a zoned subclass), so equal instants compare equal.
 DateTime _plainUtc(DateTime t) => DateTime.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch, isUtc: true);
+
+/// A calendar events belong to: its name and color follow its source (FLT-01.e).
+class SuiteCalendar {
+  const SuiteCalendar({required this.id, required this.name, required this.color});
+  final String id;
+  final String name;
+
+  /// ARGB color value.
+  final int color;
+}
+
+extension SuiteEventStates on SuiteEvent {
+  /// A copy with its Calendar-filter states set (FLT-01.a).
+  SuiteEvent withState({bool? edited, bool? changedBySource, bool? hiddenFromGoogle, bool? deleted}) => SuiteEvent(
+        id: id,
+        title: title,
+        startUtc: startUtc,
+        endUtc: endUtc,
+        startZone: startZone,
+        endZone: endZone,
+        allDay: allDay,
+        calendarId: calendarId,
+        edited: edited ?? this.edited,
+        changedBySource: changedBySource ?? this.changedBySource,
+        hiddenFromGoogle: hiddenFromGoogle ?? this.hiddenFromGoogle,
+        deleted: deleted ?? this.deleted,
+      );
+}

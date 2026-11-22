@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/dates.dart';
+import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../ui/suite_dropdown.dart';
 import 'calendar_controller.dart';
+import 'date_picker.dart';
+import 'filter_panel.dart' show CalendarFilterButton;
+import 'list_view.dart';
 import 'month_view.dart';
+import 'swipe_detector.dart';
 import 'week_view.dart';
 
-const List<String> monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
+/// CAL-06.c: the view picker's icons.
+IconData viewIcon(CalendarView v) => switch (v) {
+      CalendarView.month => Icons.calendar_month,
+      CalendarView.week => Icons.view_week,
+      CalendarView.fiveDay => Icons.view_column,
+      CalendarView.day => Icons.view_day,
+      CalendarView.list => Icons.view_list,
+    };
 
-/// CAL-01.b: the views offered today.
-const List<DropdownItem<CalendarView>> _viewItems = [
-  DropdownItem(value: CalendarView.month, label: 'Month', icon: Icons.calendar_month),
-  DropdownItem(value: CalendarView.week, label: 'Week', icon: Icons.view_week),
-];
+String viewMessageKey(CalendarView v) => switch (v) {
+      CalendarView.month => 'viewMonth',
+      CalendarView.week => 'viewWeek',
+      CalendarView.fiveDay => 'viewFiveDay',
+      CalendarView.day => 'viewDay',
+      CalendarView.list => 'viewList',
+    };
 
-IconData _viewIcon(CalendarView v) => v == CalendarView.week ? Icons.view_week : Icons.calendar_month;
-
-/// The calendar section: header and the chosen view.
+/// The calendar section: header, the chosen view and the filter legend.
 class CalendarPage extends StatelessWidget {
   const CalendarPage({super.key, required this.controller});
 
@@ -28,11 +38,13 @@ class CalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = controller;
+    // CAL-01.f: the starting view depends on the window width.
+    c.layout(phone: MediaQuery.sizeOf(context).width <= phoneMaxWidth);
     return ListenableBuilder(
-      listenable: controller,
+      listenable: c,
       builder: (context, _) {
         final t = context.tokens;
-        final c = controller;
         return Container(
           margin: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -45,10 +57,15 @@ class CalendarPage extends StatelessWidget {
               _Header(controller: c),
               Divider(height: 1, color: t.line),
               Expanded(
-                child: switch (c.view) {
-                  CalendarView.week => WeekView(controller: c),
-                  _ => MonthView(controller: c),
-                },
+                child: SwipeDetector(
+                  onNext: c.next,
+                  onPrevious: c.previous,
+                  child: switch (c.view) {
+                    CalendarView.month => MonthView(controller: c),
+                    CalendarView.list => AgendaView(controller: c),
+                    _ => HourlyView(controller: c),
+                  },
+                ),
               ),
             ],
           ),
@@ -63,163 +80,80 @@ class _Header extends StatelessWidget {
 
   final CalendarController controller;
 
-  String get _title {
+  String _title(BuildContext context) {
     final c = controller;
-    if (c.view == CalendarView.week) {
-      final s = c.weekStart;
-      final e = c.weekEnd;
-      final a = '${monthNames[s.month - 1].substring(0, 3)} ${s.day}';
-      final b = s.month == e.month
-          ? '${e.day}'
-          : '${monthNames[e.month - 1].substring(0, 3)} ${e.day}';
-      return '$a – $b, ${e.year}';
+    final locale = context.msg.locale;
+    switch (c.view) {
+      case CalendarView.day:
+        return dayTitle(locale, c.focused);
+      case CalendarView.week:
+        return dateRange(locale, c.weekStart, c.weekEnd);
+      case CalendarView.fiveDay:
+        final d = c.hourlyDays;
+        return dateRange(locale, d.first, d.last);
+      case CalendarView.month:
+      case CalendarView.list:
+        return monthYearTitle(locale, c.focused);
     }
-    return '${monthNames[c.focused.month - 1]} ${c.focused.year}';
   }
+
+  /// CAL-01.n: previous and next name the step of the view.
+  (String, String) _stepKeys() => switch (controller.view) {
+        CalendarView.day => ('previousDay', 'nextDay'),
+        CalendarView.week || CalendarView.fiveDay => ('previousWeek', 'nextWeek'),
+        _ => ('previousMonth', 'nextMonth'),
+      };
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
     final c = controller;
+    final m = context.msg;
+    final (prevKey, nextKey) = _stepKeys();
+    final viewName = m(viewMessageKey(c.view));
     // UIC-14: left, center and right zones; CAL-01.l: previous, next, Today, then the title.
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 40, top: 4, bottom: 4),
       child: Row(
         children: [
-          IconButton(key: const ValueKey('previous'), tooltip: 'Previous', icon: const Icon(Icons.chevron_left), onPressed: c.previous),
-          IconButton(key: const ValueKey('next'), tooltip: 'Next', icon: const Icon(Icons.chevron_right), onPressed: c.next),
-          TextButton(key: const ValueKey('today'), onPressed: c.goToToday, child: const Text('Today')),
+          IconButton(key: const ValueKey('previous'), tooltip: m(prevKey), icon: const Icon(Icons.chevron_left), onPressed: c.previous),
+          IconButton(key: const ValueKey('next'), tooltip: m(nextKey), icon: const Icon(Icons.chevron_right), onPressed: c.next),
+          TextButton(key: const ValueKey('today'), onPressed: c.goToToday, child: Text(m('today'))),
           const SizedBox(width: 8),
           Flexible(
             child: InkWell(
               key: const ValueKey('title'),
               borderRadius: BorderRadius.circular(6),
-              onTap: () => _pickMonth(context),
+              onTap: () => pickDate(context, controller),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                child: Text(_title, overflow: TextOverflow.ellipsis, style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width)),
+                child: Text(
+                  _title(context),
+                  overflow: TextOverflow.ellipsis,
+                  style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width),
+                ),
               ),
             ),
           ),
           const Spacer(),
-          SuiteDropdown<CalendarView>(
-            icon: _viewIcon(c.view),
-            tooltip: 'View',
-            items: _viewItems,
-            selected: {c.view},
-            onChanged: (s) => c.view = s.first,
+          CalendarFilterButton(controller: c),
+          // CAL-06.c: the view picker shows icons; its tooltip names the current view.
+          Semantics(
+            label: m('viewName'),
+            child: SuiteDropdown<CalendarView>(
+              icon: viewIcon(c.view),
+              tooltip: m('viewTooltip', {'name': viewName}),
+              items: [
+                for (final v in CalendarView.values)
+                  DropdownItem(value: v, label: m(viewMessageKey(v)), icon: viewIcon(v)),
+              ],
+              selected: {c.view},
+              onChanged: (s) => c.view = s.first,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _pickMonth(BuildContext context) async {
-    final c = controller;
-    final picked = await showDialog<(int, int)>(
-      context: context,
-      builder: (_) => _MonthPicker(year: c.focused.year, month: c.focused.month),
-    );
-    if (picked != null) c.goToMonth(picked.$1, picked.$2);
-  }
-}
-
-/// CAL-01.d: a small month picker; picking a month closes it.
-class _MonthPicker extends StatefulWidget {
-  const _MonthPicker({required this.year, required this.month});
-  final int year;
-  final int month;
-
-  @override
-  State<_MonthPicker> createState() => _MonthPickerState();
-}
-
-class _MonthPickerState extends State<_MonthPicker> {
-  late int _year = widget.year;
-  bool _choosingYear = false;
-
-  /// DEF-01: supported calendar years, 2000 to 2100.
-  static const int firstYear = 2000;
-  static const int lastYear = 2100;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-    return Dialog(
-      backgroundColor: t.card,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: SizedBox(
-          width: 280,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(key: const ValueKey('year-prev'), icon: const Icon(Icons.chevron_left), onPressed: () => setState(() => _year--)),
-                  // Clicking the year opens the list of years to choose from.
-                  TextButton(
-                    key: const ValueKey('year-title'),
-                    onPressed: () => setState(() => _choosingYear = !_choosingYear),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('$_year', style: SuiteText.label(t)),
-                        Icon(_choosingYear ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-                      ],
-                    ),
-                  ),
-                  IconButton(key: const ValueKey('year-next'), icon: const Icon(Icons.chevron_right), onPressed: () => setState(() => _year++)),
-                ],
-              ),
-              if (_choosingYear) _yearGrid(t) else _monthGrid(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _monthGrid() => Wrap(
-        children: [
-          for (var m = 1; m <= 12; m++)
-            SizedBox(
-              width: 280 / 4 - 1,
-              child: TextButton(
-                key: ValueKey('month-$m'),
-                onPressed: () => Navigator.of(context).pop((_year, m)),
-                child: Text(monthNames[m - 1].substring(0, 3)),
-              ),
-            ),
-        ],
-      );
-
-  Widget _yearGrid(SuiteTokens t) {
-    const cols = 4;
-    final rowOfYear = (_year.clamp(firstYear, lastYear) - firstYear) ~/ cols;
-    return SizedBox(
-      key: const ValueKey('year-grid'),
-      height: 240,
-      child: GridView.count(
-        crossAxisCount: cols,
-        childAspectRatio: 1.6,
-        controller: ScrollController(initialScrollOffset: rowOfYear * (280 / cols / 1.6)),
-        children: [
-          for (var y = firstYear; y <= lastYear; y++)
-            TextButton(
-              key: ValueKey('year-$y'),
-              style: y == _year
-                  ? TextButton.styleFrom(backgroundColor: t.accent, foregroundColor: t.onAccent)
-                  : null,
-              onPressed: () => setState(() {
-                _year = y;
-                _choosingYear = false;
-              }),
-              child: Text('$y'),
-            ),
-        ],
-      ),
-    );
-  }
 }

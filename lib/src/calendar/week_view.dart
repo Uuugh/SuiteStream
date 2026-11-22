@@ -6,7 +6,8 @@ import '../time/suite_event.dart';
 import '../time/time_format.dart';
 import '../time/zones.dart';
 import 'calendar_controller.dart';
-import 'month_view.dart';
+import '../l10n/dates.dart';
+import '../l10n/messages.dart';
 import 'week_layout.dart';
 
 /// DEF-01: the hourly grid starts at the first event, or at 7 am.
@@ -44,40 +45,39 @@ int scrollStartHour(CalendarController c, List<DateTime> days) {
   return (startMin, endMin == 0 && en.isAfter(s) ? 24 * 60 : endMin);
 }
 
-/// CAL-01.h: the Week view: an hourly grid, all-day events above.
-class WeekView extends StatefulWidget {
-  const WeekView({super.key, required this.controller});
+/// CAL-01.h: the hourly views (Week, 5-day, Day): an hourly grid, all-day events above.
+class HourlyView extends StatefulWidget {
+  const HourlyView({super.key, required this.controller});
 
   final CalendarController controller;
 
   @override
-  State<WeekView> createState() => _WeekViewState();
+  State<HourlyView> createState() => _HourlyViewState();
 }
 
-class _WeekViewState extends State<WeekView> {
+class _HourlyViewState extends State<HourlyView> {
   late ScrollController _scroll;
-  DateTime? _weekShown;
+  String? _shown;
 
-  List<DateTime> get _days {
-    final s = widget.controller.weekStart;
-    return [for (var i = 0; i < 7; i++) DateTime(s.year, s.month, s.day + i)];
-  }
+  List<DateTime> get _days => widget.controller.hourlyDays;
 
   @override
   void initState() {
     super.initState();
     _scroll = ScrollController(initialScrollOffset: _offset());
-    _weekShown = widget.controller.weekStart;
+    _shown = _signature();
   }
+
+  String _signature() => _days.map((d) => d.toIso8601String()).join(",");
 
   double _offset() => scrollStartHour(widget.controller, _days) * hourHeight;
 
   @override
-  void didUpdateWidget(WeekView old) {
+  void didUpdateWidget(HourlyView old) {
     super.didUpdateWidget(old);
-    final w = widget.controller.weekStart;
-    if (w != _weekShown) {
-      _weekShown = w;
+    final w = _signature();
+    if (w != _shown) {
+      _shown = w;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scroll.hasClients) _scroll.jumpTo(_offset().clamp(0, _scroll.position.maxScrollExtent));
       });
@@ -116,7 +116,7 @@ class _WeekViewState extends State<WeekView> {
                         ? BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(12))
                         : null,
                     child: Text(
-                      '${weekdayNames[d.weekday % 7]} ${d.day}',
+                      '${weekdayAbbreviation(context.msg.locale, d)} ${d.day}',
                       style: SuiteText.label(t).copyWith(color: d == c.today ? t.onAccent : t.text),
                     ),
                   ),
@@ -131,8 +131,8 @@ class _WeekViewState extends State<WeekView> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(width: gutter, child: Text('all-day', textAlign: TextAlign.center, style: SuiteText.note(t))),
-                for (var i = 0; i < 7; i++)
+                SizedBox(width: gutter, child: Text(context.msg('allDay'), textAlign: TextAlign.center, style: SuiteText.note(t))),
+                for (var i = 0; i < days.length; i++)
                   Expanded(
                     child: Column(
                       children: [

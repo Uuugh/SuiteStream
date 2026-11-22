@@ -9,10 +9,21 @@ const double triggerIconInset = 12;
 
 /// One item of a [SuiteDropdown].
 class DropdownItem<T> {
-  const DropdownItem({required this.value, required this.label, this.icon});
+  const DropdownItem({required this.value, required this.label, this.icon, this.leading});
   final T value;
   final String label;
   final IconData? icon;
+
+  /// A widget shown where the icon goes (for example a color swatch); it is
+  /// [triggerIconSize] wide so it lines up with the trigger icon.
+  final Widget? leading;
+}
+
+/// A command at the top of a dropdown (for example Select all); it does not close the menu.
+class DropdownAction {
+  const DropdownAction({required this.label, required this.onPressed});
+  final String label;
+  final VoidCallback onPressed;
 }
 
 /// UIC-12: the one shared dropdown. It opens from a single icon. The feature
@@ -30,6 +41,8 @@ class SuiteDropdown<T> extends StatefulWidget {
     required this.onChanged,
     this.multi = false,
     this.tooltip,
+    this.active = false,
+    this.actions = const [],
   });
 
   final IconData icon;
@@ -38,6 +51,12 @@ class SuiteDropdown<T> extends StatefulWidget {
   final ValueChanged<Set<T>> onChanged;
   final bool multi;
   final String? tooltip;
+
+  /// UIC-21: shown in the accent color when a filter is active.
+  final bool active;
+
+  /// Commands above the items (UIC-21: Select all, Select none).
+  final List<DropdownAction> actions;
 
   @override
   State<SuiteDropdown<T>> createState() => _SuiteDropdownState<T>();
@@ -112,6 +131,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          for (final a in widget.actions) _actionRow(context, a),
                           for (var i = 0; i < widget.items.length; i++) _row(context, i),
                         ],
                       ),
@@ -124,12 +144,14 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
         ),
         child: IconButton(
           tooltip: widget.tooltip,
-          icon: Icon(widget.icon, size: triggerIconSize),
+          icon: Icon(widget.icon, size: triggerIconSize, color: widget.active ? t.accent : null),
           onPressed: _toggleOpen,
         ),
       ),
     );
   }
+
+  Widget _actionRow(BuildContext context, DropdownAction a) => _actionRowImpl(context, a);
 
   Widget _row(BuildContext context, int i) {
     final t = context.tokens;
@@ -147,11 +169,29 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
         color: selected ? t.soft : null,
         child: Row(
           children: [
-            if (item.icon != null) ...[Icon(item.icon, size: triggerIconSize), const SizedBox(width: 12)],
+            if (item.leading != null) ...[SizedBox(width: triggerIconSize, height: triggerIconSize, child: Center(child: item.leading)), const SizedBox(width: 12)]
+            else if (item.icon != null) ...[Icon(item.icon, size: triggerIconSize), const SizedBox(width: 12)],
             Expanded(child: Text(item.label)),
             if (selected) Icon(Icons.check, size: 18, color: t.accent, semanticLabel: 'selected'),
           ],
         ),
+      ),
+    );
+  }
+}
+
+extension on _SuiteDropdownState {
+  Widget _actionRowImpl(BuildContext context, DropdownAction a) {
+    final t = context.tokens;
+    return InkWell(
+      key: ValueKey('dropdown-action-${a.label}'),
+      onTap: a.onPressed,
+      child: Container(
+        height: 40,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: triggerIconInset, right: 12),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: t.line))),
+        child: Text(a.label, style: TextStyle(color: t.accent, fontWeight: FontWeight.w600)),
       ),
     );
   }

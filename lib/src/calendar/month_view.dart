@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/dates.dart';
+import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
+import '../time/suite_event.dart';
 import '../time/time_format.dart';
 import 'calendar_controller.dart';
 
-const List<String> weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+/// Height of one event line in a day cell, and of the date number's row.
+const double monthLineHeight = 16;
+const double monthDateRowHeight = 24;
 
 /// CAL-01.a, CAL-01.i: the Month view.
 class MonthView extends StatelessWidget {
@@ -13,23 +18,26 @@ class MonthView extends StatelessWidget {
 
   final CalendarController controller;
 
-  static const int maxVisibleEvents = 3;
-
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
     final c = controller;
+    final locale = context.msg.locale;
     final start = c.monthGridStart;
     final weeks = c.monthGridWeeks;
     return Column(
       children: [
         Row(
           children: [
-            for (final n in weekdayNames)
+            for (var i = 0; i < 7; i++)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(n, textAlign: TextAlign.center, style: SuiteText.note(t)),
+                  child: Text(
+                    weekdayAbbreviation(locale, DateTime(start.year, start.month, start.day + i)),
+                    textAlign: TextAlign.center,
+                    style: SuiteText.note(t),
+                  ),
                 ),
               ),
           ],
@@ -72,9 +80,6 @@ class _DayCell extends StatelessWidget {
     final isToday = day == c.today;
     final inMonth = day.month == c.focused.month;
     final events = c.eventsOn(day);
-    final shown = events.take(MonthView.maxVisibleEvents).toList();
-    final hidden = events.length - shown.length;
-    final loc = c.localZone;
 
     // THM-04.e: today's day is marked with a 2 px accent outline, not a border.
     return Container(
@@ -83,53 +88,80 @@ class _DayCell extends StatelessWidget {
         border: Border.all(color: t.line, width: 0.5),
         color: inMonth ? t.card : t.soft,
       ),
-      foregroundDecoration: isToday
-          ? BoxDecoration(border: Border.all(color: t.accent, width: 2))
-          : null,
+      foregroundDecoration: isToday ? BoxDecoration(border: Border.all(color: t.accent, width: 2)) : null,
       padding: const EdgeInsets.all(2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              key: isToday ? const ValueKey('today-marker') : null,
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-              decoration: isToday
-                  ? BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(10))
-                  : null,
-              child: Text(
-                '${day.day}',
-                style: SuiteText.label(t).copyWith(
-                  color: isToday ? t.onAccent : (inMonth ? t.text : t.muted),
+      child: LayoutBuilder(
+        builder: (context, box) {
+          // CAL-01.g: the cell shows how many of its visible events do not fit.
+          final lines = ((box.maxHeight - 4 - monthDateRowHeight) / monthLineHeight).floor();
+          final fit = events.length <= lines ? events.length : (lines - 1).clamp(0, events.length);
+          final hidden = events.length - fit;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  key: isToday ? const ValueKey('today-marker') : null,
+                  height: monthDateRowHeight - 4,
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  alignment: Alignment.center,
+                  decoration: isToday
+                      ? BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(10))
+                      : null,
+                  child: Text(
+                    '${day.day}',
+                    style: SuiteText.label(t).copyWith(color: isToday ? t.onAccent : (inMonth ? t.text : t.muted)),
+                  ),
                 ),
               ),
-            ),
-          ),
-          for (final e in shown)
-            Padding(
-              padding: const EdgeInsets.only(top: 1),
-              child: Text(
-                e.allDay
-                    ? e.title
-                    : '${_start(e, loc.location, c.timeFormat)} ${e.title}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: SuiteText.note(t).copyWith(color: t.text),
-              ),
-            ),
-          if (hidden > 0)
-            Padding(
-              padding: const EdgeInsets.only(top: 1),
-              child: Text('+$hidden more', style: SuiteText.note(t)),
-            ),
-        ],
+              for (final e in events.take(fit)) _EventLine(event: e, controller: c),
+              if (hidden > 0)
+                SizedBox(
+                  key: ValueKey('more-${day.year}-${day.month}-${day.day}'),
+                  height: monthLineHeight,
+                  child: Text(context.msg('moreEvents', {'n': hidden}), style: SuiteText.note(t)),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
+}
 
-  String _start(dynamic e, dynamic location, TimeFormat f) {
-    final s = e.startIn(location);
-    return formatTimeOfDay(s.hour, s.minute, f);
+class _EventLine extends StatelessWidget {
+  const _EventLine({required this.event, required this.controller});
+
+  final SuiteEvent event;
+  final CalendarController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    final c = controller;
+    final s = event.startIn(c.localZone.location);
+    final text = event.allDay ? event.title : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} ${event.title}';
+    final color = c.colorOf(event);
+    return SizedBox(
+      height: monthLineHeight,
+      child: Row(
+        children: [
+          if (color != null)
+            Container(width: 3, height: 12, margin: const EdgeInsets.only(right: 3), color: Color(color)),
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: SuiteText.note(t).copyWith(
+                color: t.text,
+                decoration: event.deleted ? TextDecoration.lineThrough : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
