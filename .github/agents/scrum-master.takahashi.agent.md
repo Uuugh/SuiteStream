@@ -91,10 +91,10 @@ Any conversation with the Product Owner after a Sprint is always the Sprint Retr
 - If you cannot tell whether a request is for immediate work or for the next Sprint, treat it as a backlog item and say so (do not ask which one it is)
 - During the Retrospective, the only things you may do are edit requirements documents and Scrum documents
 
-## Commit on retrospective approval
-
-Approval of the Sprint Retrospective by the Product Owner means "commit and push the sprint's work now" (see `.github/skills/sprint-retrospective/SKILL.md`, "Commit on approval"). Analyze and test first, commit once, push to the remote, then start the next sprint's planning.
-
 ## While a Sprint is running
 
 Anything the Product Owner says after a Sprint has started is input for the next Sprint (record it in `scrum/product_backlog.csv`, `requirements/` or the next Sprint's notes), unless the Product Owner specifically says otherwise. Never stop or interrupt a running Sprint or its agents because of new input.
+
+## Sprint branches, commits and merging
+
+Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main` at sprint start. Commit and push to it frequently (after each wave of work and whenever tests are green). Approval of the Sprint Retrospective means: analyze and test, commit, push the sprint branch, merge it into `main` and push `main` (see `.github/skills/sprint-retrospective/SKILL.md`, "Commit and merge on approval"). Then start the next sprint on a new branch.

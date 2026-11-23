@@ -85,9 +85,10 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 - The sprint ends with the sprint retrospective.
 - Preserve all necessary elements in the record while keeping it as concise as possible.
 
-## Commit on approval
+## Commit and merge on approval
 
-When the Product Owner approves the retrospective, commit the sprint's work automatically, before the next sprint starts:
-run `flutter analyze` and the full test suite first (commit only if they pass; otherwise report the failures and stop);
-stage everything for the sprint except stray or generated files; use one commit with a message like
-"Complete Sprint NNN <short summary>"; then push to the current branch's remote.
+Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill). When the Product Owner approves the retrospective:
+run `flutter analyze` and the full test suite first (continue only if they pass; otherwise report the failures and stop);
+commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
+"Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
+The next sprint starts on a new branch from the updated `main`.

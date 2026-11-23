@@ -101,18 +101,8 @@ Future<void> openEventDialog(
   int? startMinute,
   bool allDay = false,
   SharedPreferences? prefs,
-}) async {
+}) {
   final msgs = context.msg;
-  // EVT-01.m: with no spot clicked, a new event starts at the default time (Settings > Calendar).
-  var defaultStart = standardEventStartMinutes;
-  if (event == null && duplicateOf == null && startMinute == null && !allDay) {
-    try {
-      defaultStart = CalendarDefaults.load(prefs ?? await SharedPreferences.getInstance()).startMinutes;
-    } on Object {
-      // keep 9:00
-    }
-  }
-  if (!context.mounted) return;
   final phone = MediaQuery.sizeOf(context).width <= phoneMaxWidth;
   return showSuiteDialog<void>(
     context: context,
@@ -134,7 +124,7 @@ Future<void> openEventDialog(
               day: day,
               startMinute: startMinute,
               allDay: allDay,
-              defaultStartMinutes: defaultStart,
+              prefs: prefs,
             ),
           ),
         ),
@@ -153,7 +143,7 @@ class EventDialog extends StatefulWidget {
     this.day,
     this.startMinute,
     this.allDay = false,
-    this.defaultStartMinutes = standardEventStartMinutes,
+    this.prefs,
   });
 
   final CalendarController controller;
@@ -169,8 +159,8 @@ class EventDialog extends StatefulWidget {
   /// A click in the all-day row starts an all-day event.
   final bool allDay;
 
-  /// EVT-01.m: the start of a new event when no spot was clicked (CalendarDefaults.startMinutes).
-  final int defaultStartMinutes;
+  /// EVT-01.m: where the default start time of a new event is read; without it the device's own.
+  final SharedPreferences? prefs;
 
   @override
   State<EventDialog> createState() => _EventDialogState();
@@ -253,7 +243,7 @@ class _EventDialogState extends State<EventDialog> {
       // EVT-01.m: a new event starts at 9:00 for an hour on the day clicked, or today.
       final d = widget.day ?? c.today;
       _allDay = widget.allDay;
-      final startMin = widget.startMinute ?? widget.defaultStartMinutes;
+      final startMin = widget.startMinute ?? _defaultStart();
       final endTotal =
           startMin +
           c

@@ -74,3 +74,7 @@ Use the Takahashi agent to verify:
 - Whether the sprint goal was clearly defined.
 - Whether timeboxes were respected.
 If these conditions are not met, intervene appropriately to promote discussion.
+
+## Sprint branch
+
+Each sprint works on a branch named for it (`sprintNNN`, for example `sprint007`), created from an up-to-date `main` when the sprint starts. Commit and push to that branch often (at least after each wave of agent work, and whenever tests are green) so no work is lost. The branch is merged into `main` after the retrospective is approved (see the sprint-retrospective skill).
