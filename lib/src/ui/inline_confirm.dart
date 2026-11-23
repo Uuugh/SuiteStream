@@ -18,6 +18,8 @@ class InlineConfirmButton extends StatefulWidget {
     required this.builder,
     required this.onConfirm,
     this.color,
+    this.leading,
+    this.background,
   });
 
   /// Builds the original button; call `start` from its onPressed.
@@ -29,6 +31,13 @@ class InlineConfirmButton extends StatefulWidget {
   /// Font color of the question and the answers; the primary color when null (like the
   /// Add notification button).
   final Color? color;
+
+  /// The icon of the original button. The question starts where the original label did (same
+  /// padding, icon size and gap), so the text does not jump when the confirm opens.
+  final Widget? leading;
+
+  /// Fill of the confirm; the error container of the theme when null and [leading] is set.
+  final Color? background;
 
   @override
   State<InlineConfirmButton> createState() => _InlineConfirmButtonState();
@@ -65,11 +74,20 @@ class _InlineConfirmButtonState extends State<InlineConfirmButton> {
               }
               return KeyEventResult.ignored;
             },
-            child: SizedBox(
+            child: Container(
               height: suiteControlHeight,
+              padding: const EdgeInsets.only(left: suiteDialogPadding),
+              decoration: BoxDecoration(
+                color: widget.background ?? Theme.of(context).colorScheme.errorContainer,
+                borderRadius: const BorderRadius.all(Radius.circular(suiteControlRadius)),
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (widget.leading != null) ...[
+                    IconTheme(data: IconThemeData(size: 18, color: color), child: widget.leading!),
+                    const SizedBox(width: suitePartGap + suiteLabelGap),
+                  ],
                   Text(m('areYouSure'), style: TextStyle(color: color)),
                   TextButton(
                     key: const ValueKey('inline-confirm-yes'),
@@ -97,6 +115,10 @@ class _InlineConfirmButtonState extends State<InlineConfirmButton> {
           );
     return AnimatedSwitcher(
       duration: SuiteAnimationScope.of(context),
+      layoutBuilder: (current, previous) => Stack(
+        alignment: Alignment.centerLeft,
+        children: [...previous, ?current],
+      ),
       child: content,
     );
   }

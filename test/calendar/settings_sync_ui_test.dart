@@ -120,7 +120,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('inline-confirm-yes')));
       await tester.pump();
       expect(sync.pushes, 3, reason: 'Reset pushes');
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(sync.pushes, 4, reason: 'closing pushes');
     },

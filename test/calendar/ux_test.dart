@@ -96,7 +96,7 @@ void main() {
         '1.5',
       );
       await tester.pump();
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(c.defaultLength, const Duration(minutes: 90));
       expect(find.byKey(const ValueKey('settings-dialog')), findsNothing);
@@ -116,7 +116,7 @@ void main() {
         'soon',
       );
       await tester.pump();
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(c.defaultLength, const Duration(minutes: 90));
     },
@@ -622,7 +622,7 @@ void pressDelayTests() {
         '0.8',
       );
       await tester.pump();
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(c.longPress, const Duration(milliseconds: 800));
       final again = CalendarController(

@@ -180,7 +180,7 @@ void main() {
         '90',
       );
       await tester.pump();
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(c.defaultLength, const Duration(minutes: 90));
       expect(find.byKey(const ValueKey('settings-dialog')), findsNothing);
@@ -196,7 +196,7 @@ void main() {
         'soon',
       );
       await tester.pump();
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(c.defaultLength, const Duration(minutes: 90));
     },
@@ -226,7 +226,7 @@ void main() {
         '2:30 pm',
       );
       await tester.pump();
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(CalendarDefaults.load(prefs).startMinutes, 14 * 60 + 30);
     },
@@ -247,7 +247,7 @@ void main() {
             .selected,
         isTrue,
       );
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('settings-dialog')), findsNothing);
       expect(prefs.getKeys(), isEmpty);

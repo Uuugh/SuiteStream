@@ -110,11 +110,12 @@ void main() {
         await tester.pumpAndSettle();
         final reset = find.byKey(const ValueKey('setting-theme-reset'));
         expect(reset, findsOneWidget);
-        final close = find.byKey(const ValueKey('settings-close'));
+        // PBI-072: there is no Close button; Reset takes its place in the bottom row.
+        expect(find.byKey(const ValueKey('settings-close')), findsNothing);
         expect(
-          (tester.getCenter(reset).dy - tester.getCenter(close).dy).abs(),
-          greaterThan(1),
-          reason: 'not beside Close',
+          tester.getCenter(reset).dy,
+          greaterThan(tester.getCenter(find.byKey(const ValueKey('settings-back'))).dy),
+          reason: 'bottom row',
         );
         if (wide) {
           expect(
@@ -133,7 +134,7 @@ void main() {
           findsOneWidget,
         );
         expect(tester.getRect(reset).height, suiteControlHeight);
-        // Leaving Theme takes Reset away; Close stays.
+        // Leaving Theme takes Reset away.
         expect(tester.takeException(), isNull, reason: 'theme');
         await tester.ensureVisible(
           find.byKey(const ValueKey('settings-admin')),
@@ -141,10 +142,7 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('settings-admin')));
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('setting-theme-reset')), findsNothing);
-        expect(close, findsOneWidget);
         expect(tester.takeException(), isNull);
-        // Nothing is wider than the window.
-        expect(tester.getRect(close).right, lessThanOrEqualTo(width));
       },
     );
   }

@@ -327,19 +327,16 @@ class _SettingsDialogState extends State<SettingsDialog> {
       listenable: _reset,
       builder: (context, _) => _reset.action == null
           ? const SizedBox.shrink()
-          : FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: InlineConfirmButton(
-                color: Theme.of(context).colorScheme.error,
-                onConfirm: _reset.action!,
-                builder: (context, start) => TextButton.icon(
-                  key: const ValueKey('setting-theme-reset'),
-                  style: suiteResetButtonStyle(context),
-                  onPressed: start,
-                  icon: const Icon(SuiteIcons.restartAlt),
-                  label: Text(m('themeSettingsReset')),
-                ),
+          : InlineConfirmButton(
+              color: Theme.of(context).colorScheme.error,
+              leading: const Icon(SuiteIcons.restartAlt),
+              onConfirm: _reset.action!,
+              builder: (context, start) => TextButton.icon(
+                key: const ValueKey('setting-theme-reset'),
+                style: suiteResetButtonStyle(context),
+                onPressed: start,
+                icon: const Icon(SuiteIcons.restartAlt),
+                label: Text(m('themeSettingsReset')),
               ),
             ),
     );
@@ -400,7 +397,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Expanded(child: _menu(context, vertical: true)),
-                                _resetButton(context),
                               ],
                             ),
                           ),
@@ -424,7 +420,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _menu(context, vertical: false),
-                                  _resetButton(context),
                                 ],
                               ),
                             ),
@@ -434,17 +429,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         ],
                       ),
               ),
-              // SET-01.g: Reset sits on the menu side; Close stays here on the content side.
-              Row(
-                children: [
-                  const Spacer(),
-                  TextButton(
-                    key: const ValueKey('settings-close'),
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(m('closeButton')),
-                  ),
-                ],
-              ),
+              // PBI-072: Reset takes the place Close had (the back button leaves Settings); only the Theme page has one.
+              Align(alignment: Alignment.centerLeft, child: _resetButton(context)),
             ],
           ),
         ),

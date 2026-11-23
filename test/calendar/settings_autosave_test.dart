@@ -60,7 +60,7 @@ Future<void> _leave(WidgetTester tester, _Leave how) async {
     case _Leave.pageChange:
       await tester.tap(find.byKey(const ValueKey('settings-sources')));
     case _Leave.close:
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
     case _Leave.back:
       await tester.tap(find.byKey(const ValueKey('settings-back')));
   }
