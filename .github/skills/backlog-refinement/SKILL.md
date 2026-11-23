@@ -103,9 +103,9 @@ A PBI too big for one sprint (about 8 points or more, or one that cannot be test
 - Its status reads `Epic (split into PBI-x to PBI-y)` and its size is the sum of its children (informational, never counted in a sprint).
 - Each child is a story: it has its own PBI id, a size, acceptance criteria and a status, and names its parent epic at the start of its description ("Part of PBI-040: ...").
 - A child must be small enough to finish and test within one sprint and cites the requirement rows it will meet.
-- Only stories are committed to a sprint; an epic is done when all its children are done and accepted by the Product Owner.
+- Only stories are committed to a sprint; an epic is done when all its children are done and accepted by the Executive (XO).
 - Already used this way: PBI-010 and PBI-019 (children PBI-029 to 031) and PBI-039 (children PBI-042 to 045). The ScrumBoard (SCB-06) draws the same story, epic and sprint blocks.
 
-### Epics split to fit usage (Product Owner rule, 2026-11-23)
+### Epics split to fit usage (Executive (XO) rule, 2026-11-23)
 
 When the orchestrator or Scrum Master decides to split a story so that it fits within the available usage (see `scrum/usage.md`), the children form an epic and the sprints that build it run on automatically: at the end of each sprint in the epic, complete it without waiting for the Product Owner's review or retrospective approval (analyze and test, commit, push the sprint branch, merge into `main`, push `main`), then plan and start the next sprint, until the epic is complete. The Product Owner gives feedback after the epic, not between its sprints. This applies only to epics split for usage; any other sprint still waits for the Product Owner's approval of its retrospective. A failing analyze or test run still stops the run, and the Product Owner's other rules still hold (input during a sprint is for the next sprint).
