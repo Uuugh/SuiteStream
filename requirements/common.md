@@ -130,7 +130,7 @@ SuiteStream), **rule** (made by a rule).
 
 | ID | status | statement | test |
 |---|---|---|---|
-| DEF-01 | backlog | Every default and limit is defined once, in the table below, and a feature row refers to it instead of repeating the number. A value that an admin setting exposes is stored in the database and overrides the default (DEP-05); the others stay as the defaults. A Settings value with an empty Stored cell is a user setting kept in the database like the rest (it follows the user to every device), so the column says nothing for it; only the calendar header controls (view; filter) stay on the device. Not met: the table is the one list of values, but several are also written as constants or literals in code and nothing checks that the two agree; only the six Theme settings' defaults and limits are tested. | test/theme/theme_settings_test.dart (the six Theme settings only) |
+| DEF-01 | backlog | Every default and limit is defined once, in the table below, and a feature row refers to it instead of repeating the number. Anything in Settings is stored in the database and follows the user to every device; it overrides the default (DEP-05), and no other row repeats this. The Stored column therefore says only default only (a value that is not a setting) or database (Site Admin) (only a Site Admin changes it); only the calendar header controls (view; filter) stay on the device. Not met: the table is the one list of values, but several are also written as constants or literals in code and nothing checks that the two agree; only the six Theme settings' defaults and limits are tested. | test/theme/theme_settings_test.dart (the six Theme settings only) |
 | DEF-02 | backlog | Every list that grows with use (logs, failure records, pending sign-ins) has a stated limit in the table below, and entries no longer needed are forgotten first, so memory cannot fill. A feature row refers to the limit instead of repeating it. | — |
 | DEF-03 | backlog | Wherever a limit or a count is in characters (a password length, a name length, a token length), a character is what the user sees as one character (a Unicode extended grapheme cluster), not a code unit; a special character is any character that is not a letter or a digit. | — |
 
@@ -143,8 +143,8 @@ SuiteStream), **rule** (made by a rule).
 | Resize bar size | 100 % | 50 to 200 % | |
 | Dropdown text size | 100 % | 75 to 150 % | |
 | Date picker size | 100 % | 75 to 150 % | |
-| CCS+ sync interval | 60 minutes | 15 to 1,440 minutes | database |
-| History kept | 100 changes | 1 to 200 | database |
+| CCS+ sync interval | 60 minutes | 15 to 1,440 minutes | |
+| History kept | 100 changes | 1 to 200 | |
 | Login failures per address | 5 (15-minute lock) | | default only |
 | Login failures in total | 25 within 15 minutes | | default only |
 | Trusted address period | 7 days | | default only |
@@ -208,7 +208,7 @@ SuiteStream), **rule** (made by a rule).
 | Image editor input file size | | at most 10 MB | default only |
 
 | User name length | | 1 to 64 characters | default only |
-| Session signing key | 32 random bytes | | database |
+| Session signing key | 32 random bytes | | |
 | Known-browser cookie valid | 400 days from the last sign-in | | default only |
 | Public address length | | at most 300 characters | default only |
 | Administrator email length | | at most 254 characters | default only |
@@ -277,7 +277,7 @@ SuiteStream), **rule** (made by a rule).
 | Installer stack defaults | port 8080, or 8078 plus the stack number; stack number 2 or the lowest free; user 1000, group 100 | | default only |
 | Installer secrets | updater token 40 random letters and digits; database password 32 | | default only |
 | Environment defaults | time zone America/Chicago, image tag latest, no profiles, prefix calendar_stream, restart unless-stopped, trusted proxies 127.0.0.1, database calendar_stream, database user ccs | | default only |
-| CCS+ calendar address | https://ccsplus.ual.com/calendarsyncapi/api/Calendar/GetCalendar | | database |
+| CCS+ calendar address | https://ccsplus.ual.com/calendarsyncapi/api/Calendar/GetCalendar | | |
 | Event length when the setting is not valid | 1 hour | | default only |
 | Updater request time limit | 15 seconds | | default only |
 | Identifier lengths | six hexadecimal digits after the letter; a hand-made event 16 hexadecimal digits | | default only |
