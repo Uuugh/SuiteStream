@@ -43,3 +43,27 @@ SET-01.g / UIC-46 need an icon beside the Reset label. Please add `static const 
 - Press-and-hold default 0.2 s: the Theme pane still reads and writes `CalendarController.longPress`.
 - PBI-057: the cause of the "resize bar" in Settings: nothing in `lib/` draws `ResizeBar` in the Settings dialog today (no use of `ResizeBar` outside `resize_bar.dart`), so the test just guards it (`find.byType(ResizeBar)` findsNothing). Reset is now in the dialog footer (`SettingsResetHook`; the Theme pane registers its action), as `TextButton.icon` with `suiteResetButtonStyle` and `SuiteIcons.restartAlt` (thanks Tanaka); keys unchanged (`setting-theme-reset`). Narrow menu scrolls inside 40 % of the height, so tests tap menu entries after `ensureVisible`.
 - Stale tests not mine: `test/calendar/ux_test.dart` still expects press-and-hold 0.3 s (`pressDelayTests` line ~597, `stepperTests` line ~765 expects 0.4 s after one step); DEF-01 says 0.2 s. Owner of ux_test: please update (0.2 s, step gives 0.3 s).
+
+## From Nakamura to all (PBI-063a/b: server, API contract, new dependencies)
+
+### New dependencies (`server/pubspec.yaml` only, pinned exactly; none added to the Flutter app)
+shelf 1.4.3, shelf_router 1.1.5, shelf_static 1.2.0, postgres 3.7.0, http 1.6.0, crypto 3.0.7 (PKCE SHA-256); dev: test 1.33.0, lints 6.0.0. No JWT or OIDC library (userinfo endpoint is used). Docker images in `docker/docker-compose.yml` (not verified): postgres:16-alpine, ghcr.io/goauthentik/server:${AUTHENTIK_TAG} (example 2025.10.1, tag unchecked), ghcr.io/nicholas-fedor/watchtower:latest (unpinned; the old containrrr image is unmaintained), build images ghcr.io/cirruslabs/flutter:stable and dart:stable (unpinned). Product Owner approval of these is still needed (DoD).
+
+### API contract (server in `server/`, tests `server/test/server_test.dart`)
+Same origin as the web build; every call sends the browser cookie (`fetch` with `credentials: 'same-origin'`, the default). JSON in and out, `content-type: application/json`.
+- `GET /api/health` (no sign-in): 200 `{"ok":true}`; 503 `{"ok":false,"error":"databaseUnavailable"}`. `/healthz` is an alias.
+- `GET /api/me`: 200 `{"sub","name","email"}`; 401 `{"error":"signInAgain"}` when not signed in or the session expired.
+- `GET /api/settings`: 200 one JSON object keyed by setting name (`{}` when nothing saved); 401 when not signed in.
+- `PUT /api/settings`: body is one JSON object (replaces the whole stored object, so send every key; max 256 KB); needs `content-type: application/json`. 200 echoes the stored object; 400 `invalidJson` / `objectRequired`; 401; 403 when an `Origin` header differs from PUBLIC_URL; 413 `tooLarge`; 415 `jsonRequired`.
+- Any API call while the database is down: 503 `{"ok":false,"error":"databaseUnavailable"}` (not a sign-in failure: keep the device copy and retry).
+- Sign-in: navigate (not fetch) to `/auth/login?next=/path` (next must be a path on this site, else `/`). Authentik asks for credentials, then the browser returns to `next` with the cookie set. On failure it lands on `/?signInError=state|denied|refused|unavailable`.
+- Sign-out: `POST` or `GET /auth/logout` clears the app session and redirects to `/` (the Authentik session stays).
+- Cookie `ss_session`: HttpOnly, SameSite=Lax, Secure when PUBLIC_URL is https, lifetime SESSION_HOURS (default 24). The page cannot read it: ask `GET /api/me` to learn whether the user is signed in.
+- Env: OIDC_ISSUER, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, PUBLIC_URL, DATABASE_URL, SESSION_HOURS, WEB_DIR (default build/web), PORT (default 8080).
+- Run: `cd server && dart run bin/server.dart` (needs Postgres). The Flutter dev server has no `/api`: the client needs a base-URL setting or a proxy for `flutter run` (Nakamura, wave 3).
+
+### Not verified / known gaps
+Postgres store (no Postgres here), Dockerfile, compose, Authentik setup, Watchtower, the real Authentik discovery document. Logout does not end the Authentik session (ACC-02.c partial). ACC-02.a (unauthenticated page request redirects) is client work: the server serves the page, `/api/me` 401 tells the client to show the sign-in button. No refresh token, no per-user conflict rule: last PUT wins. DEP-01.e retry uses 2 s for 60 s until DEF-01 names values.
+
+### CAL-09.c (print)
+`calendar_print_dialog.dart` now prints the start time only for a single-day event (`multiDayLabel` otherwise); `calendar_print_test.dart` updated. Ito: cite it in CAL-09.c if wanted.

@@ -5,6 +5,8 @@ Terms used below (defined once):
 - **App session**: the session SuiteStream keeps in the browser after Authentik has signed the user in (ACC-02.d).
 - **Address**: the visitor's network address as reported by a trusted proxy (DEP-03).
 
+Test cells that name `server/test/server_test.dart` are covered by the Dart server tests in `server/` (in-memory store, fake Authentik; the Postgres store and a real Authentik are not tested). Compose files under `docker/` are written but not run, so rows covered only by them keep `—`.
+
 | ID | status | statement | test |
 |---|---|---|---|
 | ACC-01 | backlog | A new installation is set up by creating the first administrator in Authentik; SuiteStream has no setup code or login of its own. | — |
@@ -21,15 +23,15 @@ Terms used below (defined once):
 | ACC-01.l | backlog | The first sign-in of a new user through Authentik records a History entry msg:statusPageLoginCreatedFor ({user} is the user name) and renews the form security token (ACC-03.c). | — |
 | ACC-02 | backlog | A person signs in through Authentik to see or change anything on the page, and can sign out. | — |
 | ACC-02.a | backlog | An unauthenticated page request goes to Authentik's sign-in and does not expose destination content; a successful app session can read the page. Any change to settings, including update settings, requires that signed-in app session. | — |
-| ACC-02.b | backlog | SuiteStream accepts a sign-in only when Authentik reports it as successful; a refused one establishes no app session. | — |
+| ACC-02.b | backlog | SuiteStream accepts a sign-in only when Authentik reports it as successful; a refused one establishes no app session. | server/test/server_test.dart |
 | ACC-02.g | backlog | The sign-in page, its User name and Password fields, Show/Hide and the cursor placement are Authentik's (a login flow of Authentik); SuiteStream shows only a button msg:signInAction that starts the sign-in through Authentik. | — |
 | ACC-02.h | backlog | The message for a wrong sign-in, which never says whether the user name or the password was wrong, is Authentik's job; SuiteStream shows msg:signInWrong only when Authentik returns the user with an error. | — |
 | ACC-02.i | backlog | A signed-in visitor who opens the sign-in page goes to the page they asked for (ACC-02.f). | — |
-| ACC-02.j | backlog | An unauthenticated request that is not a page request (a background request from the page) is answered 401 with msg:signInAgainReloadThePage. | — |
-| ACC-02.f | backlog | After sign-in through Authentik the user goes to the page they asked for only when it is a path on this site. A destination that starts with //, contains a backslash, or contains a tab, line break or other control character (browsers drop those, so "/<tab>/other.site" would go to another site) is not followed; the user goes to the home page instead. The query and fragment of a followed destination are kept. | — |
+| ACC-02.j | backlog | An unauthenticated request that is not a page request (a background request from the page) is answered 401 with msg:signInAgainReloadThePage. | server/test/server_test.dart |
+| ACC-02.f | backlog | After sign-in through Authentik the user goes to the page they asked for only when it is a path on this site. A destination that starts with //, contains a backslash, or contains a tab, line break or other control character (browsers drop those, so "/<tab>/other.site" would go to another site) is not followed; the user goes to the home page instead. The query and fragment of a followed destination are kept. | server/test/server_test.dart |
 | ACC-02.c | backlog | Signing out ends the app session and the Authentik session; subsequent page requests go to Authentik's sign-in. The status API accepts a token issued by Authentik or authenticated HTTP Basic checked by Authentik. | — |
 | ACC-02.d | backlog | A successful sign-in through Authentik establishes an app session valid for the time in DEF-01, and no longer than the Authentik session. | — |
-| ACC-02.k | backlog | The app session cookie cannot be read by the page script, is sent only to this site (SameSite lax) and is marked secure when the request arrived over HTTPS, directly or through a trusted proxy. | — |
+| ACC-02.k | backlog | The app session cookie cannot be read by the page script, is sent only to this site (SameSite lax) and is marked secure when the request arrived over HTTPS, directly or through a trusted proxy. | server/test/server_test.dart |
 | ACC-02.l | backlog | App sessions are signed with a random key of the size in DEF-01 kept in the database; a missing or too-short key is replaced by a new one. | — |
 | ACC-02.m | backlog | HTTP Basic credentials are passed to Authentik: a correct pair succeeds, a wrong pair is one failed sign-in counted by Authentik (ACC-06), and a request with none counts nothing. | — |
 | ACC-02.e | backlog | Login settings identify the signed-in Authentik user and the signed-in state, and link to the user's Authentik account page. | — |

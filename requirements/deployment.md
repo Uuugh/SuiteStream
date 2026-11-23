@@ -1,5 +1,7 @@
 # Requirements: deployment
 
+Test cells that name `server/test/server_test.dart` are covered by the Dart server tests in `server/` (in-memory store, fake Authentik; the Postgres store and a real Authentik are not tested). Compose files under `docker/` are written but not run, so rows covered only by them keep `—`.
+
 | ID | status | statement | test |
 |---|---|---|---|
 | DEP-01 | backlog | The app runs in the user's own Docker stack and keeps all of its data there. | — |

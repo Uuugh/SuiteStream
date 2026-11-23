@@ -62,9 +62,9 @@ void main() {
       expect(inPreview('Print preview'), findsOneWidget);
       expect(inPreview('Portrait'), findsOneWidget);
       expect(inPreview('times in Asia/Tokyo'), findsOneWidget);
-      expect(inPreview('11:00 – 12:00 Visible meeting'), findsOneWidget);
-      expect(inPreview('11:00 – 12:00 Filtered meeting'), findsNothing);
-      expect(inPreview('11:00 – 12:00 Outside print range'), findsNothing);
+      expect(inPreview('11:00 Visible meeting'), findsOneWidget);
+      expect(inPreview('11:00 Filtered meeting'), findsNothing);
+      expect(inPreview('11:00 Outside print range'), findsNothing);
 
       // UIC-27: Print uses the shared Cancel | Save pair, with Print as the save word.
       expect(find.descendant(of: preview, matching: find.byType(CancelSavePair)), findsOneWidget);

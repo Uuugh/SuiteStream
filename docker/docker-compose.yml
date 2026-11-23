@@ -1,0 +1,86 @@
+# NOT VERIFIED: written without Docker or Authentik available (Sprint 010, PBI-063b).
+# Run from this folder:  cp .env.example .env  (fill it in)  then  docker compose up -d
+name: ${STACK_NAME:-suitestream}
+
+services:
+  app:
+    image: ${APP_IMAGE:-suitestream:local}
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    restart: ${RESTART_POLICY:-unless-stopped}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: "8080"
+      PUBLIC_URL: ${PUBLIC_URL}
+      OIDC_ISSUER: ${OIDC_ISSUER}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      SESSION_HOURS: ${SESSION_HOURS:-24}
+      DATABASE_URL: postgresql://suitestream:${POSTGRES_PASSWORD}@db:5432/suitestream?sslmode=disable
+      TZ: ${TZ:-America/Chicago}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    labels:
+      # Watchtower updates only containers with this label set to true.
+      com.centurylinklabs.watchtower.enable: "true"
+
+  db:
+    image: postgres:16-alpine
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      POSTGRES_USER: suitestream
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: suitestream
+    volumes:
+      - ${DATA_DIR:-./data}/postgres:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U suitestream -d suitestream"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # Authentik 2025.10 and later need no Redis (cache and queue moved into
+  # Postgres). Older releases need a redis service: check the release notes of
+  # the tag you pin. NOT VERIFIED here.
+  authentik:
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG}
+    command: server
+    restart: ${RESTART_POLICY:-unless-stopped}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: &authentik-env
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_POSTGRESQL__HOST: db
+      AUTHENTIK_POSTGRESQL__USER: suitestream
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${AUTHENTIK_PORT:-9000}:9000"
+
+  authentik_worker:
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG}
+    command: worker
+    restart: ${RESTART_POLICY:-unless-stopped}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: *authentik-env
+
+  # Not published on any port. With label-enable it touches only containers
+  # labelled watchtower.enable=true (the app). The app asks it to update
+  # through its HTTP API with the token (DEP-04); no timed polling.
+  watchtower:
+    image: ghcr.io/nicholas-fedor/watchtower:latest
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_HTTP_API_UPDATE: "true"
+      WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
