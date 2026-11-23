@@ -193,6 +193,9 @@ class SettingsDialog extends StatefulWidget {
   State<SettingsDialog> createState() => _SettingsDialogState();
 }
 
+/// Width of the Settings menu column; the section starts after it and the vertical rule.
+const double _menuWidth = 200;
+
 class _SettingsDialogState extends State<SettingsDialog> {
   SettingsSection _section = SettingsSection.general;
   final SettingsLeaveHook _leave = SettingsLeaveHook();
@@ -392,7 +395,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: _menuWidth,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -418,9 +421,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _menu(context, vertical: false),
-                                ],
+                                children: [_menu(context, vertical: false)],
                               ),
                             ),
                           ),
@@ -429,8 +430,16 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         ],
                       ),
               ),
-              // PBI-072: Reset takes the place Close had (the back button leaves Settings); only the Theme page has one.
-              Align(alignment: Alignment.centerLeft, child: _resetButton(context)),
+              // PBI-072: Reset takes the place Close had, on the section side of the rule (right of it when the menu is beside the page).
+              Padding(
+                padding: EdgeInsets.only(
+                  left: wide ? _menuWidth + 2 * suiteDialogPadding : 0,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: _resetButton(context),
+                ),
+              ),
             ],
           ),
         ),

@@ -44,7 +44,7 @@ void main() {
 
   for (final width in [320.0, 400.0, 800.0]) {
     testWidgets(
-      'SET-01.e, SET-01.f, SET-01.g, SET-14, UIC-46: at $width px the menu order, the rule, no resize bar, Reset on the menu side, not beside Close',
+      'SET-01.e, SET-01.f, SET-01.g, SET-14, UIC-46: at $width px the menu order, the rule, no resize bar, Reset on the section side, no Close',
       (tester) async {
         await _open(tester, Size(width, 900));
         final wide = width >= 640;
@@ -114,19 +114,21 @@ void main() {
         expect(find.byKey(const ValueKey('settings-close')), findsNothing);
         expect(
           tester.getCenter(reset).dy,
-          greaterThan(tester.getCenter(find.byKey(const ValueKey('settings-back'))).dy),
+          greaterThan(
+            tester.getCenter(find.byKey(const ValueKey('settings-back'))).dy,
+          ),
           reason: 'bottom row',
         );
         if (wide) {
           expect(
-            tester.getRect(reset).right,
-            lessThanOrEqualTo(
+            tester.getRect(reset).left,
+            greaterThanOrEqualTo(
               tester
                       .getRect(find.byKey(const ValueKey('settings-menu-rule')))
-                      .right +
+                      .right -
                   0.5,
             ),
-            reason: 'menu side of the vertical rule',
+            reason: 'section side of the vertical rule',
           );
         }
         expect(
