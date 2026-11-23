@@ -50,3 +50,6 @@ app.*.map.json
 # Deployment secrets (docker/.env.example holds placeholders only)
 docker/.env
 .env
+
+# Executive private notes (contain credentials; never commit)
+/scrum/XO/
