@@ -9,6 +9,7 @@ import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/time/local_zone.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
+import 'package:suitestream/src/ui/reset_button.dart';
 
 import 'test_support.dart';
 
@@ -23,8 +24,8 @@ class _Rig {
   final ThemeModeController mode;
 }
 
-Future<_Rig> _open(WidgetTester tester, SharedPreferences prefs) async {
-  useWindow(tester, _tall);
+Future<_Rig> _open(WidgetTester tester, SharedPreferences prefs, [Size size = _tall]) async {
+  useWindow(tester, size);
   final c = CalendarController(
     localZone: const LocalZone.system(zone),
     timeFormat: TimeFormat.twelveHour,
@@ -40,7 +41,7 @@ Future<_Rig> _open(WidgetTester tester, SharedPreferences prefs) async {
         controller: mode,
         child: appFor(
           Builder(builder: (context) => TextButton(onPressed: () => openSettingsDialog(context, c, prefs: prefs), child: const Text('open'))),
-          size: _tall,
+          size: size,
         ),
       ),
     ),
@@ -79,6 +80,12 @@ void main() {
     expect(_text(tester, 'setting-date-picker'), '100 %');
     expect(_text(tester, 'setting-status-chip'), '2.4 s');
     expect(find.byKey(const ValueKey('setting-theme-reset')), findsOneWidget);
+    // UIC-46: Reset is the shared button in the error role.
+    final reset = find.byKey(const ValueKey('setting-theme-reset'));
+    expect(tester.widget(reset), isA<ResetButton>());
+    final button = tester.widget<TextButton>(find.descendant(of: reset, matching: find.byType(TextButton)));
+    final error = Theme.of(tester.element(reset)).colorScheme.error;
+    expect(button.style!.foregroundColor!.resolve(<WidgetState>{}), error);
     expect(rig.settings.isDefault, isTrue);
   });
 
@@ -142,12 +149,15 @@ void main() {
     await tester.enterText(find.byKey(const ValueKey('setting-popup-shadow')), '150');
     await tester.enterText(find.byKey(const ValueKey('setting-animation')), '1.5');
     await tester.enterText(find.byKey(const ValueKey('setting-status-chip')), '7');
+    await tester.enterText(find.byKey(const ValueKey('setting-press-delay')), '1.2');
     await tester.pump();
     expect(rig.settings.isDefault, isFalse);
     await tester.tap(find.byKey(const ValueKey('setting-theme-reset')));
     await tester.pump();
     expect(rig.settings.isDefault, isTrue);
     expect(rig.controller.animationDuration, const Duration(milliseconds: 500));
+    expect(rig.controller.longPress, const Duration(milliseconds: 300));
+    expect(_text(tester, 'setting-press-delay'), '0.3 s');
     expect(_text(tester, 'setting-popup-shadow'), '100 %');
     expect(_text(tester, 'setting-animation'), '0.5 s');
     expect(_text(tester, 'setting-status-chip'), '2.4 s');
@@ -169,4 +179,51 @@ void main() {
     await tester.pump();
     expect(rig.mode.mode, ThemeMode.light);
   });
+  testWidgets('SET-03.b: the press-and-hold delay is in Settings > Theme, 0.3 s until changed, applies at once, steps 0.1 s within 0.2 to 1.5 s', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final rig = await _open(tester, prefs);
+    expect(_text(tester, 'setting-press-delay'), '0.3 s');
+    await tester.enterText(find.byKey(const ValueKey('setting-press-delay')), '0.8');
+    await tester.pump();
+    expect(rig.controller.longPress, const Duration(milliseconds: 800));
+    await tester.tap(find.byKey(const ValueKey('setting-press-delay-up')));
+    await tester.pump();
+    expect(rig.controller.longPress, const Duration(milliseconds: 900));
+    expect(CalendarController(localZone: const LocalZone.system(zone), timeFormat: TimeFormat.twelveHour, prefs: prefs).longPress, const Duration(milliseconds: 900));
+    await tester.enterText(find.byKey(const ValueKey('setting-press-delay')), '2');
+    await tester.pump();
+    expect(find.text('Use a number from 0.2 to 1.5.'), findsOneWidget);
+    expect(rig.controller.longPress, const Duration(milliseconds: 900));
+    // General no longer holds it.
+    await tester.tap(find.byKey(const ValueKey('settings-general')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('setting-press-delay')), findsNothing);
+  });
+
+  for (final width in [320.0, 400.0, 800.0]) {
+    testWidgets('UIC-44, SET-03.b: at $width px the Theme pane has titled groups, ${width >= 800 ? 'two columns' : 'one column'} and no overflow', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      await _open(tester, await SharedPreferences.getInstance(), Size(width, 900));
+      // Each type of setting is a group with its name written on a rule.
+      for (final (id, name) in [('theme', 'Default theme'), ('times', 'Times'), ('scales', 'Sizes and strength')]) {
+        expect(find.descendant(of: find.byKey(ValueKey('theme-group-$id')), matching: find.text(name)), findsOneWidget);
+        expect(find.descendant(of: find.byKey(ValueKey('theme-group-$id')), matching: find.byType(Divider)), findsOneWidget);
+      }
+      final two = width >= 800;
+      expect(find.byKey(ValueKey('theme-columns-${two ? 2 : 1}')), findsOneWidget);
+      final a = tester.getTopLeft(find.text('Animation time'));
+      final b = tester.getTopLeft(find.text('Press and hold delay'));
+      if (two) {
+        expect(a.dy, b.dy);
+        expect(a.dx, lessThan(b.dx));
+      } else {
+        expect(a.dx, b.dx);
+        expect(a.dy, lessThan(b.dy));
+      }
+      // The pane is never wider than the window (nothing overflows).
+      expect(tester.takeException(), isNull);
+      expect(tester.getRect(find.byKey(const ValueKey('setting-date-picker'))).right, lessThanOrEqualTo(width));
+    });
+  }
 }

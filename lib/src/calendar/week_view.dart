@@ -2,19 +2,20 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/event_colors.dart';
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/suite_event.dart';
-import '../time/time_format.dart';
-import '../time/zones.dart';
-import 'calendar_controller.dart';
-import 'event_dialog.dart';
-import 'event_drag.dart';
-import '../l10n/dates.dart';
-import '../l10n/messages.dart';
-import 'week_layout.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/ui/popup_motion.dart';
+import 'package:suitestream/src/time/suite_event.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/time/zones.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/event_dialog.dart';
+import 'package:suitestream/src/calendar/event_drag.dart';
+import 'package:suitestream/src/l10n/dates.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/calendar/week_layout.dart';
 
 /// DEF-01: the hourly grid starts at the first event, or at 7 am.
 const int defaultScrollStartHour = 7;
@@ -168,6 +169,7 @@ class _HourlyViewState extends State<HourlyView> {
                 key: const ValueKey('hour-density'),
                 tooltip: context.msg('calendarHourHeight'),
                 elevation: popupElevationOf(context),
+                popUpAnimationStyle: suitePopupAnimationStyle(context),
                 initialValue: c.hourLines,
                 onSelected: (lines) {
                   final previousHeight = _hourHeight;
@@ -358,7 +360,7 @@ class _DayColumn extends StatelessWidget {
                       border: Border(left: BorderSide(color: Color(c.colorOf(p.event) ?? defaultEventColor), width: 3)),
                     ),
                     child: Text(
-                      '${formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} ${p.event.title}',
+                      '${multiDayLabel(start: p.event.startIn(c.localZone.location), end: p.event.endIn(c.localZone.location), day: day, format: c.timeFormat, cont: context.msg('cont')) ?? formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} ${p.event.title}',
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                       style: SuiteText.note(t).copyWith(color: t.text),

@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../l10n/messages.dart';
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/length_input.dart';
-import '../ui/popup_size_lock.dart';
-import '../ui/stepper_arrows.dart';
-import '../ui/suite_dialog.dart';
-import 'calendar_controller.dart';
-import 'event_drag.dart';
-import 'local_calendars_dialog.dart';
-import 'settings_admin_pane.dart';
-import 'settings_calendar_pane.dart';
-import 'settings_theme_pane.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/ui/popup_size_lock.dart';
+import 'package:suitestream/src/ui/stepper_arrows.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/local_calendars_dialog.dart';
+import 'package:suitestream/src/calendar/settings_admin_pane.dart';
+import 'package:suitestream/src/calendar/settings_calendar_pane.dart';
+import 'package:suitestream/src/calendar/settings_theme_pane.dart';
 
 /// Opens the user's settings (view settings, kept on the device). [prefs] holds the
 /// settings that are not in the calendar controller (the calendar defaults); without it
@@ -210,7 +208,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     final m = context.msg;
     switch (_section) {
       case SettingsSection.general:
-        return _GeneralPane(controller: widget.controller, leave: _leave);
+        return const _GeneralPane();
       case SettingsSection.calendar:
         return SettingsCalendarPane(
           controller: widget.controller,
@@ -326,74 +324,16 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 }
 
-/// SET-09: Settings > General: the press-and-hold delay before an event can be dragged.
-/// It saves on its own when Settings or the page is left (UIC-45); an invalid delay is not saved.
-class _GeneralPane extends StatefulWidget {
-  const _GeneralPane({required this.controller, required this.leave});
-
-  final CalendarController controller;
-  final SettingsLeaveHook leave;
+/// Settings > General: nothing is set here at present. The press-and-hold delay (SET-03.b)
+/// moved to Settings > Theme; the page says so instead of staying blank.
+class _GeneralPane extends StatelessWidget {
+  const _GeneralPane();
 
   @override
-  State<_GeneralPane> createState() => _GeneralPaneState();
-}
-
-class _GeneralPaneState extends State<_GeneralPane> {
-  late final TextEditingController _press = TextEditingController(
-    text: formatPressDelay(widget.controller.longPress),
+  Widget build(BuildContext context) => Center(
+    child: Text(
+      context.msg('settingsGeneralEmpty'),
+      style: SuiteText.label(context.tokens),
+    ),
   );
-  String? _pressError;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.leave.register(_save);
-  }
-
-  @override
-  void dispose() {
-    widget.leave.unregister(_save);
-    _press.dispose();
-    super.dispose();
-  }
-
-  /// Stores the delay when it is valid; otherwise nothing is stored.
-  void _save() {
-    final press = parsePressDelayInput(_press.text);
-    if (press != null && press != widget.controller.longPress) {
-      widget.controller.longPress = press;
-    }
-  }
-
-  /// The note shows as soon as the typed delay is not valid.
-  void _validate() {
-    final invalid = parsePressDelayInput(_press.text) == null;
-    setState(
-      () => _pressError = invalid ? context.msg('pressDelayInvalid') : null,
-    );
-  }
-
-  /// The arrows step the press-and-hold delay by 0.1 seconds.
-  void _stepPress(int dir) {
-    final d = parsePressDelayInput(_press.text) ?? widget.controller.longPress;
-    _press.text = formatPressDelay(
-      clampLongPress(d + Duration(milliseconds: 100 * dir)),
-    );
-    _validate();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final m = context.msg;
-    return SingleChildScrollView(
-      child: SettingsField(
-        label: m('pressDelay'),
-        fieldKey: 'setting-press-delay',
-        controller: _press,
-        error: _pressError,
-        step: _stepPress,
-        onChanged: _validate,
-      ),
-    );
-  }
 }

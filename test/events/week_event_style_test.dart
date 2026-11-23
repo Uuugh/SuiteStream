@@ -48,6 +48,6 @@ void main() {
     await tester.pumpWidget(appFor(CalendarPage(controller: c)));
     Color chip(String id) => tester.widget<Container>(find.descendant(of: find.byKey(ValueKey('event-$id')), matching: find.byType(Container)).first).color!;
     expect(chip('x'), const Color(0xFF112233));
-    expect(chip('y'), Color(defaultEventColor));
+    expect(chip('y'), const Color(defaultEventColor));
   });
 }

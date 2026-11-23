@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../time/suite_event.dart';
+import 'package:suitestream/src/time/suite_event.dart';
 
 /// FLT-01.a: the event states the Calendar filter can show or hide.
 enum EventState { edited, changedBySource, hiddenFromGoogle, deleted }

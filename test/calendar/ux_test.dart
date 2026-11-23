@@ -564,7 +564,7 @@ void pairBehaviorTests() {
 
 void pressDelayTests() {
   test(
-    'SET-09: a press-and-hold delay is read in seconds or milliseconds, from 0.2 to 1.5 seconds',
+    'SET-03.b: a press-and-hold delay is read in seconds or milliseconds, from 0.2 to 1.5 seconds',
     () {
     expect(parsePressDelayInput('0.3'), const Duration(milliseconds: 300));
     expect(parsePressDelayInput('0,5'), const Duration(milliseconds: 500));
@@ -584,7 +584,7 @@ void pressDelayTests() {
   );
 
   testWidgets(
-    'SET-09: the press-and-hold delay is a setting the user edits, 0.3 seconds until changed, kept on the device',
+    'SET-03.b: the press-and-hold delay is a Theme setting the user edits, 0.3 seconds until changed, kept on the device',
     (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -608,13 +608,15 @@ void pressDelayTests() {
       );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    expect(fieldText(tester, 'setting-press-delay'), '0.3');
+    await tester.tap(find.byKey(const ValueKey('settings-theme')));
+    await tester.pumpAndSettle();
+    expect(fieldText(tester, 'setting-press-delay'), '0.3 s');
       await tester.enterText(
         find.byKey(const ValueKey('setting-press-delay')),
         '2',
       );
     await tester.pump();
-    expect(find.text('Use a delay from 0.2 to 1.5 seconds.'), findsOneWidget);
+    expect(find.text('Use a number from 0.2 to 1.5.'), findsOneWidget);
     expect(c.longPress, const Duration(milliseconds: 300));
       await tester.enterText(
         find.byKey(const ValueKey('setting-press-delay')),
@@ -756,18 +758,18 @@ void stepperTests() {
     await tester.tap(find.byKey(const ValueKey('setting-default-length-up')));
     await tester.pump();
     expect(fieldText(tester, 'setting-default-length'), '1.25');
-    await tester.tap(find.byKey(const ValueKey('settings-general')));
+    await tester.tap(find.byKey(const ValueKey('settings-theme')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('setting-press-delay-up')));
     await tester.pump();
-    expect(fieldText(tester, 'setting-press-delay'), '0.4');
+    expect(fieldText(tester, 'setting-press-delay'), '0.4 s');
     for (var i = 0; i < 5; i++) {
       await tester.tap(find.byKey(const ValueKey('setting-press-delay-down')));
     }
     await tester.pump();
     expect(
       fieldText(tester, 'setting-press-delay'),
-      '0.2',
+      '0.2 s',
     ); // not below 0.2 seconds
   });
 }

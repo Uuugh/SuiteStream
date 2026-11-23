@@ -23,7 +23,7 @@ bool isKnownZone(String name) {
   try {
     tz.getLocation(name);
     return true;
-  } catch (_) {
+  } on tz.LocationNotFoundException {
     return false;
   }
 }

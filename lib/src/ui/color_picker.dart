@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/messages.dart';
-import '../theme/event_colors.dart';
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import 'suite_dialog.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
 
 /// What the picker returns when "calendar default" is chosen (UIC-10).
 const int colorPickerDefault = -1;
@@ -27,7 +27,6 @@ Future<int?> showColorPicker(
   final messages = context.msg;
   return showSuiteDialog<int>(
     context: context,
-    animate: false,
     builder: (_) => MessagesScope(
       messages: messages,
       child: ColorPickerDialog(palette: palette, current: current, defaultColor: defaultColor),

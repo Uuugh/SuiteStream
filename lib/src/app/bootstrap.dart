@@ -1,13 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../calendar/calendar_controller.dart';
-import '../calendar/event_filter.dart';
-import '../calendar/event_store.dart';
-import '../calendar/local_calendar_store.dart';
-import '../l10n/messages.dart';
-import '../time/local_zone.dart';
-import '../time/suite_event.dart';
-import '../time/time_format.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/event_filter.dart';
+import 'package:suitestream/src/calendar/event_store.dart';
+import 'package:suitestream/src/calendar/local_calendar_store.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/time/local_zone.dart';
+import 'package:suitestream/src/time/suite_event.dart';
+import 'package:suitestream/src/time/time_format.dart';
 
 /// Id of the calendar every installation starts with.
 const localCalendarId = 'local';

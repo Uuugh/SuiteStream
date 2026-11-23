@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../app/test_data.dart';
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
-import '../ui/confirm.dart';
-import 'calendar_controller.dart';
+import 'package:suitestream/src/app/test_data.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/ui/confirm.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
 
 /// Settings > Admin (PBI-041): adds and removes the test calendars.
 class SettingsAdminPane extends StatefulWidget {

@@ -2,15 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../l10n/dates.dart';
-import '../l10n/messages.dart';
-import '../theme/event_colors.dart';
-import '../theme/suite_theme.dart';
-import '../time/time_format.dart';
-import '../ui/cancel_save_pair.dart';
-import '../ui/suite_dialog.dart';
-import 'calendar_controller.dart';
-import 'calendar_print_platform.dart';
+import 'package:suitestream/src/l10n/dates.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/ui/cancel_save_pair.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/calendar_print_platform.dart';
 
 /// CAL-05: preview and print the calendar period selected when Print opens.
 Future<void> showCalendarPrint(
@@ -247,8 +247,15 @@ class _PrintSheet {
                   ? list
                         ? messages('allDay')
                         : ''
-                  : '${_eventTime(event.startIn(location), calendar.timeFormat)} – '
-                        '${_eventTime(event.endIn(location), calendar.timeFormat)}',
+                  : multiDayLabel(
+                          start: event.startIn(location),
+                          end: event.endIn(location),
+                          day: day,
+                          format: calendar.timeFormat,
+                          cont: messages('cont'),
+                        ) ??
+                        '${_eventTime(event.startIn(location), calendar.timeFormat)} – '
+                            '${_eventTime(event.endIn(location), calendar.timeFormat)}',
               Color(calendar.colorOf(event) ?? defaultEventColor),
               event.deleted || event.hiddenFromGoogle,
               event.allDay

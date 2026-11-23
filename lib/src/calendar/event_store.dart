@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../time/suite_event.dart';
+import 'package:suitestream/src/time/suite_event.dart';
 
 /// Where the user's events are kept between visits (TIM-01: in UTC with their zones).
 abstract class EventStore {
@@ -36,8 +36,10 @@ class PrefsEventStore implements EventStore {
     try {
       final list = jsonDecode(raw) as List;
       return [for (final e in list) SuiteEvent.fromJson((e as Map).cast<String, Object?>())];
-    } catch (_) {
+    } on Exception {
       return []; // an unreadable store starts empty rather than crashing the app
+    } on TypeError {
+      return []; // a store of the wrong shape starts empty too
     }
   }
 

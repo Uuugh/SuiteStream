@@ -20,8 +20,9 @@ Widget host(Widget child, {ThemeSettings? settings}) {
 }
 
 double shadowOf(WidgetTester tester, Finder inside) {
-  final material = find.ancestor(of: inside, matching: find.byType(Material)).evaluate().map((e) => e.widget as Material).firstWhere((m) => m.elevation > 0, orElse: () => const Material());
-  return material.elevation;
+  final materials = find.ancestor(of: inside, matching: find.byType(Material)).evaluate().map((e) => (e.widget as Material).elevation).toList();
+  expect(materials, isNotEmpty, reason: 'a popup Material must exist above the finder');
+  return materials.reduce((a, b) => a > b ? a : b);
 }
 
 void main() {

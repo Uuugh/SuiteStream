@@ -2,17 +2,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../theme/suite_theme.dart' show defaultAnimationDuration;
-import '../theme/event_colors.dart' show nextCalendarColor;
-import '../time/length_input.dart';
-import '../time/local_zone.dart';
-import '../time/suite_event.dart';
-import '../time/time_format.dart';
-import '../time/zones.dart';
-import 'event_drag.dart';
-import 'event_filter.dart';
-import 'event_store.dart';
-import 'local_calendar_store.dart';
+import 'package:suitestream/src/theme/suite_theme.dart' show defaultAnimationDuration;
+import 'package:suitestream/src/theme/event_colors.dart' show nextCalendarColor;
+import 'package:suitestream/src/time/length_input.dart';
+import 'package:suitestream/src/time/local_zone.dart';
+import 'package:suitestream/src/time/suite_event.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/time/zones.dart';
+import 'package:suitestream/src/calendar/event_drag.dart';
+import 'package:suitestream/src/calendar/event_filter.dart';
+import 'package:suitestream/src/calendar/event_store.dart';
+import 'package:suitestream/src/calendar/local_calendar_store.dart';
 
 /// CAL-01.b: the calendar's views.
 enum CalendarView { month, week, fiveDay, day, list }

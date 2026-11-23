@@ -1,6 +1,5 @@
 # Analyzer configuration (PBI-048). Strict modes plus seven extra lints on top of
-# flutter_lints. The new lints are reported as info until Sprint 009 fixes the
-# findings listed in scrum/sprint008/analyzer_findings.md.
+# flutter_lints. The seven lints are warnings, so `flutter analyze lib test` fails on them.
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
@@ -9,16 +8,13 @@ analyzer:
     strict-inference: true
     strict-raw-types: true
   errors:
-    prefer_const_constructors: info
-    avoid_print: info
-    unawaited_futures: info
-    prefer_final_locals: info
-    always_declare_return_types: info
-    avoid_catches_without_on_clauses: info
-    always_use_package_imports: info
-    # strict-casts finding in test/calendar/header_test.dart (raw List parameter, also strict_raw_type); fixed in Sprint 009.
-    list_element_type_not_assignable: info
-    strict_raw_type: info
+    prefer_const_constructors: warning
+    avoid_print: warning
+    unawaited_futures: warning
+    prefer_final_locals: warning
+    always_declare_return_types: warning
+    avoid_catches_without_on_clauses: warning
+    always_use_package_imports: warning
 
 linter:
   rules:

@@ -438,7 +438,7 @@ void main() {
     await typeIn(tester, 'event-title', 'Follow');
     Color swatch() => ((tester.widget<Container>(find.byKey(const ValueKey('event-color-swatch')))).decoration! as BoxDecoration).color!;
     expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Default color')), findsOneWidget);
-    expect(swatch(), Color(defaultEventColor)); // no calendar color: the default event color (THM-09.b)
+    expect(swatch(), const Color(defaultEventColor)); // no calendar color: the default event color (THM-09.b)
     await tester.tap(find.byKey(const ValueKey('event-calendar')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Home').last);

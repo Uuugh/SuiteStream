@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/dates.dart';
-import '../l10n/messages.dart';
-import '../theme/event_colors.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/time_format.dart';
-import 'calendar_controller.dart';
-import 'event_dialog.dart';
+import 'package:suitestream/src/l10n/dates.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/event_dialog.dart';
 
 /// CAL-01.b: the List view: the events of the focused month, a day at a time.
 class AgendaView extends StatelessWidget {
@@ -46,7 +46,8 @@ class AgendaView extends StatelessWidget {
         final en = e.endIn(c.localZone.location);
         final when = e.allDay
             ? context.msg('allDay')
-            : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} – ${formatTimeOfDay(en.hour, en.minute, c.timeFormat)}';
+            : multiDayLabel(start: s, end: en, day: day, format: c.timeFormat, cont: context.msg('cont')) ??
+                '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} – ${formatTimeOfDay(en.hour, en.minute, c.timeFormat)}';
         final color = c.colorOf(e);
         rows.add(InkWell(
           key: ValueKey('event-${e.id}'),

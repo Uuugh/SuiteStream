@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../theme/event_colors.dart';
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
-import '../l10n/messages.dart';
-import '../ui/cancel_save_pair.dart';
-import '../ui/color_picker.dart';
-import '../ui/confirm.dart';
-import '../ui/suite_dialog.dart';
-import 'calendar_controller.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/ui/cancel_save_pair.dart';
+import 'package:suitestream/src/ui/color_picker.dart';
+import 'package:suitestream/src/ui/confirm.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
 
 /// Dot radius: no token exists, so it is the swatch gap (8), the same value.
 const double _dotRadius = suiteSwatchGap;

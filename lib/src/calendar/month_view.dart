@@ -1,16 +1,16 @@
 
 import 'package:flutter/material.dart';
 
-import '../l10n/dates.dart';
-import '../l10n/messages.dart';
-import '../theme/event_colors.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/suite_event.dart';
-import '../time/time_format.dart';
-import 'calendar_controller.dart';
-import 'event_dialog.dart';
-import 'event_drag.dart';
+import 'package:suitestream/src/l10n/dates.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/suite_event.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/event_dialog.dart';
+import 'package:suitestream/src/calendar/event_drag.dart';
 
 /// Height of one event line in a day cell, and of the date number's row.
 const double monthLineHeight = 20;
@@ -196,7 +196,12 @@ class _EventLine extends StatelessWidget {
     final t = context.tokens;
     final c = controller;
     final s = event.startIn(c.localZone.location);
-    final text = event.allDay ? event.title : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} ${event.title}';
+    final en = event.endIn(c.localZone.location);
+    // CAL-09.c: a multi-day event shows 18:00- on its first day, -04:00 on its last and cont. between.
+    final label = event.allDay
+        ? null
+        : multiDayLabel(start: s, end: en, day: day, format: c.timeFormat, cont: context.msg('cont')) ?? formatTimeOfDay(s.hour, s.minute, c.timeFormat);
+    final text = label == null ? event.title : '$label ${event.title}';
     final color = c.colorOf(event);
     final muted = event.deleted || event.hiddenFromGoogle;
     final base = muted ? t.muted : Color(color ?? defaultEventColor);

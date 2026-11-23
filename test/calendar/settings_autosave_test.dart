@@ -104,33 +104,27 @@ void main() {
   );
 
   for (final how in _Leave.values) {
-    testWidgets('UIC-45: General stores the press delay on ${how.name}', (
+    testWidgets('UIC-45, SET-03.b: Theme stores the press delay at once and keeps it on ${how.name}', (
       tester,
     ) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final c = await _open(tester, prefs, 'settings-general');
+      final c = await _open(tester, prefs, 'settings-theme');
       await _type(tester, 'setting-press-delay', '0.8');
-      expect(
-        c.longPress,
-        const Duration(milliseconds: 300),
-      ); // nothing is stored before leaving
+      expect(c.longPress, const Duration(milliseconds: 800)); // applied at once
       await _leave(tester, how);
       expect(c.longPress, const Duration(milliseconds: 800));
       expect(_controller(prefs).longPress, const Duration(milliseconds: 800));
     });
 
     testWidgets(
-      'UIC-45: General does not store an invalid delay on ${how.name} and showed its note',
+      'UIC-45, SET-03.b: Theme does not store an invalid press delay on ${how.name} and showed its note',
       (tester) async {
         SharedPreferences.setMockInitialValues({});
         final prefs = await SharedPreferences.getInstance();
-        final c = await _open(tester, prefs, 'settings-general');
+        final c = await _open(tester, prefs, 'settings-theme');
         await _type(tester, 'setting-press-delay', '9');
-        expect(
-          find.text('Use a delay from 0.2 to 1.5 seconds.'),
-          findsOneWidget,
-        );
+        expect(find.text('Use a number from 0.2 to 1.5.'), findsOneWidget);
         await _leave(tester, how);
         expect(c.longPress, const Duration(milliseconds: 300));
         expect(_controller(prefs).longPress, const Duration(milliseconds: 300));

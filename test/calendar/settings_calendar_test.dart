@@ -91,7 +91,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('setting-animation')), findsNothing);
     expect(find.byKey(const ValueKey('setting-default-length')), findsNothing);
-    expect(find.byKey(const ValueKey('setting-press-delay')), findsOneWidget);
+    // SET-03.b: the press-and-hold delay is in Theme, not in General.
+    expect(find.byKey(const ValueKey('setting-press-delay')), findsNothing);
   });
 
   testWidgets('SET-08.b: the default length is saved in the chosen unit and kept on the device; an invalid length is not saved', (tester) async {

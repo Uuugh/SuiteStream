@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/local_zone.dart';
-import '../time/time_format.dart';
-import '../time/time_input.dart';
-import '../ui/zone_picker.dart';
-import 'calendar_controller.dart';
-import 'calendar_defaults.dart';
-import 'settings_dialog.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/local_zone.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/time/time_input.dart';
+import 'package:suitestream/src/ui/zone_picker.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
+import 'package:suitestream/src/calendar/settings_dialog.dart';
 
 /// SET-08.a: Settings > Calendar: what a new event starts with: its length (a number and a
 /// unit of time), its time of day and its time zone. User settings kept on the device

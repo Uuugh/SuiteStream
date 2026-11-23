@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'suite_icons.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
 
 /// SHL-03: the page theme is Light, Dark or Match system (the default); the
 /// choice is a user setting kept on the device.

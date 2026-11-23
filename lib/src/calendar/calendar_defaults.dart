@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../time/length_input.dart';
-import '../time/time_input.dart';
+import 'package:suitestream/src/time/length_input.dart';
+import 'package:suitestream/src/time/time_input.dart';
 
 /// SET-08.a (Settings > Calendar): the unit the default event length is shown and typed in.
 enum LengthUnit {
