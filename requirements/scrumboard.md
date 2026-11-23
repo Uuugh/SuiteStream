@@ -36,11 +36,12 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-05.d | backlog | An issue without a feature or a requirement shows a dash in its place. | — |
 | SCB-05.e | backlog | The issue list holds at most the number of issues in DEF-01, newest first, and says when more exist (msg:scbIssuesTruncated, with the number as {limit}). | — |
 | SCB-06 | backlog | The board along the top shows the Backlog block, then the add control, then the blocks of the sprint. | — |
-| SCB-06.a | backlog | The Backlog block (heading msg:scbBacklog) holds the requirements and the issues whose status is `backlog`. | — |
+| SCB-06.a | backlog | The Backlog block (heading msg:scbBacklog) is the queue for a sprint: it holds the features (requirements) and the issues whose status is `backlog`. | — |
 | SCB-06.b | backlog | The add control (msg:scbAddBlock) asks which kind of block (msg:scbBlockKind, msg:scbKindStory, msg:scbKindEpic, msg:scbKindSprint) and its name (msg:scbBlockName), and adds the block at the end of the board; its Cancel is msg:cancel and its Save is msg:scbSave. | — |
 | SCB-06.c | backlog | A story can sit in an epic or in a sprint, an epic can sit in a sprint, and a sprint sits at the top of the board; a block is drawn inside the block it sits in. | — |
 | SCB-06.d | backlog | A story holds the requirements and the issues that were dropped on it and shows each with its ID or number and title. | — |
 | SCB-06.e | backlog | The board's blocks start at the left edge of the board area, in one row, and the row scrolls sideways inside the board area when the blocks do not fit; the board is never centered. | — |
+| SCB-06.f | backlog | The board shows the Backlog block, then the sprints newest first; a scrollbar on the board moves to older sprints, which are read from `scrum/sprints` and loaded in batches of the size in DEF-01 only when the scroll nears them, never all at once. | — |
 | SCB-07 | backlog | The Product Owner and the team build the sprint by dragging and dropping. | — |
 | SCB-07.a | backlog | A block can be dragged onto a block it may sit in (SCB-06.c) and then sits there, written to the sprint file (SCB-02.d). | — |
 | SCB-07.b | backlog | A block can be dragged to the top of the board and then sits there if it may (SCB-06.c). | — |
@@ -50,9 +51,10 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-07.f | backlog | Dropping a requirement or an issue that is in a story on the Backlog block removes it from the story's Members rows and sets its status to `backlog`. | — |
 | SCB-07.g | backlog | A drop that would move a status down in any other way, or that is not allowed by SCB-07.c, changes nothing and says why (msg:scbMoveRefused, with the reason as {reason}). | — |
 | SCB-07.h | backlog | Dropping something where it already is changes nothing. | — |
-| SCB-08 | backlog | A story that sits in a sprint has an Accept control (msg:scbAccept). | — |
-| SCB-08.a | backlog | Accept sets the status of every requirement and issue of the story to `done`. | — |
-| SCB-08.b | backlog | A story that does not sit in a sprint has no Accept control. | — |
+| SCB-07.i | backlog | Dragging a requirement or an issue out of the Backlog block, onto nothing, removes it from the Backlog: its status goes back to `proposed`. It stays listed in its own column in every case, with the status changed in the requirement file or the issue tracker; the board is a window onto the existing process. | — |
+| SCB-08 | backlog | A sprint block has one Accept control (msg:scbAccept), in its header to the right of its usage metric; stories have none. | — |
+| SCB-08.a | backlog | Accept sets the status of every requirement and issue of every story in the sprint to `done`. | — |
+| SCB-08.b | backlog | Only a sprint block that sits on the board has an Accept control; the Backlog block has none. | — |
 | SCB-09 | backlog | The Issues column has a New issue control (msg:scbNewIssue) that opens a form to enter an issue: a title, a description, and dropdowns for the feature, the requirement and the status. | — |
 | SCB-09.a | backlog | The form's requirement dropdown lists the requirements of the chosen feature, and choosing another feature clears it. | — |
 | SCB-09.b | backlog | The status dropdown offers the four statuses and nothing else, and starts as `backlog`. | — |
@@ -76,7 +78,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-11.h | backlog | An issue belongs to its feature (SCB-05.b) or, when it has none, to the feature of the requirement it names (SCB-05.c); an issue with neither is a top-level row under no feature and always stays visible. | — |
 | SCB-11.i | backlog | The Issues column has the switch of SCB-11.c on its filter row, collapsing or expanding the issues of every feature, and opens collapsed (SCB-11.d). | — |
 | SCB-15 | backlog | The page fits the window and every part of it scrolls on its own. | — |
-| SCB-15.a | backlog | The page itself does not scroll. It has three rows: the board along the top (SCB-06), a middle row with the usage chart and the running agents (SCB-12, SCB-14), and a bottom row of three columns: Features (the Requirements column, SCB-03), Issues (SCB-05) and Questions (SCB-17); the rows take the shares of the window's height in DEF-01. | — |
+| SCB-15.a | backlog | The page itself does not scroll. It has three rows: the board along the top (SCB-06) with 40 % of the window's height, a middle row with the usage chart and the running agents (SCB-12, SCB-14) with 20 %, and a bottom row of three columns, Features (the Requirements column, SCB-03), Issues (SCB-05) and Questions (SCB-17), with 40 %. | — |
 | SCB-15.b | backlog | Each column, and each block's contents, has its own vertical scrollbar when its content is longer than its area. | — |
 | SCB-15.c | backlog | Nothing is clipped or overflows at the window sizes in DEF-01. | — |
 | SCB-12 | backlog | The middle row has two parts side by side: the usage chart (SCB-14) and the running agents (heading msg:scbAgentProgress), each agent with its name and a completion bar next to it. | — |
@@ -104,7 +106,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-14.g | backlog | When the usage file is missing or has no Usage table the chart is empty and says so (msg:scbNoUsage). | — |
 | SCB-13.i | backlog | Text from the issue tracker's commands is read as Unicode (the UTF 8 form) and the server's answers declare that character set, so characters such as ’, — and › show as written (a defect found in use: they showed as â€™, â€” and â€º). | — |
 | SCB-16 | backlog | The three add controls (a new block on the board, a new requirement in the Requirements column, a new issue in the Issues column) are one shared control that opens one shared add popup. | — |
-| SCB-16.a | backlog | Each add control is a `+` button whose tooltip and accessible name are msg:scbAddBlock, msg:scbNewRequirement or msg:scbNewIssue. | — |
+| SCB-16.a | backlog | Each add control is a `+` button in the right zone of the header of its section (UIC-14): the board, Features and Issues; its tooltip and accessible name are msg:scbAddBlock, msg:scbNewRequirement or msg:scbNewIssue. Any section that has an add feature has this `+` in the same place. | — |
 | SCB-16.b | backlog | The popup for a new requirement or a new issue has an optional ID field (msg:scbIdOptional): the ID of the new requirement, or for an issue the ID of the requirement it names; it may be left empty. | — |
 | SCB-16.c | backlog | The popup for a new requirement has a statement field (msg:scbRequirementStatement) and the one for a new issue has the title and description of SCB-09. | — |
 | SCB-16.d | backlog | When the ID is empty and text has been entered, the popup lists suggested places (heading msg:scbSuggestions), at most the number in DEF-01, best first; with none it says so (msg:scbNoSuggestions). | — |
@@ -117,7 +119,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-13.j | backlog | The server also answers the request to create a requirement: it checks SCB-16.i, adds the row as SCB-16.h says, changes nothing else in the file, and replaces the file as a whole or not at all. | — |
 | SCB-17 | backlog | The third column of the bottom row is Questions (heading msg:scbQuestions): what the agents are asking the Executive, each with a space for the answer after it, so a question is never lost in a long conversation. | — |
 | SCB-17.a | backlog | The questions are read from `scrum/questions.md`, one per heading with its asker (the agent and the sprint), the question, the answer choices when there are some, the answer and a status of open or answered; the file is added to what the ScrumBoard may change (SCB-01.a). | — |
-| SCB-17.b | backlog | Under each open question there is a space for the answer (a choice or typed text) and an Answered button (msg:scbAnswered); pressing it saves the answer under the question and sets its status to answered. | — |
+| SCB-17.b | backlog | Under each open question there is a space for the answer (a choice or typed text) with the Answered button (msg:scbAnswered) to the right of the answer text; pressing it saves the answer under the question and sets its status to answered. | — |
 | SCB-17.c | backlog | An answered pair is the agents' queue: before making any change an agent reads `scrum/questions.md`; for each answered pair it records the decision where it belongs and then deletes the pair from the file, so it leaves the board. Open questions come first, newest first; with no question the column says so (msg:scbNoQuestions). | — |
 | SCB-17.d | backlog | The column has its own vertical scrollbar (SCB-15.b). | — |
 | SCB-17.e | backlog | A new open question shows a count badge on the column's heading and is marked new until the Product Owner has seen it. | — |
