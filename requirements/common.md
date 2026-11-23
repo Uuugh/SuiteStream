@@ -163,7 +163,7 @@ SuiteStream), **rule** (made by a rule).
 | Google retry: jitter | up to 25 % added | | default only |
 | Instant-update renewal | 1 day before it expires | | default only |
 | Instant-update retry after refusal | 6 hours | | default only |
-| Database connection retry | every 3 seconds, for up to 60 seconds | | default only |
+| Database connection retry | every 5 seconds, for up to 60 seconds | | default only |
 | Phone-width window | 700 px wide or narrower | | default only |
 | Popup start scale (UIC-47) | 96 % growing to 100 % | | default only |
 | Stream token: generated length and strength | 22 characters, at least 128 bits of randomness | 1 to 128 characters | default only |
