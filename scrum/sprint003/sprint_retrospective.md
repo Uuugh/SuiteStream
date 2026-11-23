@@ -40,7 +40,7 @@ This retrospective is evidence-only, approved by the Product Owner because the t
 | Run a Product Owner walkthrough of the first vertical slice, including narrow layouts, before expanding the slice. | Product Owner and developer pair | First day of Sprint 004 |
 | Map prerequisite features and log requirement conflicts as impediments when discovered. | Product Owner and Scrum Master | Before Sprint 004 planning |
 
-No action is considered graduated to team culture yet. Carry these actions into Sprint 004 planning; no Sprint 004 backlog exists at this time.
+No action is considered graduated to team culture yet. The capacity, early-review, and dependency-mapping actions are carried into Sprint 004 planning.
 
 ## Definition of Done review
 

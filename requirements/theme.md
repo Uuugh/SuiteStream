@@ -36,8 +36,8 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-01.e | backlog | A field label is 12 px, in the muted color, over a 34 px field. | — |
 | THM-05 | backlog | Buttons share one look, and a status has one look per meaning. | — |
 | THM-05.a | backlog | An icon button's icon is the muted color, with soft behind it on hover. | — |
-| THM-05.b | backlog | A pressable button that shows no status uses the accent look: accent fill and onaccent words. Accent is never used for a status. | — |
-| THM-05.c | backlog | A disabled Cancel \| Save pair is greyed and faded. The pulse of a first change is the pressed look. | — |
+| THM-05.b | backlog | A pressable button that shows no status, other than a Cancel \| Save pair (UIC-27), uses the accent look: accent fill and onaccent words. Accent is never used for a status. | — |
+| THM-05.c | backlog | A disabled Cancel \| Save pair cannot be activated. A first change triggers the pulse in THM-06.c. | — |
 | THM-05.d | backlog | Done or OK is green: ok words on okbg; a done button fills ok. | — |
 | THM-05.e | backlog | In action, or waiting on the user, is pressed: run words on runbg; a working button is card with run words. | — |
 | THM-05.f | backlog | A problem outside SuiteStream (United, Google, GitHub, the internet), or an entry that was refused, is amber: warn words on warnbg; a failed button fills warn. | — |
@@ -45,7 +45,7 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-06 | backlog | Every change of state moves as the rows below say. When reduced motion is requested nothing slides, grows, fades, spins or pulses: each state replaces the last, with the same words and hold times. | — |
 | THM-06.a | backlog | A pop-up opens with a fade and a scale from 0.96 to 1 in 0.2 s ease-out; its backdrop (black at 55%, the page blurred 2 px) fades in. | — |
 | THM-06.b | backlog | The color box and the emoji list open at once, with no motion. | — |
-| THM-06.c | backlog | The pressed side of a Cancel \| Save pair grows over the pair and fades its words in 0.3 s ease; Cancel takes 1 s, in and back. Save pulses in the pressed look once a second, five times, in 1 s ease-out. | — |
+| THM-06.c | backlog | The pressed side of a Cancel \| Save pair grows over the pair and fades its words in 0.3 s ease; Cancel takes 1 s, in and back. Save pulses once a second, five times, in 1 s ease-out. | — |
 | THM-06.d | backlog | A good status word shrinks to its ✓ in 0.5 s ease. A ✓ saved in place fades in in 0.45 s ease (messages 0.3 s). | — |
 | THM-06.e | backlog | The triangles of Expand and Close turn in 0.15 s; Close points up. | — |
 | THM-06.f | backlog | A Status/Action button grows from the bottom 22 px to the whole box in 0.25 s ease while its chip fades out in 0.2 s; its working words fade in in 0.25 s ease-out beside an icon that turns once a second, linear. | — |

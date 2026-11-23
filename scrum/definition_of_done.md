@@ -5,6 +5,7 @@ An item is Done only when every applicable criterion below can be answered Yes.
 ## Requirements and tests
 - The item maps to agreed Product Backlog acceptance criteria.
 - Each acceptance criterion has a clear pass/fail verification.
+- One test may verify multiple related criteria or requirement rows; keep every distinct behavior and applicable edge case covered and traceable. Do not add a separate test solely to create a one-to-one row mapping.
 - All relevant tests pass on the agreed target platforms.
 
 ## Code quality

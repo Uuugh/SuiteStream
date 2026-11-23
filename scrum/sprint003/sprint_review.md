@@ -23,7 +23,7 @@ Result: about 22 of the 47 planned points were built. The goal is met for the ev
 | Items map to agreed acceptance criteria | Yes, rows above |
 | Pass/fail verification | `flutter test`: 138 pass; `dart run tool/req_coverage.dart` |
 | Code quality | `flutter analyze` clean; Dart and Flutter only |
-| Runtime behavior | Builds for the web and runs at localhost:8080; the Product Owner reviewed the event dialog and requested a readable short end-zone label and horizontally aligned time fields, which were fixed and covered by targeted tests |
+| Runtime behavior | Builds for the web and runs at localhost:8080; the Product Owner confirmed the time-field alignment fix in the browser. The requested end-zone label shortening is carried into Sprint 004 for acceptance. |
 | Security and privacy | Events and settings are kept only on the device; no network access except opening a map or meeting link on a click |
 | Documentation | README unchanged and still correct |
 

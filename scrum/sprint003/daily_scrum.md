@@ -19,5 +19,6 @@
 - Tests: 138 pass; 43 requirement rows `planned`.
 
 ## Follow-up (2026-11-22)
-- The end-time-zone label now uses a localized short form before ellipsis when space is limited; the paired start/end time fields align horizontally.
+- The paired start/end time fields now align horizontally; the Product Owner confirmed the fix in the browser.
+- The end-time-zone label shortening is tracked for Sprint 004 and remains pending Product Owner acceptance.
 - Verification: 41 event-dialog and popup-layout tests pass; `flutter analyze` is clean.

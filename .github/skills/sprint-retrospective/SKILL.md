@@ -60,11 +60,17 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 - Have the team discuss whether the Definition of Done needs to change.
 - If it changes, update `scrum/definition_of_done.md`.
 
-### 7. Audit the Retrospective Results
+### 7. Periodic Requirements and Test Audit
+- Count completed `sprint_retrospective.md` records, including the current retrospective. On every fifth retrospective (5th, 10th, 15th, etc.), audit completed requirements and their associated tests.
+- Check for mismatches between requirement wording/status and test behavior, missing or stale test traceability, and relevant edge cases not covered.
+- Identify duplicated tests or opportunities to combine related coverage. A shared test may cover multiple requirement IDs only when each behavior and relevant edge case remains traceable; do not reduce coverage for efficiency.
+- Record findings and prioritized actions in the retrospective, with owners and deadlines. Do not change requirement status or remove tests without supporting evidence.
+
+### 8. Audit the Retrospective Results
 - Use the Kobayashi agent to audit the sprint retrospective results.
   - Check that every file requiring an update was updated correctly and that nothing was missed.
 
-### 8. Apply Changes to the Repository
+### 9. Apply Changes to the Repository
 - Use the Takahashi agent to merge the necessary files and apply everything to the main repository.
  - Finally, run git pull origin main and review and retrieve the differences.
 

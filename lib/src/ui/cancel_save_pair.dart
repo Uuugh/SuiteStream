@@ -10,10 +10,9 @@ const double pairHeight = 34;
 /// what they save. The same pair carries a question's answers, No | Yes
 /// (UIC-27.d, UIC-06), when given those words.
 ///
-/// Cancel is the quiet side. Save is the pressable side in a dimmed accent look
-/// that brightens to the full accent on hover (THM-05.b). Save is only available
-/// once something has changed: until then it is disabled and has the same look as
-/// Cancel (THM-05.c, UIC-27.b).
+/// Cancel is the quiet side. The Save pilot uses the theme's normal accent look,
+/// dims it while inactive, and fills with accent on hover
+/// (THM-05.b, UIC-27.b-c).
 class CancelSavePair extends StatelessWidget {
   const CancelSavePair({
     super.key,
@@ -25,6 +24,7 @@ class CancelSavePair extends StatelessWidget {
     this.saveKey,
     this.cancelEnabled = true,
     this.saveEnabled = true,
+    this.useThemedSaveStates = false,
   });
 
   final String cancelLabel;
@@ -35,21 +35,40 @@ class CancelSavePair extends StatelessWidget {
   final Key? saveKey;
   final bool cancelEnabled;
 
-  /// False until something has changed; the side then looks like Cancel.
+  /// False until something has changed; the side then uses the inactive look.
   final bool saveEnabled;
+
+  /// Enables the theme-matched active/inactive Save pilot.
+  final bool useThemedSaveStates;
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final quiet = _Look(background: t.card, hover: t.soft, foreground: t.accent);
-    // The dimmed accent, and the full accent it brightens to on hover.
-    final dim = _Look(
+    final quiet = _Look(
+      background: t.card,
+      hover: t.soft,
+      foreground: t.accent,
+    );
+    final legacySave = _Look(
       background: Color.alphaBlend(t.accent.withValues(alpha: 0.5), t.card),
       hover: t.accent,
       foreground: t.onAccent,
     );
+    final inactiveSave = _Look(
+      background: t.card,
+      hover: t.card,
+      foreground: t.accent.withValues(alpha: 0.33),
+    );
+    final activeSave = _Look(
+      background: t.card,
+      hover: t.accent,
+      foreground: t.accent,
+      hoverForeground: t.onAccent,
+    );
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8), // THM-04.a: controls have 8 px corners
+      borderRadius: BorderRadius.circular(
+        8,
+      ), // THM-04.a: controls have 8 px corners
       child: Container(
         width: pairWidth,
         height: pairHeight,
@@ -60,11 +79,25 @@ class CancelSavePair extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: _Side(key: cancelKey, label: cancelLabel, enabled: cancelEnabled, look: quiet, onPressed: onCancel),
+              child: _Side(
+                key: cancelKey,
+                label: cancelLabel,
+                enabled: cancelEnabled,
+                look: quiet,
+                onPressed: onCancel,
+              ),
             ),
             Expanded(
-              // Nothing changed: the same format as Cancel, and not pressable.
-              child: _Side(key: saveKey, label: saveLabel, enabled: saveEnabled, look: saveEnabled ? dim : quiet, onPressed: onSave, inert: !saveEnabled),
+              child: _Side(
+                key: saveKey,
+                label: saveLabel,
+                enabled: saveEnabled,
+                look: useThemedSaveStates
+                    ? (saveEnabled ? activeSave : inactiveSave)
+                    : (saveEnabled ? legacySave : quiet),
+                onPressed: onSave,
+                inert: !saveEnabled,
+              ),
             ),
           ],
         ),
@@ -74,21 +107,34 @@ class CancelSavePair extends StatelessWidget {
 }
 
 class _Look {
-  const _Look({required this.background, required this.hover, required this.foreground});
+  const _Look({
+    required this.background,
+    required this.hover,
+    required this.foreground,
+    this.hoverForeground,
+  });
   final Color background;
   final Color hover;
   final Color foreground;
+  final Color? hoverForeground;
 }
 
 class _Side extends StatefulWidget {
-  const _Side({super.key, required this.label, required this.enabled, required this.look, required this.onPressed, this.inert = false});
+  const _Side({
+    super.key,
+    required this.label,
+    required this.enabled,
+    required this.look,
+    required this.onPressed,
+    this.inert = false,
+  });
 
   final String label;
   final bool enabled;
   final _Look look;
   final VoidCallback onPressed;
 
-  /// A disabled Save: it looks like Cancel and does nothing.
+  /// A disabled Save: it uses the inactive look and does nothing.
   final bool inert;
 
   @override
@@ -114,7 +160,16 @@ class _SideState extends State<_Side> {
             onTap: active ? widget.onPressed : null,
             hoverColor: Colors.transparent,
             child: Center(
-              child: Text(widget.label, style: TextStyle(color: look.foreground, fontWeight: FontWeight.w700, fontSize: 13)),
+              child: Text(
+                widget.label,
+                style: TextStyle(
+                  color: active && _hover
+                      ? look.hoverForeground ?? look.foreground
+                      : look.foreground,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
+              ),
             ),
           ),
         ),

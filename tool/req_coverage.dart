@@ -1,7 +1,7 @@
 // Reports which requirement IDs have tests (README rule 11).
 //
-// A test names the requirement it verifies at the start of its name, for
-// example `test('TIM-01: ...')`. Usage:
+// A test names the requirement IDs it verifies at the start of its name, for
+// example `test('TIM-01: ...')` or `test('TIM-01, TIM-02: ...')`. Usage:
 //
 //   dart run tool/req_coverage.dart           report only
 //   dart run tool/req_coverage.dart --apply   also set each tested row to
@@ -9,7 +9,15 @@
 //                                             the test cell
 import 'dart:io';
 
-final _id = RegExp(r"""(?:test|testWidgets)\(\s*['"]([A-Z]{3,4}-\d+(?:\.[a-z]+)?)\b""");
+final _testIds = RegExp(
+  r"""(?:test|testWidgets)\(\s*['"]((?:[A-Z]{3,4}-\d+(?:\.[a-z]+)?)(?:,\s*[A-Z]{3,4}-\d+(?:\.[a-z]+)?)*)\s*(?::|\b)""",
+);
+final _id = RegExp(r'[A-Z]{3,4}-\d+(?:\.[a-z]+)?');
+
+List<String> requirementIdsInTestSource(String source) => [
+  for (final test in _testIds.allMatches(source))
+    for (final id in _id.allMatches(test.group(1)!)) id.group(0)!,
+];
 
 void main(List<String> args) {
   final apply = args.contains('--apply');
@@ -19,8 +27,8 @@ void main(List<String> args) {
   for (final f in Directory('test').listSync(recursive: true).whereType<File>()) {
     if (!f.path.endsWith('_test.dart')) continue;
     final path = f.path.replaceAll('\\', '/');
-    for (final m in _id.allMatches(f.readAsStringSync())) {
-      tested.putIfAbsent(m.group(1)!, () => path);
+    for (final id in requirementIdsInTestSource(f.readAsStringSync())) {
+      tested.putIfAbsent(id, () => path);
     }
   }
 

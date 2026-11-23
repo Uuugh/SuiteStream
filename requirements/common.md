@@ -25,8 +25,8 @@
 | UIC-26 | backlog | A field that saves in place shows ✓ once saved, and ✕ \| ✓ while the user types: ✕ puts the saved value back, ✓ saves. | — |
 | UIC-27 | planned | A Cancel \| Save pair sits at the bottom of what it saves and works as the rows below say. | test/calendar/ux_test.dart |
 | UIC-27.a | backlog | Pressing a side fills the pair with its word ("Saved" or "Cancelled") for the time in DEF-01; then the pair is idle. | — |
-| UIC-27.b | planned | With nothing to save both sides are disabled: not focusable and announced as unavailable. A pop-up's Cancel, which only closes it, and the buttons of a + Add pop-up, which can be saved with its defaults, stay available. Save is available only once something has changed; until then it has the same look as Cancel. | test/calendar/ux_test.dart |
-| UIC-27.c | backlog | The first change turns Save on, in a dimmed accent look that brightens to the full accent on hover, and Save pulses for the time in DEF-01 and then stays in full color; saving or cancelling returns the pair to idle. | — |
+| UIC-27.b | planned | With nothing to save both sides are disabled: not focusable and announced as unavailable. A pop-up's Cancel, which only closes it, and the buttons of a + Add pop-up, which can be saved with their defaults, stay available. | test/calendar/ux_test.dart |
+| UIC-27.c | backlog | Save pulses for the time in DEF-01; saving or cancelling returns the pair to idle. | — |
 | UIC-27.d | backlog | A question's answers can be the same pair (No \| Yes, UIC-06). | — |
 | UIC-27.e | backlog | Adding something (+ Add a calendar…) ends with the same Cancel \| Save pair as editing it. | — |
 | UIC-28 | backlog | A Status/Action button shows a status chip over the action that updates it (Sync Now, Check now, Update now, Connect, Fix), and a status looks one way for one meaning everywhere. | — |

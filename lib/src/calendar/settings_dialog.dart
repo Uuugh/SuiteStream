@@ -141,6 +141,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               saveKey: const ValueKey('settings-save'),
               cancelLabel: m('cancel'),
               saveLabel: m('save'),
+              useThemedSaveStates: true,
               onCancel: () => Navigator.of(context).pop(),
               saveEnabled: _changed,
               onSave: _save,

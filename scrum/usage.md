@@ -24,6 +24,15 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 
 | sprint003 | T01 to T14 and the Product Owner's review changes (event dialog, store, header, drag, popups, settings) | 2026-11-21 to 22 | Sonnet 5.5 | 30–40 (est.) | 20 / 92 | 66 / 98 | 46 | Before-reading is the sprint 002 after-reading; after-reading supplied by the Product Owner on 2026-11-22. The week rose 6 points and is above the 85% Warning level: no new job should start until the weekly reset (Wed Nov 25, 5:00 PM) |
 
+## Copilot Fusion
+
+These product usage readings are tracked separately from Claude's session and weekly percentages; they are not added
+together.
+
+| Date | Model | Inline suggestions used | Included credits used |
+|---|---|---:|---:|
+| 2026-11-22 | Copilot Fusion | 27% | 96% |
+
 ## Baseline
 
 None yet. The retired CalendarStream repository (https://github.com/Uuugh/CalendarStream, `scrum/usage.md`) holds an earlier usage baseline only: about 1.3 session % per changed file for a code story (plus or minus 30%), later measured at 0.35 per file in one sprint. Different task type and models; use it only until this project has three finished sprints of its own.

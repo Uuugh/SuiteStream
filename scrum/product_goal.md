@@ -9,10 +9,10 @@ SuiteStream
 A calendar app that shows a user's events from their own and outside calendars (local, feeds, Google) in one place, with correct time zones, in the user's language and theme.
 
 ## Current Product Goal
-Recreate SuiteStream in Dart with Flutter so that every agreed requirement in `requirements/` is met and verified by a test.
+Recreate SuiteStream in Dart with Flutter so that every agreed requirement in `requirements/` is met and has traceable passing test coverage.
 
 ### Conditions for achieving the goal
-1. Every requirement row in `requirements/` has status `done` and a test that passes (README rule 11).
+1. Every requirement row in `requirements/` has status `done` and traceable, passing test coverage (README rule 11). A test may cover multiple related rows when it verifies each row's acceptance criteria.
 2. All requirement rows were approved by the Product Owner on 2026-11-21.
 3. The app is written only in Dart with Flutter; no code from the old Python app is used.
 
@@ -24,9 +24,10 @@ Recreate SuiteStream in Dart with Flutter so that every agreed requirement in `r
 
 ## Success measures
 - Count of requirement rows `done` vs `backlog` (1,433 agreed on 2026-11-21).
-- Tests passing per requirement ID.
+- Requirement rows with passing test coverage; related rows may share a test.
 
 ## History
 | Date | Change | Author |
 |---|---|---|
 | 2026-11-21 | Initial draft from requirements | Claude |
+| 2026-11-22 | Clarified that related requirements may share traceable test coverage. | Manager request; Product Owner consulted |

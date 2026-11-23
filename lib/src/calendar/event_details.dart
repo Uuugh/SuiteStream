@@ -39,6 +39,21 @@ class EventDetails extends StatelessWidget {
   final CalendarController controller;
   final SuiteEvent event;
 
+  Future<void> _openEditor(
+    BuildContext context,
+    CalendarController controller,
+    SuiteEvent event, {
+    required bool duplicate,
+  }) async {
+    await openEventDialog(
+      context,
+      controller,
+      event: duplicate ? null : event,
+      duplicateOf: duplicate ? event : null,
+    );
+    if (context.mounted) controller.selectEvent(null);
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
@@ -85,13 +100,14 @@ class EventDetails extends StatelessWidget {
                 key: const ValueKey('details-edit'),
                 tooltip: m('edit'),
                 icon: const Icon(Icons.edit_outlined),
-                onPressed: () => openEventDialog(context, c, event: e),
+                onPressed: () =>
+                    _openEditor(context, c, e, duplicate: false),
               ),
               IconButton(
                 key: const ValueKey('details-duplicate'),
                 tooltip: m('duplicateEvent'),
                 icon: const Icon(Icons.copy_outlined),
-                onPressed: () => openEventDialog(context, c, duplicateOf: e),
+                onPressed: () => _openEditor(context, c, e, duplicate: true),
               ),
               IconButton(
                 key: const ValueKey('details-delete'),

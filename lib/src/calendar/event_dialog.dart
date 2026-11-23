@@ -40,7 +40,11 @@ enum ReminderUnit {
 /// 90 minutes, 120 min is 2 hours).
 (int, ReminderUnit) splitReminder(int minutes) {
   if (minutes > 0) {
-    for (final u in [ReminderUnit.weeks, ReminderUnit.days, ReminderUnit.hours]) {
+    for (final u in [
+      ReminderUnit.weeks,
+      ReminderUnit.days,
+      ReminderUnit.hours,
+    ]) {
       if (minutes % u.inMinutes == 0) return (minutes ~/ u.inMinutes, u);
     }
   }
@@ -55,7 +59,10 @@ const Duration newEventLength = Duration(hours: 1);
 /// lead, so 15, 60, 20000 stores 15, 60), at most [remindersPerEvent], each once,
 /// soonest first.
 List<int> normalizeReminders(Iterable<int> chosen) {
-  final valid = {for (final r in chosen) if (r >= 0 && r <= longestReminderLead) r}.toList()..sort();
+  final valid = {
+    for (final r in chosen)
+      if (r >= 0 && r <= longestReminderLead) r,
+  }.toList()..sort();
   return valid.take(remindersPerEvent).toList();
 }
 
@@ -71,14 +78,24 @@ String reminderLabel(Messages m, int minutes) {
 }
 
 /// EVT-03.a: the map link for a location: the address is the URL-encoded location.
-Uri mapUrl(String location) =>
-    Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(location)}');
+Uri mapUrl(String location) => Uri.parse(
+  'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(location)}',
+);
 
 /// EVT-01.p: empty, or a link starting with http:// or https:// with no spaces.
-bool isValidMeetingUrl(String s) => s.isEmpty || RegExp(r'^https?://\S+$').hasMatch(s);
+bool isValidMeetingUrl(String s) =>
+    s.isEmpty || RegExp(r'^https?://\S+$').hasMatch(s);
 
 /// Opens the event dialog: a new event on [day] (EVT-01.a), or [event] to edit.
-Future<void> openEventDialog(BuildContext context, CalendarController c, {SuiteEvent? event, SuiteEvent? duplicateOf, DateTime? day, int? startMinute, bool allDay = false}) {
+Future<void> openEventDialog(
+  BuildContext context,
+  CalendarController c, {
+  SuiteEvent? event,
+  SuiteEvent? duplicateOf,
+  DateTime? day,
+  int? startMinute,
+  bool allDay = false,
+}) {
   final msgs = context.msg;
   final phone = MediaQuery.sizeOf(context).width <= phoneMaxWidth;
   return showDialog<void>(
@@ -87,11 +104,22 @@ Future<void> openEventDialog(BuildContext context, CalendarController c, {SuiteE
       messages: msgs,
       child: Dialog(
         backgroundColor: context.tokens.card,
-        insetPadding: phone ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        insetPadding: phone
+            ? EdgeInsets.zero
+            : const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
         shape: phone ? const RoundedRectangleBorder() : null,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: phone ? double.infinity : 960),
-          child: PopupSizeLock(child: EventDialog(controller: c, event: event, duplicateOf: duplicateOf, day: day, startMinute: startMinute, allDay: allDay)),
+          child: PopupSizeLock(
+            child: EventDialog(
+              controller: c,
+              event: event,
+              duplicateOf: duplicateOf,
+              day: day,
+              startMinute: startMinute,
+              allDay: allDay,
+            ),
+          ),
         ),
       ),
     ),
@@ -100,7 +128,15 @@ Future<void> openEventDialog(BuildContext context, CalendarController c, {SuiteE
 
 /// EVT-01: the dialog to add, edit and remove an event.
 class EventDialog extends StatefulWidget {
-  const EventDialog({super.key, required this.controller, this.event, this.duplicateOf, this.day, this.startMinute, this.allDay = false});
+  const EventDialog({
+    super.key,
+    required this.controller,
+    this.event,
+    this.duplicateOf,
+    this.day,
+    this.startMinute,
+    this.allDay = false,
+  });
 
   final CalendarController controller;
   final SuiteEvent? event;
@@ -177,7 +213,10 @@ class _EventDialogState extends State<EventDialog> {
       final s = e.startIn(zoneNamed(_startZone));
       var en = e.endIn(zoneNamed(_endZone));
       _startDate = DateTime(s.year, s.month, s.day);
-      if (_allDay) en = en.subtract(const Duration(days: 1)); // the last day is included (EVT-02.f)
+      if (_allDay)
+        en = en.subtract(
+          const Duration(days: 1),
+        ); // the last day is included (EVT-02.f)
       _endDate = DateTime(en.year, en.month, en.day);
       _startTime.text = _fmt(s.hour, s.minute);
       final e2 = e.endIn(zoneNamed(_endZone));
@@ -187,13 +226,20 @@ class _EventDialogState extends State<EventDialog> {
     } else {
       // EVT-01.b: the system zone, or the calendar's zone when one is selected.
       _calendarId = null;
-      _startZone = zoneForNewEvent(imported: false, systemZone: c.localZone.systemZoneName);
+      _startZone = zoneForNewEvent(
+        imported: false,
+        systemZone: c.localZone.systemZoneName,
+      );
       _endZone = _startZone;
       // EVT-01.m: a new event starts at 9:00 for an hour on the day clicked, or today.
       final d = widget.day ?? c.today;
       _allDay = widget.allDay;
       final startMin = widget.startMinute ?? newEventStartMinutes;
-      final endTotal = startMin + c.defaultLength.inMinutes; // EVT-02.n: the default length is a user setting
+      final endTotal =
+          startMin +
+          c
+              .defaultLength
+              .inMinutes; // EVT-02.n: the default length is a user setting
       _startDate = DateTime(d.year, d.month, d.day);
       _endDate = DateTime(d.year, d.month, d.day + endTotal ~/ 1440);
       _startTime.text = _fmt(startMin ~/ 60, startMin % 60);
@@ -206,7 +252,14 @@ class _EventDialogState extends State<EventDialog> {
 
   @override
   void dispose() {
-    for (final t in [_title, _location, _meeting, _notes, _startTime, _endTime]) {
+    for (final t in [
+      _title,
+      _location,
+      _meeting,
+      _notes,
+      _startTime,
+      _endTime,
+    ]) {
       t.dispose();
     }
     _startFocus.dispose();
@@ -220,22 +273,22 @@ class _EventDialogState extends State<EventDialog> {
   /// Everything the user can change, as one string: Save is available only when it differs
   /// from how the dialog opened (UIC-27.b).
   String _signature() => [
-        _title.text,
-        _calendarId,
-        _allDay,
-        _startDate,
-        _endDate,
-        _startTime.text,
-        _endTime.text,
-        _startZone,
-        _endZone,
-        _differentEnd,
-        _color,
-        _location.text,
-        _meeting.text,
-        _notes.text,
-        for (final r in _reminders) '${r.number.text}${r.unit.name}',
-      ].join('|');
+    _title.text,
+    _calendarId,
+    _allDay,
+    _startDate,
+    _endDate,
+    _startTime.text,
+    _endTime.text,
+    _startZone,
+    _endZone,
+    _differentEnd,
+    _color,
+    _location.text,
+    _meeting.text,
+    _notes.text,
+    for (final r in _reminders) '${r.number.text}${r.unit.name}',
+  ].join('|');
 
   String _fmt(int h, int m) => formatTimeOfDay(h, m, _format);
 
@@ -253,23 +306,48 @@ class _EventDialogState extends State<EventDialog> {
     if (timeText.trim().isEmpty) return null;
     final t = parseTimeInput(timeText);
     if (t == null) return null;
-    return TZDateTime(zoneNamed(zone), date.year, date.month, date.day, t.hour, t.minute);
+    return TZDateTime(
+      zoneNamed(zone),
+      date.year,
+      date.month,
+      date.day,
+      t.hour,
+      t.minute,
+    );
   }
 
   TZDateTime? get _startInstant => _allDay
-      ? TZDateTime(zoneNamed(_startZone), _startDate.year, _startDate.month, _startDate.day)
+      ? TZDateTime(
+          zoneNamed(_startZone),
+          _startDate.year,
+          _startDate.month,
+          _startDate.day,
+        )
       : _instant(_startDate, _startTime.text, _startZone);
 
   TZDateTime? get _endInstant => _allDay
-      ? TZDateTime(zoneNamed(_endZone), _endDate.year, _endDate.month, _endDate.day + 1)
-      : _instant(_endDate, _endTime.text, _differentEnd ? _endZone : _startZone);
+      ? TZDateTime(
+          zoneNamed(_endZone),
+          _endDate.year,
+          _endDate.month,
+          _endDate.day + 1,
+        )
+      : _instant(
+          _endDate,
+          _endTime.text,
+          _differentEnd ? _endZone : _startZone,
+        );
 
   /// EVT-02.b: changing the start keeps the duration, across midnight if needed.
   void _startChanged() {
     final s = _startInstant;
     if (s == null) return;
     if (_allDay) {
-      _endDate = DateTime(_startDate.year, _startDate.month, _startDate.day + _span);
+      _endDate = DateTime(
+        _startDate.year,
+        _startDate.month,
+        _startDate.day + _span,
+      );
       return;
     }
     final endZone = zoneNamed(_differentEnd ? _endZone : _startZone);
@@ -322,7 +400,10 @@ class _EventDialogState extends State<EventDialog> {
     if (_endTime.text.trim().isEmpty) {
       final s = _startInstant;
       if (s != null) {
-        final end = TZDateTime.from(s.toUtc().add(c.defaultLength), zoneNamed(_differentEnd ? _endZone : _startZone));
+        final end = TZDateTime.from(
+          s.toUtc().add(c.defaultLength),
+          zoneNamed(_differentEnd ? _endZone : _startZone),
+        );
         _endDate = DateTime(end.year, end.month, end.day);
         _endTime.text = _fmt(end.hour, end.minute);
         _duration = c.defaultLength;
@@ -340,16 +421,23 @@ class _EventDialogState extends State<EventDialog> {
     final s = _startInstant;
     final e = _endInstant;
     if (_allDay) {
-      if (_endDate.isBefore(_startDate)) errors['end'] = m('theLastDayIsBefore');
+      if (_endDate.isBefore(_startDate))
+        errors['end'] = m('theLastDayIsBefore');
     } else {
       if (s == null) errors['start'] = m('typeATimeLike9');
       if (e == null) errors['end'] = m('typeATimeLike9');
-      if (s != null && e != null && !e.isAfter(s)) errors['end'] = m('theEndHasToBe');
+      if (s != null && e != null && !e.isAfter(s))
+        errors['end'] = m('theEndHasToBe');
     }
-    if (!isValidMeetingUrl(_meeting.text.trim())) errors['meeting'] = m('onlineMeetingNeedsLink');
+    if (!isValidMeetingUrl(_meeting.text.trim()))
+      errors['meeting'] = m('onlineMeetingNeedsLink');
     // A reminder with a number that is not a whole number up to the longest lead is not valid.
-    if (_reminders.any((r) => r.number.text.trim().isNotEmpty && r.minutes == null)) errors['reminders'] = m('reminderRange');
-    if (_color != null && !eventPalette.any((p) => p.value == _color)) errors['color'] = m('chooseOneOfTheColors');
+    if (_reminders.any(
+      (r) => r.number.text.trim().isNotEmpty && r.minutes == null,
+    ))
+      errors['reminders'] = m('reminderRange');
+    if (_color != null && !eventPalette.any((p) => p.value == _color))
+      errors['color'] = m('chooseOneOfTheColors');
     if (errors.isNotEmpty) {
       setState(() {
         _errors
@@ -377,14 +465,19 @@ class _EventDialogState extends State<EventDialog> {
       location: _location.text.trim(),
       notes: _notes.text,
       color: _color,
-      reminders: normalizeReminders([for (final r in _reminders) if (r.minutes != null) r.minutes!]),
+      reminders: normalizeReminders([
+        for (final r in _reminders)
+          if (r.minutes != null) r.minutes!,
+      ]),
       meetingUrl: _meeting.text.trim(),
     );
     if (old != null && _sameContent(old, built)) {
       Navigator.of(context).pop(); // EVT-01.q: no change, no edit recorded
       return;
     }
-    c.upsertEvent(old != null && !old.custom ? built.copyWith(edited: true) : built);
+    c.upsertEvent(
+      old != null && !old.custom ? built.copyWith(edited: true) : built,
+    );
     Navigator.of(context).pop();
   }
 
@@ -417,8 +510,24 @@ class _EventDialogState extends State<EventDialog> {
   double? _leftHeight;
 
   /// A field's label sits over it (THM-07.b), with a red asterisk when required.
-  Widget _labeled(String label, Widget field, {bool required = false, Widget? trailing, String? error}) {
+  Widget _labeled(
+    String label,
+    Widget field, {
+    bool required = false,
+    Widget? trailing,
+    bool prioritizeTrailing = false,
+    String? error,
+  }) {
     final t = context.tokens;
+    final title = Text(
+      label,
+      maxLines: 1,
+      style: TextStyle(
+        color: t.muted,
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -428,17 +537,34 @@ class _EventDialogState extends State<EventDialog> {
             height: 20,
             child: Row(
               children: [
-                Flexible(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(label, maxLines: 1, style: TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12)),
+                if (prioritizeTrailing)
+                  title
+                else
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: title,
+                    ),
                   ),
-                ),
-                if (required) Text(' *', style: TextStyle(color: t.bad, fontWeight: FontWeight.w700, fontSize: 12)),
-                if (trailing != null) ...[const SizedBox(width: 10), Flexible(child: trailing)],
+                if (required)
+                  Text(
+                    ' *',
+                    style: TextStyle(
+                      color: t.bad,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                  ),
+                if (trailing != null) ...[
+                  const SizedBox(width: 10),
+                  Flexible(child: trailing),
+                ],
                 // The note says what is wrong, on this line, next to the label (UIC-19).
-                if (error != null) ...[const SizedBox(width: 10), Expanded(child: ErrorNote(error))],
+                if (error != null) ...[
+                  const SizedBox(width: 10),
+                  Expanded(child: ErrorNote(error)),
+                ],
               ],
             ),
           ),
@@ -452,19 +578,37 @@ class _EventDialogState extends State<EventDialog> {
     final t = context.tokens;
     return InputDecoration(
       isDense: true,
-      errorText: null, // the note is on the label line (ErrorNote), not below the field
+      errorText:
+          null, // the note is on the label line (ErrorNote), not below the field
       errorMaxLines: 3,
       suffixIcon: suffix,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       filled: true,
       fillColor: t.bg,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: error != null ? t.bad : t.line)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: error != null ? t.bad : t.line)),
-      focusedBorder: error != null ? OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: t.bad)) : null,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: error != null ? t.bad : t.line),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: error != null ? t.bad : t.line),
+      ),
+      focusedBorder: error != null
+          ? OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: t.bad),
+            )
+          : null,
     );
   }
 
-  Widget _checkbox(String key, String label, bool value, ValueChanged<bool> onChanged, {String? shortLabel}) {
+  Widget _checkbox(
+    String key,
+    String label,
+    bool value,
+    ValueChanged<bool> onChanged, {
+    String? shortLabel,
+  }) {
     final t = context.tokens;
     return InkWell(
       onTap: () => onChanged(!value),
@@ -474,13 +618,23 @@ class _EventDialogState extends State<EventDialog> {
           SizedBox(
             width: 20,
             height: 20,
-            child: Checkbox(key: ValueKey(key), value: value, onChanged: (v) => onChanged(v ?? false), visualDensity: VisualDensity.compact, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+            child: Checkbox(
+              key: ValueKey(key),
+              value: value,
+              onChanged: (v) => onChanged(v ?? false),
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
           const SizedBox(width: 6),
           Flexible(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final style = TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12);
+                final style = DefaultTextStyle.of(context).style.copyWith(
+                  color: t.muted,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                );
                 final painter = TextPainter(
                   text: TextSpan(text: label, style: style),
                   maxLines: 1,
@@ -508,13 +662,18 @@ class _EventDialogState extends State<EventDialog> {
   Widget build(BuildContext context) {
     final t = context.tokens;
     final m = context.msg;
-    final heading = widget.duplicateOf != null ? m('duplicateEvent') : (_editing ? m('editEvent') : m('addEvent'));
+    final heading = widget.duplicateOf != null
+        ? m('duplicateEvent')
+        : (_editing ? m('editEvent') : m('addEvent'));
     final old = widget.event;
     final phone = MediaQuery.sizeOf(context).width <= phoneMaxWidth;
     // Notes is as tall as the fields beside it (EVT-01.i); on a phone it is 10 lines.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final h = _leftKey.currentContext?.size?.height;
-      if (!phone && h != null && h != _leftHeight && mounted) setState(() => _leftHeight = h);
+      if (!phone && h != null && h != _leftHeight && mounted) {
+        setState(() => _leftHeight = h);
+        relockPopupSize(context);
+      }
     });
     final notesHeight = ((_leftHeight ?? 221) - 21).clamp(200.0, 4000.0);
     final notes = _labeled(
@@ -522,16 +681,16 @@ class _EventDialogState extends State<EventDialog> {
       SizedBox(
         height: phone ? null : notesHeight,
         child: TextField(
-        key: const ValueKey('event-notes'),
-        controller: _notes,
-        maxLines: phone ? 10 : null,
-        minLines: phone ? 10 : null,
-        expands: !phone,
-        textAlignVertical: TextAlignVertical.top,
-        inputFormatters: [LengthLimitingTextInputFormatter(eventNotesLength)],
-        decoration: _decoration(),
-        onChanged: (_) => setState(() => _errors.remove('notes')),
-      ),
+          key: const ValueKey('event-notes'),
+          controller: _notes,
+          maxLines: phone ? 10 : null,
+          minLines: phone ? 10 : null,
+          expands: !phone,
+          textAlignVertical: TextAlignVertical.top,
+          inputFormatters: [LengthLimitingTextInputFormatter(eventNotesLength)],
+          decoration: _decoration(),
+          onChanged: (_) => setState(() => _errors.remove('notes')),
+        ),
       ),
     );
     return Padding(
@@ -552,14 +711,27 @@ class _EventDialogState extends State<EventDialog> {
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.zero,
                     side: BorderSide(color: t.line),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Tooltip(message: m('cancel'), child: Icon(Icons.arrow_back, size: 20, color: t.muted)),
+                  child: Tooltip(
+                    message: m('cancel'),
+                    child: Icon(Icons.arrow_back, size: 20, color: t.muted),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
-              Expanded(child: Text(heading, style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width))),
+              Expanded(
+                child: Text(
+                  heading,
+                  style: SuiteText.moduleKind(
+                    t,
+                    windowWidth: MediaQuery.sizeOf(context).width,
+                  ),
+                ),
+              ),
               if (c.calendars.isEmpty) ?_duplicateButton(m),
             ],
           ),
@@ -573,7 +745,9 @@ class _EventDialogState extends State<EventDialog> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: KeyedSubtree(key: _leftKey, child: _leftColumn(m))),
+                Expanded(
+                  child: KeyedSubtree(key: _leftKey, child: _leftColumn(m)),
+                ),
                 const SizedBox(width: 10),
                 Expanded(child: notes),
               ],
@@ -588,12 +762,20 @@ class _EventDialogState extends State<EventDialog> {
                   key: const ValueKey('event-delete'),
                   onPressed: _delete,
                   icon: Icon(
-                    old.custom ? Icons.delete_outline : (old.hiddenFromGoogle ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                    old.custom
+                        ? Icons.delete_outline
+                        : (old.hiddenFromGoogle
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
                     size: 18,
                     color: old.custom ? t.bad : t.muted,
                   ),
                   label: Text(
-                    old.custom ? m('deleteEvent') : (old.hiddenFromGoogle ? m('showButton') : m('hideButton')),
+                    old.custom
+                        ? m('deleteEvent')
+                        : (old.hiddenFromGoogle
+                              ? m('showButton')
+                              : m('hideButton')),
                     style: TextStyle(color: old.custom ? t.bad : t.text),
                   ),
                 ),
@@ -604,6 +786,7 @@ class _EventDialogState extends State<EventDialog> {
                 saveKey: const ValueKey('event-save'),
                 cancelLabel: m('cancel'),
                 saveLabel: m('save'),
+                useThemedSaveStates: true,
                 onCancel: () => Navigator.of(context).pop(),
                 saveEnabled: _signature() != _initialSig,
                 onSave: _save,
@@ -620,7 +803,12 @@ class _EventDialogState extends State<EventDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _labeled(m('title'), _textField('title', _title, max: eventTitleLength), required: true, error: _errors['title']),
+        _labeled(
+          m('title'),
+          _textField('title', _title, max: eventTitleLength),
+          required: true,
+          error: _errors['title'],
+        ),
         gap,
         _labeled(
           m('location'),
@@ -632,7 +820,9 @@ class _EventDialogState extends State<EventDialog> {
               key: const ValueKey('event-map'),
               tooltip: m('openMap'),
               icon: const Icon(Icons.map_outlined, size: 18),
-              onPressed: _location.text.trim().isEmpty ? null : () => launchUrl(mapUrl(_location.text.trim())),
+              onPressed: _location.text.trim().isEmpty
+                  ? null
+                  : () => launchUrl(mapUrl(_location.text.trim())),
             ),
           ),
         ),
@@ -647,7 +837,9 @@ class _EventDialogState extends State<EventDialog> {
               key: const ValueKey('event-open-meeting'),
               tooltip: m('openLink'),
               icon: const Icon(Icons.link, size: 18),
-              onPressed: (_meeting.text.trim().isEmpty || !isValidMeetingUrl(_meeting.text.trim()))
+              onPressed:
+                  (_meeting.text.trim().isEmpty ||
+                      !isValidMeetingUrl(_meeting.text.trim()))
                   ? null
                   : () => launchUrl(Uri.parse(_meeting.text.trim())),
             ),
@@ -669,13 +861,23 @@ class _EventDialogState extends State<EventDialog> {
                     isExpanded: true,
                     decoration: _decoration(),
                     items: [
-                      DropdownMenuItem<String?>(value: null, child: Text(m('local'))),
-                      for (final cal in c.calendars) DropdownMenuItem<String?>(value: cal.id, child: Text(cal.name)),
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(m('local')),
+                      ),
+                      for (final cal in c.calendars)
+                        DropdownMenuItem<String?>(
+                          value: cal.id,
+                          child: Text(cal.name),
+                        ),
                     ],
                     onChanged: (v) => setState(() {
                       _calendarId = v;
                       final z = _calendarZone();
-                      if (!_editing && widget.duplicateOf == null && z != null && isKnownZone(z)) {
+                      if (!_editing &&
+                          widget.duplicateOf == null &&
+                          z != null &&
+                          isKnownZone(z)) {
                         _startZone = z;
                         if (!_differentEnd) _endZone = z;
                       }
@@ -684,14 +886,26 @@ class _EventDialogState extends State<EventDialog> {
                 ),
               ),
             if (c.calendars.isNotEmpty) const SizedBox(width: 6),
-            Expanded(child: _labeled(m('changeColor'), _colorButton(m), error: _errors['color'])),
+            Expanded(
+              child: _labeled(
+                m('changeColor'),
+                _colorButton(m),
+                error: _errors['color'],
+              ),
+            ),
           ],
         ),
         gap,
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _labeled(m('starts'), _dateButton(start: true), required: true)),
+            Expanded(
+              child: _labeled(
+                m('starts'),
+                _dateButton(start: true),
+                required: true,
+              ),
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: _labeled(
@@ -699,11 +913,17 @@ class _EventDialogState extends State<EventDialog> {
                 _dateButton(start: false),
                 required: true,
                 error: _allDay ? _errors['end'] : null,
-                trailing: _checkbox('event-allday', m('allDay'), _allDay, (v) => setState(() {
-                  _allDay = v;
-                  if (_allDay && _endDate.isBefore(_startDate)) _endDate = _startDate;
-                  if (_allDay) _span = _endDate.difference(_startDate).inDays;
-                })),
+                trailing: _checkbox(
+                  'event-allday',
+                  m('allDay'),
+                  _allDay,
+                  (v) => setState(() {
+                    _allDay = v;
+                    if (_allDay && _endDate.isBefore(_startDate))
+                      _endDate = _startDate;
+                    if (_allDay) _span = _endDate.difference(_startDate).inDays;
+                  }),
+                ),
               ),
             ),
           ],
@@ -721,75 +941,85 @@ class _EventDialogState extends State<EventDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _labeled(m('time'), _timeField(start: true), required: true, error: _allDay ? null : _errors['start'])),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _labeled(
-                  m('time'),
-                  _timeField(start: false),
-                  required: true,
-                  error: _allDay ? null : _errors['end'],
-                  trailing: _checkbox(
-                    'event-diffzone',
-                    m('differentEndZone'),
-                    _differentEnd,
-                    (v) => setState(() {
-                      _differentEnd = v;
-                      if (!_differentEnd) _endZone = _startZone; // unticking sets the end zone back
-                    }),
-                    shortLabel: m('differentEndZoneShort'),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _labeled(
+                          m('time'),
+                          _timeField(start: true),
+                          required: true,
+                          error: _allDay ? null : _errors['start'],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _labeled(
+                          m('time'),
+                          _timeField(start: false),
+                          required: true,
+                          error: _allDay ? null : _errors['end'],
+                          prioritizeTrailing: true,
+                          trailing: _checkbox(
+                            'event-diffzone',
+                            m('differentEndZone'),
+                            _differentEnd,
+                            (v) => setState(() {
+                              _differentEnd = v;
+                              if (!_differentEnd)
+                                _endZone =
+                                    _startZone; // unticking sets the end zone back
+                            }),
+                            shortLabel: m('differentEndZoneShort'),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ],
-          ),
-          gap,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _labeled(
-                  _differentEnd ? m('startTimeZone') : m('timeZone'),
-                  ZoneField(
-                    key: const ValueKey('zone-start'),
-                    value: _startZone,
-                    defaultZone: c.localZone.systemZoneName,
-                    onChanged: (z) => setState(() {
-                      _startZone = z;
-                      if (!_differentEnd) _endZone = z;
-                      _startChanged();
-                    }),
+                  gap,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _labeled(
+                          _differentEnd ? m('startTimeZone') : m('timeZone'),
+                          ZoneField(
+                            key: const ValueKey('zone-start'),
+                            value: _startZone,
+                            defaultZone: c.localZone.systemZoneName,
+                            onChanged: (z) => setState(() {
+                              _startZone = z;
+                              if (!_differentEnd) _endZone = z;
+                              _startChanged();
+                            }),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        // The end zone's place is always kept; it is only shown when the end is in a
+                        // different zone.
+                        child: Visibility(
+                          visible: _differentEnd,
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          maintainState: true,
+                          child: _labeled(
+                            m('endTimeZone'),
+                            ZoneField(
+                              key: const ValueKey('zone-end'),
+                              value: _endZone,
+                              defaultZone: c.localZone.systemZoneName,
+                              onChanged: (z) => setState(() {
+                                _endZone = z;
+                                _startChanged();
+                              }),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                // The end zone's place is always kept; it is only shown when the end is in a
-                // different zone.
-                child: Visibility(
-                  visible: _differentEnd,
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: _labeled(
-                    m('endTimeZone'),
-                    ZoneField(
-                      key: const ValueKey('zone-end'),
-                      value: _endZone,
-                      defaultZone: c.localZone.systemZoneName,
-                      onChanged: (z) => setState(() {
-                        _endZone = z;
-                        _startChanged();
-                      }),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
                 ],
               ),
             ),
@@ -825,7 +1055,12 @@ class _EventDialogState extends State<EventDialog> {
     );
   }
 
-  Widget _textField(String key, TextEditingController ctl, {int? max, Widget? suffix}) {
+  Widget _textField(
+    String key,
+    TextEditingController ctl, {
+    int? max,
+    Widget? suffix,
+  }) {
     return TextField(
       key: ValueKey('event-$key'),
       controller: ctl,
@@ -871,12 +1106,16 @@ class _EventDialogState extends State<EventDialog> {
   void _stepTime(bool start, int dir) {
     final ctl = start ? _startTime : _endTime;
     final zone = zoneNamed(start || !_differentEnd ? _startZone : _endZone);
-    final base = parseTimeInput(ctl.text) ??
+    final base =
+        parseTimeInput(ctl.text) ??
         (() {
           final n = TZDateTime.from(c.nowUtc, zone);
           return TimeOfDayValue(n.hour, n.minute);
         })();
-    final stepped = dir > 0 ? (base.minutes ~/ dragStepMinutes + 1) * dragStepMinutes : ((base.minutes + dragStepMinutes - 1) ~/ dragStepMinutes - 1) * dragStepMinutes;
+    final stepped = dir > 0
+        ? (base.minutes ~/ dragStepMinutes + 1) * dragStepMinutes
+        : ((base.minutes + dragStepMinutes - 1) ~/ dragStepMinutes - 1) *
+              dragStepMinutes;
     final next = stepped.clamp(0, 24 * 60 - 1);
     ctl.text = _fmt(next ~/ 60, next % 60);
     setState(() {
@@ -928,7 +1167,14 @@ class _EventDialogState extends State<EventDialog> {
     final t = context.tokens;
     final cal = c.calendars.where((x) => x.id == _calendarId).firstOrNull;
     final shown = _color ?? cal?.color ?? defaultEventColor;
-    final name = _color == null ? m('defaultColor') : eventPalette.firstWhere((p) => p.value == _color, orElse: () => eventPalette.first).name;
+    final name = _color == null
+        ? m('defaultColor')
+        : eventPalette
+              .firstWhere(
+                (p) => p.value == _color,
+                orElse: () => eventPalette.first,
+              )
+              .name;
     return InkWell(
       key: const ValueKey('event-color-button'),
       borderRadius: BorderRadius.circular(8),
@@ -936,7 +1182,13 @@ class _EventDialogState extends State<EventDialog> {
         final msgs = context.msg;
         final picked = await showDialog<int>(
           context: context,
-          builder: (_) => MessagesScope(messages: msgs, child: _PaletteDialog(current: _color, calendarColor: cal?.color ?? defaultEventColor)),
+          builder: (_) => MessagesScope(
+            messages: msgs,
+            child: _PaletteDialog(
+              current: _color,
+              calendarColor: cal?.color ?? defaultEventColor,
+            ),
+          ),
         );
         if (picked == null) return;
         setState(() => _color = picked == _paletteDefault ? null : picked);
@@ -945,7 +1197,15 @@ class _EventDialogState extends State<EventDialog> {
         decoration: _decoration(),
         child: Row(
           children: [
-            Container(key: const ValueKey('event-color-swatch'), width: 16, height: 16, decoration: BoxDecoration(color: Color(shown), borderRadius: BorderRadius.circular(4))),
+            Container(
+              key: const ValueKey('event-color-swatch'),
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                color: Color(shown),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(child: Text(name, overflow: TextOverflow.ellipsis)),
             Icon(Icons.arrow_drop_down, color: t.muted),
@@ -979,8 +1239,18 @@ class _EventDialogState extends State<EventDialog> {
           padding: const EdgeInsets.only(bottom: 3),
           child: Row(
             children: [
-              Text(m('reminders'), style: TextStyle(color: t.muted, fontWeight: FontWeight.w700, fontSize: 12)),
-              if (_errors['reminders'] != null) ...[const SizedBox(width: 10), Expanded(child: ErrorNote(_errors['reminders']!))],
+              Text(
+                m('reminders'),
+                style: TextStyle(
+                  color: t.muted,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
+              ),
+              if (_errors['reminders'] != null) ...[
+                const SizedBox(width: 10),
+                Expanded(child: ErrorNote(_errors['reminders']!)),
+              ],
             ],
           ),
         ),
@@ -998,7 +1268,12 @@ class _EventDialogState extends State<EventDialog> {
                     initialValue: 'notification',
                     isExpanded: true,
                     decoration: box(),
-                    items: [DropdownMenuItem(value: 'notification', child: Text(m('notification')))],
+                    items: [
+                      DropdownMenuItem(
+                        value: 'notification',
+                        child: Text(m('notification')),
+                      ),
+                    ],
                     onChanged: (_) {},
                   ),
                 ),
@@ -1012,7 +1287,10 @@ class _EventDialogState extends State<EventDialog> {
                       key: ValueKey('reminder-number-$i'),
                       controller: _reminders[i].number,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(5)],
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(5),
+                      ],
                       decoration: box().copyWith(
                         suffixIcon: StepperArrows(
                           upKey: ValueKey('reminder-number-$i-up'),
@@ -1021,7 +1299,8 @@ class _EventDialogState extends State<EventDialog> {
                           onDown: () => _stepReminder(i, -1),
                         ),
                       ),
-                      onChanged: (_) => setState(() => _errors.remove('reminders')),
+                      onChanged: (_) =>
+                          setState(() => _errors.remove('reminders')),
                     ),
                   ),
                 ),
@@ -1033,7 +1312,13 @@ class _EventDialogState extends State<EventDialog> {
                     initialValue: _reminders[i].unit,
                     isExpanded: true,
                     decoration: box(),
-                    items: [for (final u in ReminderUnit.values) DropdownMenuItem(value: u, child: Text(m(u.messageKey)))],
+                    items: [
+                      for (final u in ReminderUnit.values)
+                        DropdownMenuItem(
+                          value: u,
+                          child: Text(m(u.messageKey)),
+                        ),
+                    ],
                     onChanged: (u) => setState(() {
                       _reminders[i].unit = u ?? _reminders[i].unit;
                       _errors.remove('reminders');
@@ -1066,9 +1351,12 @@ class _EventDialogState extends State<EventDialog> {
                 : () {
                     setState(() {
                       _reminders.add(_ReminderRow.fromMinutes(10));
-                      _leftHeight = null; // Notes follows the new height of the fields
+                      _leftHeight =
+                          null; // Notes follows the new height of the fields
                     });
-                    relockPopupSize(context); // adding a reminder may grow the popup
+                    relockPopupSize(
+                      context,
+                    ); // adding a reminder may grow the popup
                   },
             icon: const Icon(Icons.add, size: 18),
             label: Text(m('addReminder')),
@@ -1081,7 +1369,8 @@ class _EventDialogState extends State<EventDialog> {
 
 /// One reminder row: a number and the unit it is in.
 class _ReminderRow {
-  _ReminderRow(int number, this.unit) : number = TextEditingController(text: '$number');
+  _ReminderRow(int number, this.unit)
+    : number = TextEditingController(text: '$number');
 
   factory _ReminderRow.fromMinutes(int minutes) {
     final (n, u) = splitReminder(minutes);
@@ -1129,7 +1418,10 @@ class _PaletteDialog extends StatelessWidget {
               ChoiceChip(
                 key: const ValueKey('color-default'),
                 label: Text(m('calendarDefault')),
-                avatar: CircleAvatar(backgroundColor: Color(calendarColor), radius: 6),
+                avatar: CircleAvatar(
+                  backgroundColor: Color(calendarColor),
+                  radius: 6,
+                ),
                 selected: current == null,
                 onSelected: (_) => Navigator.of(context).pop(_paletteDefault),
               ),
@@ -1151,9 +1443,20 @@ class _PaletteDialog extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: p.color,
                             shape: BoxShape.circle,
-                            border: Border.all(color: current == p.value ? t.text : Colors.transparent, width: 2),
+                            border: Border.all(
+                              color: current == p.value
+                                  ? t.text
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
                           ),
-                          child: current == p.value ? const Icon(Icons.check, size: 18, color: Colors.white) : null,
+                          child: current == p.value
+                              ? const Icon(
+                                  Icons.check,
+                                  size: 18,
+                                  color: Colors.white,
+                                )
+                              : null,
                         ),
                       ),
                     ),
