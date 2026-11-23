@@ -56,7 +56,7 @@ Per `scrum/definition_of_done.md`, applied this way:
 | Takahashi | everything under `scrum/` |
 
 Shared-file arrangements:
-- **arb files:** edited by Yamamoto only. Each developer sends Yamamoto a list of keys with English text (and a draft for the other locales) in `scrum/sprint007/strings_<name>.md` by the end of hour 2 of day 1, and again at the end of days 2 and 3. Yamamoto merges them and runs the l10n generation. Until merged, developers use placeholder constants behind a single `TODO(arb)` line. (Takahashi creates no code; the strings files are scrum notes.)
+- **arb files:** edited by Yamamoto only. Each developer sends Yamamoto a list of keys with English text (and a draft for the other locales) in `scrum/sprints/sprint007/strings_<name>.md` by the end of hour 2 of day 1, and again at the end of days 2 and 3. Yamamoto merges them and runs the l10n generation. Until merged, developers use placeholder constants behind a single `TODO(arb)` line. (Takahashi creates no code; the strings files are scrum notes.)
 - **`settings_dialog.dart`:** Yamamoto splits it into pane files on day 1 (hours 1 to 3). Nakamura creates `settings_admin_pane.dart` with an empty `SettingsAdminPane` widget in the first 30 minutes so Yamamoto can reference it; it is Nakamura's from then.
 - **`calendar_page.dart`:** only Nakamura (header menu). Popup shadow (PBI-042) is applied through the shared theme and Tanaka's own files; a one-line change in a file Tanaka does not own is requested from its owner.
 - **`requirements/theme.md`:** Tanaka for all rows except THM-09 (Ito).

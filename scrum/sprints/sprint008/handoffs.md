@@ -5,7 +5,7 @@
 In `lib/src/calendar/calendar_page.dart` (public, import it):
 - `HeaderBackButton({required VoidCallback onPressed, required String tooltip})`: an `IconButton` (key `header-back`, `SuiteIcons.arrowBack`, `suiteIconButtonStyle`).
 - `PageHeader({required Widget title, required VoidCallback onBack, required String backTooltip, List<Widget> right = const []})`: a `ZonedRow` with the back button first in the left zone, then `title` (Flexible). Use it in `settings_dialog.dart` in place of the plain `Text(m('settings'))` title: `PageHeader(title: Text(m('settings'), style: ...), onBack: () { /* save open pane, then */ Navigator.of(context).pop(); }, backTooltip: m('settingsBack'))`.
-- Saving is yours: onBack must save the open pane before popping. The tooltip is passed in, so I add no strings; key `settingsBack` ("Back") is in `scrum/sprint008/strings_nakamura.md` for you to merge into the arb files.
+- Saving is yours: onBack must save the open pane before popping. The tooltip is passed in, so I add no strings; key `settingsBack` ("Back") is in `scrum/sprints/sprint008/strings_nakamura.md` for you to merge into the arb files.
 
 ## Nakamura: Admin pane and UIC-45 (auto-save does not apply)
 
@@ -15,7 +15,7 @@ The Admin pane has no value to save: it has only two actions that act at once (A
 `Color eventTextColorOn(Color fill, Brightness brightness)` in `lib/src/theme/event_colors.dart`. `fill` is the opaque chip fill (blend a translucent fill over `scheme.surface` first with `Color.alphaBlend`). Result: the fill's hue moved toward black (light) or white (dark) to reach 4.5:1; flips direction when needed. Apply in `event_details.dart`. Helper `eventContrastRatio(a, b)` and `eventTextMinContrast` (4.5) are exported too. Applied by me in Month chip, Week all-day bar; Week timed blocks and List use neutral text with a color strip, and print uses a color border only (no fill), so nothing to change there.
 
 ## Tanaka: PBI-048, PBI-052 (details) and PBI-050 status
-- `analysis_options.yaml`: strict-casts, strict-inference, strict-raw-types on; the seven lints on, all at severity info (`analyzer: errors:`), plus `list_element_type_not_assignable: info` for one strict-casts finding in `test/calendar/header_test.dart` (raw `List` parameter). Findings by owner: `scrum/sprint008/analyzer_findings.md` (Sprint 009). Trivial fixes done in Tanaka's files only.
+- `analysis_options.yaml`: strict-casts, strict-inference, strict-raw-types on; the seven lints on, all at severity info (`analyzer: errors:`), plus `list_element_type_not_assignable: info` for one strict-casts finding in `test/calendar/header_test.dart` (raw `List` parameter). Findings by owner: `scrum/sprints/sprint008/analyzer_findings.md` (Sprint 009). Trivial fixes done in Tanaka's files only.
 - `event_details.dart`: not changed for `eventTextColorOn`. The details panel has no event-colored fill (text sits on `tokens.soft` in neutral token styles, already readable), so there is no chip fill to derive from. THM-10.h is set to `planned` in `theme.md`, citing Ito's `test/events/event_text_contrast_test.dart`.
 - UIC-45: set to `planned` in `common.md`, citing `test/calendar/settings_autosave_test.dart` (Yamamoto), `admin_test_data_test.dart` and `test/app/page_header_test.dart` (Nakamura).
 # Sprint 008 handoffs

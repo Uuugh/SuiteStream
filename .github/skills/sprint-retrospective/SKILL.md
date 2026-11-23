@@ -17,7 +17,7 @@ Use each sub-agent started in "Preparation" according to the instructions below 
 Yamamoto and Nakamura cannot participate in the retrospective due to contractual constraints. Proceed on the assumption that any feedback will be provided through Tanaka and Ito.
 
 ## Target Sprint
-Target the latest sprintXXX in the scrum folder (XXX is sequential).
+Target the latest sprintXXX in the scrum folder (XXX is sequential; the running sprint is `scrum/sprintXXX`, finished ones are in `scrum/sprints`).
 
 ## Pre-check
 1. Read `scrum/${sprint_number}/sprint_backlog.md` and review sprint results.
@@ -91,6 +91,7 @@ Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill
 run `flutter analyze` and the full test suite first (continue only if they pass; otherwise report the failures and stop);
 commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
 "Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
+Archive the finished sprint in the same commit, before the merge: move `scrum/sprintNNN` to `scrum/sprints/sprintNNN` (`git mv`) and change the path in any record that points at the sprint folder.
 The next sprint's branch is created from the updated `main` and the sprint is planned; it runs only when the Product Owner says "start" (except the next sprint of a usage-split epic).
 
 ## Automatic completion inside a usage epic
