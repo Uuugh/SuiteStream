@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
 import 'package:suitestream/src/calendar/settings_theme_pane.dart';
 import 'package:suitestream/src/theme/theme_mode_controller.dart';
@@ -9,7 +10,6 @@ import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/time/local_zone.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
-import 'package:suitestream/src/ui/reset_button.dart';
 
 import 'test_support.dart';
 
@@ -48,6 +48,7 @@ Future<_Rig> _open(WidgetTester tester, SharedPreferences prefs, [Size size = _t
   );
   await tester.tap(find.text('open'));
   await tester.pumpAndSettle();
+  await tester.ensureVisible(find.byKey(const ValueKey('settings-theme')));
   await tester.tap(find.byKey(const ValueKey('settings-theme')));
   await tester.pumpAndSettle();
   return _Rig(c, settings, mode);
@@ -80,10 +81,9 @@ void main() {
     expect(_text(tester, 'setting-date-picker'), '100 %');
     expect(_text(tester, 'setting-status-chip'), '2.4 s');
     expect(find.byKey(const ValueKey('setting-theme-reset')), findsOneWidget);
-    // UIC-46: Reset is the shared button in the error role.
+    // UIC-46, SET-01.g: Reset (in the dialog footer, with an icon) is in the error role.
     final reset = find.byKey(const ValueKey('setting-theme-reset'));
-    expect(tester.widget(reset), isA<ResetButton>());
-    final button = tester.widget<TextButton>(find.descendant(of: reset, matching: find.byType(TextButton)));
+    final button = tester.widget<TextButton>(reset);
     final error = Theme.of(tester.element(reset)).colorScheme.error;
     expect(button.style!.foregroundColor!.resolve(<WidgetState>{}), error);
     expect(rig.settings.isDefault, isTrue);
@@ -156,8 +156,8 @@ void main() {
     await tester.pump();
     expect(rig.settings.isDefault, isTrue);
     expect(rig.controller.animationDuration, const Duration(milliseconds: 500));
-    expect(rig.controller.longPress, const Duration(milliseconds: 300));
-    expect(_text(tester, 'setting-press-delay'), '0.3 s');
+    expect(rig.controller.longPress, const Duration(milliseconds: 200));
+    expect(_text(tester, 'setting-press-delay'), '0.2 s');
     expect(_text(tester, 'setting-popup-shadow'), '100 %');
     expect(_text(tester, 'setting-animation'), '0.5 s');
     expect(_text(tester, 'setting-status-chip'), '2.4 s');
@@ -179,11 +179,11 @@ void main() {
     await tester.pump();
     expect(rig.mode.mode, ThemeMode.light);
   });
-  testWidgets('SET-03.b: the press-and-hold delay is in Settings > Theme, 0.3 s until changed, applies at once, steps 0.1 s within 0.2 to 1.5 s', (tester) async {
+  testWidgets('SET-03.b: the press-and-hold delay is in Settings > Theme, 0.2 s until changed, applies at once, steps 0.1 s within 0.2 to 1.5 s', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final rig = await _open(tester, prefs);
-    expect(_text(tester, 'setting-press-delay'), '0.3 s');
+    expect(_text(tester, 'setting-press-delay'), '0.2 s');
     await tester.enterText(find.byKey(const ValueKey('setting-press-delay')), '0.8');
     await tester.pump();
     expect(rig.controller.longPress, const Duration(milliseconds: 800));
@@ -200,6 +200,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('setting-press-delay')), findsNothing);
   });
+
+  statusWordTests();
 
   for (final width in [320.0, 400.0, 800.0]) {
     testWidgets('UIC-44, SET-03.b: at $width px the Theme pane has titled groups, ${width >= 800 ? 'two columns' : 'one column'} and no overflow', (tester) async {
@@ -226,4 +228,66 @@ void main() {
       expect(tester.getRect(find.byKey(const ValueKey('setting-date-picker'))).right, lessThanOrEqualTo(width));
     });
   }
+}
+
+void statusWordTests() {
+  testWidgets('SET-03.m: Saved or Cancelled shown is in Times, 1 s by default, within 0.5 to 10 s, applies at once and is kept', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final timing = TimingSettings(prefs: prefs);
+    useWindow(tester, _tall);
+    final c = CalendarController(localZone: const LocalZone.system(zone), timeFormat: TimeFormat.twelveHour, prefs: prefs);
+    await tester.pumpWidget(
+      TimingSettingsScope(
+        settings: timing,
+        child: appFor(
+          Builder(builder: (context) => TextButton(onPressed: () => openSettingsDialog(context, c, prefs: prefs), child: const Text('open'))),
+          size: _tall,
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-theme')));
+    await tester.pumpAndSettle();
+    expect(find.text('Saved or Cancelled shown'), findsOneWidget);
+    expect(_text(tester, 'setting-status-word'), '1.0 s');
+    expect(timing.statusWordTime, defaultStatusWordTime);
+    // Laid out like the press-and-hold delay: same group, same left edge.
+    expect(tester.getTopLeft(find.text('Saved or Cancelled shown')).dx, greaterThan(0));
+    await tester.enterText(find.byKey(const ValueKey('setting-status-word')), '2.5');
+    await tester.pump();
+    expect(timing.statusWordTime, const Duration(milliseconds: 2500));
+    expect(TimingSettings(prefs: prefs).statusWordTime, const Duration(milliseconds: 2500));
+    // Out of range shows the range and changes nothing.
+    await tester.enterText(find.byKey(const ValueKey('setting-status-word')), '0.4');
+    await tester.pump();
+    expect(find.text('Use a number from 0.5 to 10.'), findsOneWidget);
+    expect(timing.statusWordTime, const Duration(milliseconds: 2500));
+    await tester.enterText(find.byKey(const ValueKey('setting-status-word')), '11');
+    await tester.pump();
+    expect(timing.statusWordTime, const Duration(milliseconds: 2500));
+    // The arrows step 0.1 s.
+    await tester.enterText(find.byKey(const ValueKey('setting-status-word')), '10');
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('setting-status-word-up')));
+    await tester.pump();
+    expect(timing.statusWordTime, maxStatusWordTime);
+    // Reset restores 1 s.
+    await tester.tap(find.byKey(const ValueKey('setting-theme-reset')));
+    await tester.pump();
+    expect(timing.statusWordTime, defaultStatusWordTime);
+    expect(_text(tester, 'setting-status-word'), '1.0 s');
+    expect(TimingSettings(prefs: prefs).statusWordTime, defaultStatusWordTime);
+  });
+
+  test('SET-03.m: the saved time is clamped to the limits and the default holds without storage', () async {
+    SharedPreferences.setMockInitialValues({TimingSettings.statusWordKey: 60000});
+    final prefs = await SharedPreferences.getInstance();
+    expect(TimingSettings(prefs: prefs).statusWordTime, maxStatusWordTime);
+    expect(TimingSettings().statusWordTime, defaultStatusWordTime);
+    final t = TimingSettings()..statusWordTime = const Duration(milliseconds: 10);
+    expect(t.statusWordTime, minStatusWordTime);
+    expect(defaultStatusWordTime, const Duration(seconds: 1));
+  });
 }

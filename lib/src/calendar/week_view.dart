@@ -259,19 +259,71 @@ class _HourlyViewState extends State<HourlyView> {
   }
 }
 
-class _DayColumn extends StatelessWidget {
+class _DayColumn extends StatefulWidget {
   const _DayColumn({required this.controller, required this.day});
 
   final CalendarController controller;
   final DateTime day;
 
   @override
+  State<_DayColumn> createState() => _DayColumnState();
+}
+
+class _DayColumnState extends State<_DayColumn> {
+  // CAL-12: the event being resized and the end minute it would have, while the handle is dragged.
+  String? _resizing;
+  int _resizeEnd = 0;
+
+  /// CAL-12: the resize handle on the bottom edge of the block of [p].
+  Widget _handle(PlacedEvent<SuiteEvent> p, double hourHeight, double blockHeight, double width) {
+    final c = widget.controller;
+    final day = widget.day;
+    final selected = p.event.id == c.selectedEvent?.id;
+    final loc = c.localZone.location;
+    final real = _minutesOn(p.event, c, day).$2;
+    return Positioned(
+      key: ValueKey('resize-${p.event.id}'),
+      top: p.startMinute / 60 * hourHeight + blockHeight - suiteResizeBarSize.height,
+      height: suiteResizeBarSize.height,
+      left: selected ? 0 : width * p.column / p.columns,
+      width: selected ? width - 1 : width / p.columns - 1,
+      child: ResizeHandle(
+        color: eventTextColorOn(Color(c.colorOf(p.event) ?? defaultEventColor), Theme.of(context).brightness),
+        onPreview: (dy) {
+          setState(() {
+            if (dy == null) {
+              _resizing = null;
+            } else {
+              _resizing = p.event.id;
+              _resizeEnd = resizedEndMinute(startMinute: p.startMinute, endMinute: real, deltaMinutes: dy / hourHeight * 60);
+            }
+          });
+        },
+        onResized: (dy) {
+          final end = resizedEndMinute(startMinute: p.startMinute, endMinute: real, deltaMinutes: dy / hourHeight * 60);
+          if (end == real) return;
+          c.upsertEvent(resizeEventEnd(p.event, loc, day: day, endMinute: end));
+        },
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final c = controller;
+    final c = widget.controller;
+    final day = widget.day;
     final timed = c.eventsOn(day).where((e) => !e.allDay).toList();
     final hourHeight = c.hourLines * eventLineHeight;
     final placed = layoutOverlaps<SuiteEvent>(timed, (e) => _minutesOn(e, c, day));
+    final loc = c.localZone.location;
+    final dayEnd = TZDateTime(loc, day.year, day.month, day.day + 1);
+    // CAL-12.a: the handle is on an event that can be edited and ends within this day.
+    bool resizable(PlacedEvent<SuiteEvent> p) => canMove(p.event) && !p.event.endIn(loc).isAfter(dayEnd);
+    double blockHeight(PlacedEvent<SuiteEvent> p) {
+      final end = _resizing == p.event.id ? _resizeEnd : p.endMinute;
+      return ((end - p.startMinute) / 60 * hourHeight).clamp(16, double.infinity);
+    }
     return LayoutBuilder(
       builder: (context, box) {
         // Clicking an empty spot opens the new-event dialog at that time (EVT-01.a).
@@ -318,10 +370,11 @@ class _DayColumn extends StatelessWidget {
                 ),
               // The opened event is painted last, on the top layer (CAL-10.d).
               for (final p in [...placed.where((p) => p.event.id != c.selectedEvent?.id), ...placed.where((p) => p.event.id == c.selectedEvent?.id)])
+                ...[
                 Positioned(
                   key: ValueKey('event-${p.event.id}'),
                   top: p.startMinute / 60 * hourHeight,
-                  height: ((p.endMinute - p.startMinute) / 60 * hourHeight).clamp(16, double.infinity),
+                  height: blockHeight(p),
                   left: p.event.id == c.selectedEvent?.id ? 0 : box.maxWidth * p.column / p.columns,
                   width: p.event.id == c.selectedEvent?.id ? box.maxWidth - 1 : box.maxWidth / p.columns - 1,
                   child: DragMovable(
@@ -353,22 +406,22 @@ class _DayColumn extends StatelessWidget {
                     key: p.event.id == c.selectedEvent?.id ? const ValueKey('opened-event') : null,
                     elevation: p.event.id == c.selectedEvent?.id ? popupElevationOf(context) : 0,
                     shadowColor: t.scheme.shadow,
-                    color: t.runBg,
+                    // EVT-03.b: the block fills with the event color; text readable on it (THM-10.h).
+                    color: Color(c.colorOf(p.event) ?? defaultEventColor),
                     child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                    decoration: BoxDecoration(
-                      border: Border(left: BorderSide(color: Color(c.colorOf(p.event) ?? defaultEventColor), width: 3)),
-                    ),
                     child: Text(
-                      '${multiDayLabel(start: p.event.startIn(c.localZone.location), end: p.event.endIn(c.localZone.location), day: day, format: c.timeFormat, cont: context.msg('cont')) ?? formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} ${p.event.title}',
+                      '${_resizing == p.event.id ? '${formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} - ${formatTimeOfDay(_resizeEnd ~/ 60 % 24, _resizeEnd % 60, c.timeFormat)}' : multiDayLabel(start: p.event.startIn(c.localZone.location), end: p.event.endIn(c.localZone.location), day: day, format: c.timeFormat, cont: context.msg('cont')) ?? formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} ${p.event.title}',
                       overflow: TextOverflow.ellipsis,
+                      style: SuiteText.note(t).copyWith(color: eventTextColorOn(Color(c.colorOf(p.event) ?? defaultEventColor), Theme.of(context).brightness)),
                       maxLines: 2,
-                      style: SuiteText.note(t).copyWith(color: t.text),
                     ),
                   ),
                   ),
                   ),
                 ),
+                if (resizable(p)) _handle(p, hourHeight, blockHeight(p), box.maxWidth),
+                ],
             ],
           ),
           ),

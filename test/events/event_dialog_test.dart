@@ -415,8 +415,7 @@ void main() {
     await save(tester);
     expect(c.events.single.color, 0xFF8E24AA);
     final chip = find.byKey(ValueKey('event-${c.events.single.id}'));
-    final surface = Theme.of(tester.element(chip)).colorScheme.surface;
-    final tint = Color.alphaBlend(const Color(0xFF8E24AA).withValues(alpha: 0.18), surface);
+    final tint = const Color(0xFF8E24AA);
     final bar = find.descendant(
       of: chip,
       matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == tint),

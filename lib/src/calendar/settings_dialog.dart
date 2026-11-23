@@ -7,6 +7,7 @@ import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/theme/tokens.dart';
 import 'package:suitestream/src/ui/popup_size_lock.dart';
+import 'package:suitestream/src/ui/reset_button.dart';
 import 'package:suitestream/src/ui/stepper_arrows.dart';
 import 'package:suitestream/src/ui/suite_dialog.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
@@ -44,14 +45,14 @@ Future<void> openSettingsDialog(
 
 /// The panes of Settings, in menu order; Admin is last, at the bottom (SET-14).
 enum SettingsSection {
-  general,
   calendar,
-  theme,
   sources,
   feeds,
   rules,
   templates,
   history,
+  general,
+  theme,
   admin,
 }
 
@@ -137,6 +138,37 @@ class SettingsLeaveHook {
   void run() => _save?.call();
 }
 
+/// SET-01.g: the open page's Reset, shown in the dialog's footer beside Close. A page that
+/// has a Reset sets its action here and clears it when it goes away.
+class SettingsResetHook extends ChangeNotifier {
+  VoidCallback? _action;
+
+  VoidCallback? get action => _action;
+
+  /// Set from the page's `initState` (during a build), so listeners hear it after the frame.
+  void set(VoidCallback action) {
+    _action = action;
+    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+  }
+
+  /// Clears [action] when the page goes away (only if it is still the registered one).
+  void clear(VoidCallback action) {
+    if (_action != action) return;
+    _action = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_disposed) notifyListeners();
+    });
+  }
+
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+}
+
 /// The user's settings dialog: a menu of panes (General, Calendar, Theme, Sources, ...,
 /// Admin) and the pane chosen. Each pane is its own file.
 class SettingsDialog extends StatefulWidget {
@@ -152,6 +184,13 @@ class SettingsDialog extends StatefulWidget {
 class _SettingsDialogState extends State<SettingsDialog> {
   SettingsSection _section = SettingsSection.general;
   final SettingsLeaveHook _leave = SettingsLeaveHook();
+  final SettingsResetHook _reset = SettingsResetHook();
+
+  @override
+  void dispose() {
+    _reset.dispose();
+    super.dispose();
+  }
 
   /// UIC-45: choosing another page saves the one being left.
   void _choose(SettingsSection section) {
@@ -160,40 +199,50 @@ class _SettingsDialogState extends State<SettingsDialog> {
     setState(() => _section = section);
   }
 
-  static const _entries = <(SettingsSection, String, String)>[
-    (SettingsSection.general, 'settings-general', 'settingsGeneral'),
+  /// SET-01.e: the pages above the rule, in order.
+  static const _topEntries = <(SettingsSection, String, String)>[
     (SettingsSection.calendar, 'settings-calendar', 'settingsCalendar'),
-    (SettingsSection.theme, 'settings-theme', 'settingsTheme'),
     (SettingsSection.sources, 'settings-sources', 'settingsSources'),
     (SettingsSection.feeds, 'settingsFeeds', 'settingsFeeds'),
     (SettingsSection.rules, 'settingsRules', 'settingsRules'),
     (SettingsSection.templates, 'settingsTemplates', 'settingsTemplates'),
     (SettingsSection.history, 'settingsHistory', 'settingsHistory'),
+  ];
+
+  /// SET-01.e, SET-14: the pages under the rule, at the bottom of the menu; Admin is last.
+  static const _bottomEntries = <(SettingsSection, String, String)>[
+    (SettingsSection.general, 'settings-general', 'settingsGeneral'),
+    (SettingsSection.theme, 'settings-theme', 'settingsTheme'),
     (SettingsSection.admin, 'settings-admin', 'settingsAdmin'),
   ];
 
   Widget _menu(BuildContext context, {required bool vertical}) {
     final m = context.msg;
+    final line = context.tokens.line;
+    Widget tile((SettingsSection, String, String) e) => ListTile(
+      key: ValueKey(e.$2),
+      dense: true,
+      selected: _section == e.$1,
+      title: Text(m(e.$3)),
+      onTap: () => _choose(e.$1),
+    );
+    final rule = Divider(key: const ValueKey('settings-menu-rule'), height: 2 * suitePartGap, color: line);
     if (vertical) {
-      return ListView(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final (section, key, label) in _entries)
-            ListTile(
-              key: ValueKey(key),
-              dense: true,
-              selected: _section == section,
-              title: Text(m(label)),
-              onTap: () => _choose(section),
-            ),
+          Expanded(child: ListView(children: [for (final e in _topEntries) tile(e)])),
+          rule,
+          for (final e in _bottomEntries) tile(e),
         ],
       );
     }
     // Narrow window: the entries wrap onto more rows, so every one stays in reach.
-    return Wrap(
+    Widget chips(List<(SettingsSection, String, String)> entries) => Wrap(
       spacing: suitePartGap,
       runSpacing: suitePartGap,
       children: [
-        for (final (section, key, label) in _entries)
+        for (final (section, key, label) in entries)
           ChoiceChip(
             key: ValueKey(key),
             label: Text(m(label)),
@@ -201,6 +250,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
             onSelected: (_) => _choose(section),
           ),
       ],
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [chips(_topEntries), rule, chips(_bottomEntries)],
     );
   }
 
@@ -216,7 +269,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
           leave: _leave,
         );
       case SettingsSection.theme:
-        return SettingsThemePane(controller: widget.controller);
+        return SettingsThemePane(controller: widget.controller, prefs: widget.prefs, resetHook: _reset);
       case SettingsSection.sources:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -302,19 +355,38 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _menu(context, vertical: false),
+                          // The menu takes at most 40 % of the height and scrolls; the page keeps the rest.
+                          ConstrainedBox(
+                            constraints: BoxConstraints(maxHeight: height * 0.4),
+                            child: SingleChildScrollView(child: _menu(context, vertical: false)),
+                          ),
                           const SizedBox(height: suitePartGap),
                           Expanded(child: _pane(context)),
                         ],
                       ),
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  key: const ValueKey('settings-close'),
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(m('closeButton')),
-                ),
+              // SET-01.g, UIC-46: Reset (when the page has one) sits on the same line as Close.
+              Row(
+                children: [
+                  ListenableBuilder(
+                    listenable: _reset,
+                    builder: (context, _) => _reset.action == null
+                        ? const SizedBox.shrink()
+                        : TextButton.icon(
+                            key: const ValueKey('setting-theme-reset'),
+                            style: suiteResetButtonStyle(context),
+                            onPressed: _reset.action,
+                            icon: const Icon(SuiteIcons.restartAlt),
+                            label: Text(m('themeSettingsReset')),
+                          ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    key: const ValueKey('settings-close'),
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(m('closeButton')),
+                  ),
+                ],
               ),
             ],
           ),

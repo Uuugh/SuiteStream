@@ -1092,7 +1092,7 @@ class _EventDialogState extends State<EventDialog> {
       iconSize: 18,
       padding: EdgeInsets.zero,
       visualDensity: VisualDensity.compact,
-      constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+      constraints: const BoxConstraints(minWidth: suiteCompactIconBox, minHeight: suiteCompactIconBox),
       icon: const Icon(SuiteIcons.contentCopy),
       onPressed: () {
         final nav = Navigator.of(context);

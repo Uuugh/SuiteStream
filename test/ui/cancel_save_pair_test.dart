@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/ui/cancel_save_pair.dart';
 
@@ -10,6 +11,7 @@ Widget _host(
   String cancel = 'Cancel',
   Duration? time,
   bool saveEnabled = true,
+  Duration? word = const Duration(seconds: 3),
 }) {
   Widget pair = CancelSavePair(
     cancelKey: const ValueKey('c'),
@@ -20,6 +22,7 @@ Widget _host(
     onCancel: () => log.add('cancel'),
     onSave: () => log.add('save'),
   );
+  if (word != null) pair = SuiteStatusWordScope(duration: word, child: pair);
   if (time != null) pair = SuiteAnimationScope(duration: time, child: pair);
   return MaterialApp(
     builder: (context, child) => MediaQuery(
@@ -37,13 +40,14 @@ double _pairInner(WidgetTester t) => t.getSize(find.byType(CancelSavePair)).widt
 Color _coverColor(WidgetTester t) => t.widget<ColoredBox>(find.byKey(_cover)).color;
 
 void main() {
+  _statusWordTests();
   // These tests exercise the hold itself: undo the suite-wide "no hold" default.
   setUp(() => CancelSavePair.debugHold = null);
   tearDown(() => CancelSavePair.debugHold = Duration.zero);
 
-  test('one animation time, 0.5 s by default; the hold is the DEF-01 value', () {
+  test('one animation time, 0.5 s by default; the word time is 1 s by default (DEF-01)', () {
     expect(defaultAnimationDuration, const Duration(milliseconds: 500));
-    expect(savedCancelledHold, const Duration(seconds: 3));
+    expect(defaultStatusWordTime, const Duration(seconds: 1));
   });
 
   testWidgets('Save slides from the right to cover the pair, then holds Saved and calls back', (t) async {
@@ -195,5 +199,52 @@ void main() {
     await t.tap(find.byKey(const ValueKey('s')));
     await t.pump(const Duration(milliseconds: 11));
     expect(log, ['save']);
+  });
+}
+
+void _statusWordTests() {
+  testWidgets('UIC-27.a, SET-03.m: with no scope the word is held 1 s from the press', (t) async {
+    final log = <String>[];
+    await t.pumpWidget(_host(log, word: null, time: const Duration(milliseconds: 100)));
+    await t.tap(find.byKey(const ValueKey('s')));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 900));
+    expect(log, isEmpty);
+    await t.pump(const Duration(milliseconds: 101));
+    expect(log, ['save']);
+  });
+
+  testWidgets('UIC-27.a, SET-03.m: the Status word scope changes the hold; holdDuration still wins', (t) async {
+    final log = <String>[];
+    await t.pumpWidget(_host(log, word: const Duration(seconds: 5), time: const Duration(milliseconds: 100)));
+    await t.tap(find.byKey(const ValueKey('s')));
+    await t.pump();
+    await t.pump(const Duration(seconds: 4, milliseconds: 900));
+    expect(log, isEmpty);
+    await t.pump(const Duration(milliseconds: 101));
+    expect(log, ['save']);
+
+    final log2 = <String>[];
+    await t.pumpWidget(
+      SuiteStatusWordScope(
+        duration: const Duration(seconds: 5),
+        child: MaterialApp(
+          home: Scaffold(
+            body: CancelSavePair(
+              saveKey: const ValueKey('s2'),
+              cancelLabel: 'Cancel',
+              saveLabel: 'Save',
+              holdDuration: const Duration(milliseconds: 600),
+              onCancel: () {},
+              onSave: () => log2.add('save'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await t.tap(find.byKey(const ValueKey('s2')));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 601));
+    expect(log2, ['save']);
   });
 }

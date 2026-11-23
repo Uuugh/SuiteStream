@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:suitestream/src/app/bootstrap.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
 import 'package:suitestream/src/l10n/messages.dart';
@@ -43,6 +44,7 @@ Future<void> main() async {
         messages: messages,
         themeMode: ThemeModeController(prefs: prefs),
         themeSettings: ThemeSettings(prefs: prefs),
+        timingSettings: TimingSettings(prefs: prefs),
       ),
     );
   } on Object catch (error, stack) {
@@ -109,6 +111,7 @@ class SuiteStreamApp extends StatefulWidget {
     required this.messages,
     required this.themeMode,
     this.themeSettings,
+    this.timingSettings,
   });
 
   final CalendarController controller;
@@ -118,12 +121,16 @@ class SuiteStreamApp extends StatefulWidget {
   /// UIC-44: the Theme pane settings, one instance for the whole app (null = defaults).
   final ThemeSettings? themeSettings;
 
+  /// SET-03.m: the Saved or Cancelled shown time, one instance for the whole app (null = default).
+  final TimingSettings? timingSettings;
+
   @override
   State<SuiteStreamApp> createState() => _SuiteStreamAppState();
 }
 
 class _SuiteStreamAppState extends State<SuiteStreamApp> {
   late final ThemeSettings settings = widget.themeSettings ?? ThemeSettings();
+  late final TimingSettings timing = widget.timingSettings ?? TimingSettings();
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +154,18 @@ class _SuiteStreamAppState extends State<SuiteStreamApp> {
               controller: themeMode,
               child: ThemeSettingsScope(
                 settings: settings,
-                child: MessagesScope(messages: messages, child: child!),
+                child: TimingSettingsScope(
+                  settings: timing,
+                  // The status word time reaches every Cancel | Save pair live.
+                  child: ListenableBuilder(
+                    listenable: timing,
+                    child: child!,
+                    builder: (context, child) => SuiteStatusWordScope(
+                      duration: timing.statusWordTime,
+                      child: MessagesScope(messages: messages, child: child!),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -158,6 +176,9 @@ class _SuiteStreamAppState extends State<SuiteStreamApp> {
             final t = context.tokens;
             return Scaffold(
               appBar: AppBar(
+                // SHL-01.h: no background of its own; the page color shows through.
+                backgroundColor: t.bg,
+                surfaceTintColor: Colors.transparent,
                 scrolledUnderElevation: 0,
                 titleSpacing: suitePartGap,
                 toolbarHeight: 44,

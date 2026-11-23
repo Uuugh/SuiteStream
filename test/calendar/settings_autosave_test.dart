@@ -126,8 +126,8 @@ void main() {
         await _type(tester, 'setting-press-delay', '9');
         expect(find.text('Use a number from 0.2 to 1.5.'), findsOneWidget);
         await _leave(tester, how);
-        expect(c.longPress, const Duration(milliseconds: 300));
-        expect(_controller(prefs).longPress, const Duration(milliseconds: 300));
+        expect(c.longPress, const Duration(milliseconds: 200));
+        expect(_controller(prefs).longPress, const Duration(milliseconds: 200));
       },
     );
 

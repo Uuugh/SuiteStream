@@ -14,6 +14,7 @@ const _color = 0xFF112233;
 SuiteEvent _colored() => makeEvent('c', 15, 9, title: 'Colored').copyWith(color: _color);
 SuiteEvent _plain() => makeEvent('p', 15, 11, title: 'Plain');
 
+
 /// Finds the first Container under [root] whose decoration passes [test].
 Finder _box(Finder root, bool Function(BoxDecoration) test) => find.descendant(
       of: root,
@@ -26,38 +27,32 @@ void main() {
     await initializeDateFormatting();
   });
 
-  testWidgets('EVT-03.b: Month shows the event color in its chip, else the default event color', (tester) async {
-    useWindow(tester);
-    final c = makeController(events: [_colored(), _plain()], view: CalendarView.month);
-    addTearDown(c.dispose);
-    await tester.pumpWidget(appFor(CalendarPage(controller: c)));
-    final surface = Theme.of(tester.element(find.byKey(const ValueKey('event-c')))).colorScheme.surface;
-    Color fill(String id) => tester.widget<Container>(find.descendant(of: find.byKey(ValueKey('event-$id')), matching: find.byType(Container)).first).decoration!.let((d) => (d as BoxDecoration).color!);
-    expect(fill('c'), Color.alphaBlend(const Color(_color).withValues(alpha: 0.18), surface));
-    expect(fill('p'), Color.alphaBlend(const Color(defaultEventColor).withValues(alpha: 0.18), surface));
-  });
+  // EVT-03.b, THM-10.h: in every view the event fills with its own color (never gray or a pale
+  // tint) and its text reaches 4.5:1 on that fill, in light and dark.
+  for (final brightness in Brightness.values) {
+    void check(String name, CalendarView view, Color Function(WidgetTester, String) fillOf, Color Function(WidgetTester, String) textOf) {
+      testWidgets('EVT-03.b: $name fills with the event color, readable text (${brightness.name})', (tester) async {
+        useWindow(tester);
+        final c = makeController(events: [_colored(), _plain()], view: view);
+        addTearDown(c.dispose);
+        await tester.pumpWidget(appFor(CalendarPage(controller: c), brightness: brightness));
+        expect(fillOf(tester, 'c'), const Color(_color));
+        expect(fillOf(tester, 'p'), const Color(defaultEventColor));
+        for (final id in ['c', 'p']) {
+          expect(eventContrastRatio(fillOf(tester, id), textOf(tester, id)), greaterThanOrEqualTo(eventTextMinContrast));
+        }
+      });
+    }
 
-  for (final view in [CalendarView.week, CalendarView.fiveDay, CalendarView.day]) {
-    testWidgets('EVT-03.b: ${view.name} shows the event color on the block edge, else the default', (tester) async {
-      useWindow(tester);
-      final c = makeController(events: [_colored(), _plain()], view: view);
-      addTearDown(c.dispose);
-      await tester.pumpWidget(appFor(CalendarPage(controller: c)));
-      bool edge(BoxDecoration d, int argb) => d.border is Border && (d.border! as Border).left.color == Color(argb);
-      expect(_box(find.byKey(const ValueKey('event-c')), (d) => edge(d, _color)), findsOneWidget);
-      expect(_box(find.byKey(const ValueKey('event-p')), (d) => edge(d, defaultEventColor)), findsOneWidget);
-    });
+    Text title(WidgetTester tester, String id, String word) =>
+        tester.widget<Text>(find.descendant(of: find.byKey(ValueKey('event-$id')), matching: find.textContaining(word)).first);
+
+    check('Month', CalendarView.month, (t, id) => (_first<Container>(t, id).decoration! as BoxDecoration).color!, (t, id) => title(t, id, id == 'c' ? 'Colored' : 'Plain').style!.color!);
+    for (final view in [CalendarView.week, CalendarView.fiveDay, CalendarView.day]) {
+      check(view.name, view, (t, id) => t.widget<Material>(find.descendant(of: find.byKey(ValueKey('event-$id')), matching: find.byType(Material)).first).color!, (t, id) => title(t, id, id == 'c' ? 'Colored' : 'Plain').style!.color!);
+    }
+    check('List', CalendarView.list, (t, id) => _first<Container>(t, id).color!, (t, id) => title(t, id, id == 'c' ? 'Colored' : 'Plain').style!.color!);
   }
-
-  testWidgets('EVT-03.b: List shows the event color in its bar, else the default', (tester) async {
-    useWindow(tester);
-    final c = makeController(events: [_colored(), _plain()], view: CalendarView.list);
-    addTearDown(c.dispose);
-    await tester.pumpWidget(appFor(CalendarPage(controller: c)));
-    Color bar(String id) => tester.widget<Container>(find.descendant(of: find.byKey(ValueKey('event-$id')), matching: find.byType(Container)).first).color!;
-    expect(bar('c'), const Color(_color));
-    expect(bar('p'), const Color(defaultEventColor));
-  });
 
   for (final view in [CalendarView.month, CalendarView.week, CalendarView.day, CalendarView.list]) {
     testWidgets('EVT-03.b: ${view.name} print shows the event color on the printed event', (tester) async {
@@ -75,6 +70,5 @@ void main() {
   }
 }
 
-extension<T> on T {
-  R let<R>(R Function(T) f) => f(this);
-}
+T _first<T extends Widget>(WidgetTester tester, String id) =>
+    tester.widget<T>(find.descendant(of: find.byKey(ValueKey('event-$id')), matching: find.byType(T)).first);

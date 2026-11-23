@@ -172,7 +172,7 @@ void main() {
         .map((t) => (t.key! as ValueKey).value)
         .toList();
     expect(keys.last, 'settings-admin');
-    expect(keys, containsAllInOrder(['settings-general', 'settings-calendar', 'settings-theme']));
+    expect(keys, containsAllInOrder(['settings-calendar', 'settings-general', 'settings-theme']));
     await tester.tap(find.byKey(const ValueKey('settings-admin')));
     await tester.pumpAndSettle();
     expect(find.text('Add test calendars'), findsOneWidget);

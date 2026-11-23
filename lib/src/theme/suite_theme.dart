@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/theme/tokens.dart';
 
@@ -38,6 +39,10 @@ class SuiteAnimationScope extends InheritedWidget {
 const double suiteControlRadius = 8;
 const double suitePanelRadius = 12;
 const double suiteControlHeight = 34;
+
+/// Square box of a compact icon-only button next to a field (the duplicate
+/// button in the event dialog).
+const double suiteCompactIconBox = 26;
 const double suiteCompactControlHeight = 28;
 const double suitePartGap = 5;
 const double suiteStackedZoneGap = 6;
@@ -202,4 +207,18 @@ ThemeData buildSuiteTheme(Brightness brightness) {
     ),
     extensions: <ThemeExtension<dynamic>>[t],
   );
+}
+
+/// DEF-01, SET-03.m: how long the word of a pressed Cancel | Save pair (Saved,
+/// Cancelled) is held. Without a scope, [defaultStatusWordTime] applies.
+class SuiteStatusWordScope extends InheritedWidget {
+  const SuiteStatusWordScope({super.key, required this.duration, required super.child});
+
+  final Duration duration;
+
+  static Duration of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SuiteStatusWordScope>()?.duration ?? defaultStatusWordTime;
+
+  @override
+  bool updateShouldNotify(SuiteStatusWordScope old) => duration != old.duration;
 }
