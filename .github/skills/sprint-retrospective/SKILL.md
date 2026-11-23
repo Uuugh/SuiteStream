@@ -89,4 +89,4 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 When the Product Owner approves the retrospective, commit the sprint's work automatically, before the next sprint starts:
 run `flutter analyze` and the full test suite first (commit only if they pass; otherwise report the failures and stop);
 stage everything for the sprint except stray or generated files; use one commit with a message like
-"Complete Sprint NNN <short summary>"; do not push unless the Product Owner asks.
+"Complete Sprint NNN <short summary>"; then push to the current branch's remote.
