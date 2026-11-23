@@ -35,20 +35,6 @@ class SuiteText {
 /// Builds the app theme for a palette. Every component uses it by default.
 ThemeData buildSuiteTheme(Brightness brightness) {
   final t = brightness == Brightness.dark ? SuiteTokens.dark : SuiteTokens.light;
-  final scheme = ColorScheme(
-    brightness: brightness,
-    primary: t.accent,
-    onPrimary: t.onAccent,
-    secondary: t.accent,
-    onSecondary: t.onAccent,
-    error: t.bad,
-    onError: t.card,
-    surface: t.card,
-    onSurface: t.text,
-    outline: t.line,
-    surfaceContainerHighest: t.soft,
-    onSurfaceVariant: t.muted,
-  );
   final base = SuiteText.body(t);
   final textTheme = TextTheme(
     displayLarge: base,
@@ -70,7 +56,7 @@ ThemeData buildSuiteTheme(Brightness brightness) {
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
-    colorScheme: scheme,
+    colorScheme: t.scheme,
     scaffoldBackgroundColor: t.bg,
     canvasColor: t.card,
     dividerColor: t.line,

@@ -11,7 +11,7 @@ void main() {
       FontLoader('IBM Plex Sans')
         ..addFont(rootBundle.load('assets/fonts/IBMPlexSans-Variable.ttf'))
     ).load();
-    tester.view.physicalSize = const Size(2400, 1800);
+    tester.view.physicalSize = const Size(1800, 1300);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
@@ -78,22 +78,28 @@ class _ThemePanel extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Flutter Material 3 defaults under SuiteStream theme',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 18,
+                    ),
                   ),
                   const SizedBox(height: 22),
                   for (final option in _options(scheme)) ...[
                     _ButtonOptionRow(option: option),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
                   ],
                   const Spacer(),
                   Text(
                     'Cancel is a default TextButton in each pair. The Save column uses the listed built-in widget with no custom ButtonStyle.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 15,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Default enabled appearance only; Flutter provides each button type’s built-in interaction states.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 15,
+                    ),
                   ),
                 ],
               ),
@@ -202,8 +208,8 @@ class _ButtonOptionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      height: 245,
-      padding: const EdgeInsets.all(18),
+      height: 190,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest,
         border: Border.all(color: scheme.outline),
@@ -218,12 +224,16 @@ class _ButtonOptionRow extends StatelessWidget {
               children: [
                 Text(
                   option.name,
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 22,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   option.description,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 14),
                 for (final color in option.colors)
@@ -231,7 +241,7 @@ class _ButtonOptionRow extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 28),
+          const SizedBox(width: 20),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -240,7 +250,7 @@ class _ButtonOptionRow extends StatelessWidget {
                 child: const Text('Cancel'),
               ),
               const SizedBox(width: 10),
-              SizedBox(width: 160, child: option.save()),
+              SizedBox(width: 135, child: option.save()),
             ],
           ),
         ],
@@ -263,8 +273,8 @@ class _ColorCallout extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 18,
-            height: 18,
+            width: 22,
+            height: 22,
             decoration: BoxDecoration(
               color: color ?? scheme.surface,
               border: Border.all(color: scheme.outline),
@@ -274,12 +284,14 @@ class _ColorCallout extends StatelessWidget {
           Expanded(
             child: Text(
               '${colorUse.label}${color == null ? '' : '  ${_hex(color)}'}',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontSize: 16,
+              ),
             ),
           ),
           SizedBox(
-            width: 28,
-            height: 18,
+            width: 30,
+            height: 20,
             child: CustomPaint(
               painter: _ArrowPainter(color ?? scheme.primary),
             ),
