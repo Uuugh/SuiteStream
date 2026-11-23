@@ -15,7 +15,7 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 | Level | Reading | Action |
 |---|---|---|
 | Caution | 70% | Notify the Product Owner before starting a job projected to end at or above it, and continue; tell running agents to commit |
-| Warning | 85% | Ask the Product Owner's permission, and wait, before starting a job projected to end at or above it; stop a running agent when a reading reaches it without permission |
+| Warning | 85% | Do not start a job projected to end at or above it. When running an epic automatically, decide without asking (split smaller, or wait for the reset time if nothing fits); otherwise ask the Product Owner's permission and wait; stop a running agent when a reading reaches it without permission |
 
 | Sprint | Story or round | Date | Model | Estimate session % | Before s / w | After s / w | Actual session % | Notes |
 |---|---|---|---|---|---|---|---|---|
@@ -67,3 +67,22 @@ The orchestrator checks `usage-now.json` first. When it is stale or null (the VS
 - Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens, plus the orchestrator's own turns).
 - Apply the Caution (70%) and Warning (85%) actions to the estimate. Say the number is an estimate, and take any new reading the Product Owner gives as the new anchor.
 - The session window resets at the time in the reading; weekly usage does not reset until its reset time, so check the weekly estimate too.
+
+## Cost per story point (calibrated 2026-11-23; use it instead of asking)
+
+Measured over Sprints 006 and 007 (planning, three waves of four developers, Kobayashi's review, rounds of fixes):
+
+- **About 1 session point per story point.** Sprint 007 delivered 22 points and the session went from about 44% to about 65%, plus planning and review.
+- **About 4 session points per 100,000 agent tokens** (agents report their token use when they finish). Wave 1 of Sprint 007 cost 28 points for about 690,000 tokens; later, smaller waves cost less. Add about 3 session points per sprint for the orchestrator (planning, review, merge).
+- So **5% of the session buys about 4 story points**, and a whole 8-point slice costs about 8 + 3 = 11%.
+- Weekly usage moves about one tenth as fast (Sprint 007 moved it about 7 points). Check it too.
+
+### Decision procedure (never wait for the window to reset when a slice fits)
+
+1. Anchor: the Product Owner's last pasted reading and the time of it. Add the cost of everything since (agent tokens, or points at the rate above). The result is the estimate now; say it is an estimate.
+2. Slice cost = story points + 3. If estimate now + slice cost stays below **85%** (Warning), start it now. At or above **70%** (Caution) send the Product Owner one short line and continue.
+3. If it does not fit, split the story (Epics in the `backlog-refinement` skill) and start the largest slice that fits now; the other slices are the epic's next sprints and start as soon as they fit. Complete each sprint automatically (see Takahashi's role, "Running sprints and epics automatically").
+4. Only when not even the smallest useful slice fits below 85%, wait for the reset time in the reading, then continue. Never stop a running agent for usage unless a real reading reaches 85%.
+5. Take any new reading the Product Owner pastes as the new anchor and note how far the estimate was off.
+
+If `usage-now.json` is null or stale (the VS Code extension does not refresh it), do not ask: estimate as above from the Product Owner's last pasted reading. Ask only if there has never been a reading.

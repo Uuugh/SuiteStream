@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../theme/suite_icons.dart';
-import '../l10n/dates.dart';
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
-import '../theme/theme_settings.dart';
-import '../ui/suite_dialog.dart';
-import '../theme/tokens.dart';
-import 'calendar_controller.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/l10n/dates.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/theme_settings.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
 
 /// Opens the date picker over the calendar and applies the choice.
 Future<void> pickDate(BuildContext context, CalendarController c) async {

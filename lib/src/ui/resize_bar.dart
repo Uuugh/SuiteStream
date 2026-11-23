@@ -4,9 +4,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
-import '../theme/theme_settings.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/theme_settings.dart';
 
 /// A keyboard- and pointer-operable resize handle in feature-defined units.
 class ResizeBar extends StatefulWidget {

@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/messages.dart';
+import '../theme/suite_icons.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/length_input.dart';
-import '../ui/cancel_save_pair.dart';
 import '../ui/popup_size_lock.dart';
 import '../ui/stepper_arrows.dart';
 import '../ui/suite_dialog.dart';
@@ -20,7 +20,11 @@ import 'settings_theme_pane.dart';
 /// Opens the user's settings (view settings, kept on the device). [prefs] holds the
 /// settings that are not in the calendar controller (the calendar defaults); without it
 /// the device's own preferences are used.
-Future<void> openSettingsDialog(BuildContext context, CalendarController c, {SharedPreferences? prefs}) {
+Future<void> openSettingsDialog(
+  BuildContext context,
+  CalendarController c, {
+  SharedPreferences? prefs,
+}) {
   final msgs = context.msg;
   final saved = prefs;
   return showSuiteDialog<void>(
@@ -31,7 +35,9 @@ Future<void> openSettingsDialog(BuildContext context, CalendarController c, {Sha
         backgroundColor: dialogContext.tokens.card,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 900),
-          child: PopupSizeLock(child: SettingsDialog(controller: c, prefs: saved)),
+          child: PopupSizeLock(
+            child: SettingsDialog(controller: c, prefs: saved),
+          ),
         ),
       ),
     ),
@@ -39,7 +45,17 @@ Future<void> openSettingsDialog(BuildContext context, CalendarController c, {Sha
 }
 
 /// The panes of Settings, in menu order; Admin is last, at the bottom (SET-14).
-enum SettingsSection { general, calendar, theme, sources, feeds, rules, templates, history, admin }
+enum SettingsSection {
+  general,
+  calendar,
+  theme,
+  sources,
+  feeds,
+  rules,
+  templates,
+  history,
+  admin,
+}
 
 /// A labelled text field with the shared up and down arrows (UIC-41), used by the panes.
 class SettingsField extends StatelessWidget {
@@ -70,7 +86,10 @@ class SettingsField extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: suiteLabelGap),
-          child: Text(label, style: SuiteText.label(t).copyWith(color: t.muted)),
+          child: Text(
+            label,
+            style: SuiteText.label(t).copyWith(color: t.muted),
+          ),
         ),
         ArrowKeyStepper(
           onUp: () => step(1),
@@ -103,30 +122,21 @@ class SettingsField extends StatelessWidget {
   }
 }
 
-/// The Cancel | Save pair every pane with a Save carries (SET-01.d, UIC-27).
-class SettingsSavePair extends StatelessWidget {
-  const SettingsSavePair({super.key, required this.enabled, required this.onSave});
+/// UIC-45: how a pane that saves on its own is told Settings is being left (a page change,
+/// the close button or the back button). The open pane registers its save here.
+class SettingsLeaveHook {
+  VoidCallback? _save;
 
-  final bool enabled;
-  final VoidCallback onSave;
+  /// Called by the open pane; replaces any earlier one.
+  void register(VoidCallback save) => _save = save;
 
-  @override
-  Widget build(BuildContext context) {
-    final m = context.msg;
-    return Align(
-      alignment: Alignment.centerRight,
-      // UIC-27: Save is available once something has changed.
-      child: CancelSavePair(
-        cancelKey: const ValueKey('settings-cancel'),
-        saveKey: const ValueKey('settings-save'),
-        cancelLabel: m('cancel'),
-        saveLabel: m('save'),
-        onCancel: () => Navigator.of(context).pop(),
-        saveEnabled: enabled,
-        onSave: onSave,
-      ),
-    );
+  /// Called by a pane when it goes away, so a closed pane is never saved.
+  void unregister(VoidCallback save) {
+    if (_save == save) _save = null;
   }
+
+  /// Saves the open pane's valid values; an invalid value is left unsaved.
+  void run() => _save?.call();
 }
 
 /// The user's settings dialog: a menu of panes (General, Calendar, Theme, Sources, ...,
@@ -143,6 +153,14 @@ class SettingsDialog extends StatefulWidget {
 
 class _SettingsDialogState extends State<SettingsDialog> {
   SettingsSection _section = SettingsSection.general;
+  final SettingsLeaveHook _leave = SettingsLeaveHook();
+
+  /// UIC-45: choosing another page saves the one being left.
+  void _choose(SettingsSection section) {
+    if (section == _section) return;
+    _leave.run();
+    setState(() => _section = section);
+  }
 
   static const _entries = <(SettingsSection, String, String)>[
     (SettingsSection.general, 'settings-general', 'settingsGeneral'),
@@ -167,7 +185,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               dense: true,
               selected: _section == section,
               title: Text(m(label)),
-              onTap: () => setState(() => _section = section),
+              onTap: () => _choose(section),
             ),
         ],
       );
@@ -182,7 +200,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
             key: ValueKey(key),
             label: Text(m(label)),
             selected: _section == section,
-            onSelected: (_) => setState(() => _section = section),
+            onSelected: (_) => _choose(section),
           ),
       ],
     );
@@ -192,16 +210,23 @@ class _SettingsDialogState extends State<SettingsDialog> {
     final m = context.msg;
     switch (_section) {
       case SettingsSection.general:
-        return _GeneralPane(controller: widget.controller);
+        return _GeneralPane(controller: widget.controller, leave: _leave);
       case SettingsSection.calendar:
-        return SettingsCalendarPane(controller: widget.controller, prefs: widget.prefs);
+        return SettingsCalendarPane(
+          controller: widget.controller,
+          prefs: widget.prefs,
+          leave: _leave,
+        );
       case SettingsSection.theme:
         return SettingsThemePane(controller: widget.controller);
       case SettingsSection.sources:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(m('manageLocalCalendars'), style: SuiteText.label(context.tokens)),
+            Text(
+              m('manageLocalCalendars'),
+              style: SuiteText.label(context.tokens),
+            ),
             const SizedBox(height: suitePartGap),
             Expanded(child: LocalCalendarsPanel(controller: widget.controller)),
           ],
@@ -212,12 +237,14 @@ class _SettingsDialogState extends State<SettingsDialog> {
       case SettingsSection.rules:
       case SettingsSection.templates:
       case SettingsSection.history:
-        return Center(child: Text(m('settingsUnavailable'), style: SuiteText.label(context.tokens)));
+        return Center(
+          child: Text(
+            m('settingsUnavailable'),
+            style: SuiteText.label(context.tokens),
+          ),
+        );
     }
   }
-
-  /// General and Calendar have their own Cancel | Save; Theme applies at once and has Reset.
-  bool get _ownButtons => _section == SettingsSection.general || _section == SettingsSection.calendar;
 
   @override
   Widget build(BuildContext context) {
@@ -226,41 +253,73 @@ class _SettingsDialogState extends State<SettingsDialog> {
     final size = MediaQuery.sizeOf(context);
     final wide = size.width >= 640;
     final height = (size.height - 96).clamp(360.0, 600.0);
-    return Padding(
-      key: const ValueKey('settings-dialog'),
-      padding: const EdgeInsets.all(suiteDialogPadding),
-      child: SizedBox(
-        height: height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(m('settings'), style: SuiteText.moduleKind(t, windowWidth: size.width)),
-            const SizedBox(height: suitePartGap),
-            Expanded(
-              child: wide
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(width: 200, child: _menu(context, vertical: true)),
-                        VerticalDivider(width: 2 * suiteDialogPadding, color: t.line),
-                        Expanded(child: _pane(context)),
-                      ],
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _menu(context, vertical: false),
-                        const SizedBox(height: suitePartGap),
-                        Expanded(child: _pane(context)),
-                      ],
+    // UIC-45: closing Settings (close button, back button or barrier) saves the open pane.
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _leave.run();
+      },
+      child: Padding(
+        key: const ValueKey('settings-dialog'),
+        padding: const EdgeInsets.all(suiteDialogPadding),
+        child: SizedBox(
+          height: height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // UIC-14, UIC-45: the back button sits in the left zone of the header and leaves Settings.
+              Row(
+                children: [
+                  IconButton(
+                    key: const ValueKey('settings-back'),
+                    tooltip: m('settingsBack'),
+                    icon: const Icon(SuiteIcons.arrowBack),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  const SizedBox(width: suitePartGap),
+                  Expanded(
+                    child: Text(
+                      m('settings'),
+                      style: SuiteText.moduleKind(t, windowWidth: size.width),
                     ),
-            ),
-            if (!_ownButtons)
+                  ),
+                ],
+              ),
+              const SizedBox(height: suitePartGap),
+              Expanded(
+                child: wide
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(
+                            width: 200,
+                            child: _menu(context, vertical: true),
+                          ),
+                          VerticalDivider(
+                            width: 2 * suiteDialogPadding,
+                            color: t.line,
+                          ),
+                          Expanded(child: _pane(context)),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _menu(context, vertical: false),
+                          const SizedBox(height: suitePartGap),
+                          Expanded(child: _pane(context)),
+                        ],
+                      ),
+              ),
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(m('closeButton'))),
+                child: TextButton(
+                  key: const ValueKey('settings-close'),
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(m('closeButton')),
+                ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -268,66 +327,73 @@ class _SettingsDialogState extends State<SettingsDialog> {
 }
 
 /// SET-09: Settings > General: the press-and-hold delay before an event can be dragged.
+/// It saves on its own when Settings or the page is left (UIC-45); an invalid delay is not saved.
 class _GeneralPane extends StatefulWidget {
-  const _GeneralPane({required this.controller});
+  const _GeneralPane({required this.controller, required this.leave});
 
   final CalendarController controller;
+  final SettingsLeaveHook leave;
 
   @override
   State<_GeneralPane> createState() => _GeneralPaneState();
 }
 
 class _GeneralPaneState extends State<_GeneralPane> {
-  late final TextEditingController _press = TextEditingController(text: formatPressDelay(widget.controller.longPress));
-  late final String _initialPress = _press.text;
+  late final TextEditingController _press = TextEditingController(
+    text: formatPressDelay(widget.controller.longPress),
+  );
   String? _pressError;
 
   @override
+  void initState() {
+    super.initState();
+    widget.leave.register(_save);
+  }
+
+  @override
   void dispose() {
+    widget.leave.unregister(_save);
     _press.dispose();
     super.dispose();
   }
 
-  bool get _changed => _press.text.trim() != _initialPress;
-
+  /// Stores the delay when it is valid; otherwise nothing is stored.
   void _save() {
     final press = parsePressDelayInput(_press.text);
-    if (press == null) {
-      setState(() => _pressError = context.msg('pressDelayInvalid'));
-      return;
+    if (press != null && press != widget.controller.longPress) {
+      widget.controller.longPress = press;
     }
-    widget.controller.longPress = press;
-    Navigator.of(context).pop();
+  }
+
+  /// The note shows as soon as the typed delay is not valid.
+  void _validate() {
+    final invalid = parsePressDelayInput(_press.text) == null;
+    setState(
+      () => _pressError = invalid ? context.msg('pressDelayInvalid') : null,
+    );
   }
 
   /// The arrows step the press-and-hold delay by 0.1 seconds.
   void _stepPress(int dir) {
     final d = parsePressDelayInput(_press.text) ?? widget.controller.longPress;
-    _press.text = formatPressDelay(clampLongPress(d + Duration(milliseconds: 100 * dir)));
-    setState(() => _pressError = null);
+    _press.text = formatPressDelay(
+      clampLongPress(d + Duration(milliseconds: 100 * dir)),
+    );
+    _validate();
   }
 
   @override
   Widget build(BuildContext context) {
     final m = context.msg;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: SettingsField(
-              label: m('pressDelay'),
-              fieldKey: 'setting-press-delay',
-              controller: _press,
-              error: _pressError,
-              step: _stepPress,
-              onChanged: () => setState(() => _pressError = null),
-            ),
-          ),
-        ),
-        const SizedBox(height: suitePartGap),
-        SettingsSavePair(enabled: _changed, onSave: _save),
-      ],
+    return SingleChildScrollView(
+      child: SettingsField(
+        label: m('pressDelay'),
+        fieldKey: 'setting-press-delay',
+        controller: _press,
+        error: _pressError,
+        step: _stepPress,
+        onChanged: _validate,
+      ),
     );
   }
 }

@@ -947,6 +947,7 @@
   "settingsCalendar": "Kalender",
   "settingsTheme": "Design",
   "settingsAdmin": "Admin",
+  "settingsBack": "Zurück",
   "lengthUnit": "Zeiteinheit",
   "defaultEventTime": "Standardzeit",
   "defaultTimeInvalid": "Geben Sie eine Zeit wie 9:00 oder 9:00 am ein.",

@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../theme/suite_icons.dart';
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/suite_event.dart';
-import '../time/time_format.dart';
-import '../time/zones.dart';
-import '../ui/confirm.dart';
-import '../ui/popup_size_lock.dart';
-import '../ui/suite_dialog.dart';
-import 'calendar_controller.dart';
-import 'event_dialog.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/suite_event.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/time/zones.dart';
+import 'package:suitestream/src/ui/confirm.dart';
+import 'package:suitestream/src/ui/popup_size_lock.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/event_dialog.dart';
 
 /// EVT-07.b: the range text is "day, start–end" for one day and
 /// "day start – day end" across days; an all-day event shows its day, or its
 /// first and last days, followed by msg:allDay3.
 String eventRangeText(Messages m, SuiteEvent e, Location zone, TimeFormat format) {
   final s = e.startIn(zone);
-  var en = e.endIn(zone);
+  final en = e.endIn(zone);
   String day(TZDateTime d) => DateFormat.MMMEd(m.locale).format(d);
   String time(TZDateTime d) => formatTimeOfDay(d.hour, d.minute, format);
   if (e.allDay) {

@@ -98,3 +98,24 @@ Anything the Product Owner says after a Sprint has started is input for the next
 ## Sprint branches, commits and merging
 
 Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main` at sprint start. Commit and push to it frequently (after each wave of work and whenever tests are green). Approval of the Sprint Retrospective means: analyze and test, commit, push the sprint branch, merge it into `main` and push `main` (see `.github/skills/sprint-retrospective/SKILL.md`, "Commit and merge on approval"). Then start the next sprint on a new branch.
+
+## Running sprints and epics automatically (entry point for any agent or orchestrator asked to continue the sprints)
+
+Read this section first, then `scrum/usage.md` (cost per story point and the decision procedure), then the skills named below. Work only in the SuiteStream repo (read other folders only when the Product Owner names them, and never write there).
+
+Procedure for one sprint (a sprint inside a usage-split epic completes automatically; any other sprint waits for the Product Owner's approval of its retrospective):
+1. Work on the branch `sprintNNN` (create it from an up-to-date `main` at sprint start). Plan from `scrum/sprintNNN/sprint_planning.md`; Kobayashi reviews a plan before its sprint starts.
+2. Launch the developers (Ito, Tanaka, Yamamoto, Nakamura) in parallel, each editing only the files the ownership table gives them. Handoffs go through `scrum/sprintNNN/handoffs.md`. After each wave: `flutter analyze lib test` and `flutter test` must pass, then commit and push the branch.
+3. At the end: write the sprint review and retrospective (server checks and visual checks recorded separately), add the `scrum/velocity.csv` row, run analyze and tests, commit, push, merge the branch into `main` with `--no-ff`, push `main`, and create the next branch.
+4. Stop and report (one summary: what was built, the visual checks the Product Owner must do, open defects, usage) when the epic is complete, when analyze or tests fail and cannot be fixed by the owning developer, or when a real usage reading reaches 85%.
+
+Rules that must survive (each was set by the Product Owner or learned in Sprints 005 to 007):
+- The conversation after a sprint is the retrospective; anything said while a sprint is running is input for a later sprint (record it in `scrum/product_backlog.csv` or `requirements/`, never build it, never stop a running sprint or its agents). Exception: the Product Owner says "fix it now".
+- Requirement rows stay `planned` until the Product Owner has verified the work in the browser; only then `done`. Do not add requirement rows that restate another row (point to it).
+- One editor per file. Only Yamamoto edits the six arb files (others send keys in `strings_*.md`); every UI text is an arb key, no English fallbacks. Sizes and spacing come from theme tokens (`suite_theme.dart`), colors from the Flutter theme (`ColorScheme`), no hardcoded values. An agent never restores a file from git while another agent owns it.
+- Cancel | Save is the one shared pair (`CancelSavePair`, one animation time from Settings). One 34 px height for every single-line text box and dropdown.
+- `scrum/product_backlog.csv` rows have 10 fields; never put commas inside a text field (use semicolons). Epic rules are in the `backlog-refinement` skill.
+- Web check: `flutter build web --release --no-web-resources-cdn`, served from `build/web` on port 8080 (the service worker caches; ask the Product Owner to hard-refresh). New icon glyphs: add them to `lib/src/theme/suite_icons.dart`, then run `tool/update_icon_font.sh` (rebuilds the font subset; Tanaka owns icons and font assets).
+- Sprint 011 is the ScrumBoard (SBD rows in `requirements/scrumboard.md`, code in `scrum/scrumboard`).
+- Keep chat updates short: one message per wave or decision, not per step.
+- A file missing from a sprint's ownership table belongs to the developer who owned it last (see the previous sprint's table and `handoffs.md`): ask that developer through a handoff instead of editing it. A `scrum/velocity.csv` row is added at the end of every sprint, also inside an epic.

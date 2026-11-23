@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-import '../theme/suite_icons.dart';
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
-import '../theme/tokens.dart';
-import '../time/zones.dart';
-import 'suite_dialog.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/zones.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
 
 /// DEF-01: the Common time zones, in this order.
 const List<String> commonZones = [

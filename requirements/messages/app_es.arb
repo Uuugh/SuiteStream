@@ -947,6 +947,7 @@
   "settingsCalendar": "Calendario",
   "settingsTheme": "Tema",
   "settingsAdmin": "Administración",
+  "settingsBack": "Atrás",
   "lengthUnit": "Unidad de tiempo",
   "defaultEventTime": "Hora predeterminada",
   "defaultTimeInvalid": "Use una hora como 9:00 o 9:00 am.",

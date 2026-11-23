@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'theme_settings.dart';
-import 'tokens.dart';
+import 'package:suitestream/src/theme/theme_settings.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 
 /// THM-01.a: IBM Plex Sans is the font for everything.
 const String sansFamily = 'IBM Plex Sans';

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show Brightness, Color;
+
 /// One named palette color (UIC-10): [key] names it in tests and keys, [messageKey]
 /// is its arb key, [name] its English fallback, [argb] its opaque color.
 class PaletteColor {
@@ -81,3 +83,33 @@ int nextCalendarColor(Iterable<int?> used) {
 
 /// An opaque ARGB value as #RRGGBB (lower case).
 String hexOf(int argb) => '#${(argb & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+
+/// Minimum contrast ratio of event text on its chip fill (THM-10.h, WCAG AA).
+const double eventTextMinContrast = 4.5;
+
+/// Contrast ratio (1 to 21) between two opaque colors.
+double eventContrastRatio(Color a, Color b) {
+  final la = a.computeLuminance(), lb = b.computeLuminance();
+  final hi = la > lb ? la : lb, lo = la > lb ? lb : la;
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/// THM-10.h: the text color for an event chip or bar filled with [fill] (opaque; blend
+/// a translucent fill over its surface first). The text is the fill's own hue moved
+/// toward black (light [brightness]: dark text on pale fills) or toward white (dark
+/// [brightness]) in the fewest steps that reach 4.5:1; when that direction cannot
+/// reach it, it moves the other way.
+Color eventTextColorOn(Color fill, Brightness brightness) {
+  final opaque = fill.withValues(alpha: 1);
+  final light = brightness == Brightness.light;
+  final first = Color(light ? 0xFF000000 : 0xFFFFFFFF);
+  final second = Color(light ? 0xFFFFFFFF : 0xFF000000);
+  for (final target in [first, second]) {
+    if (eventContrastRatio(opaque, target) < eventTextMinContrast) continue;
+    for (var i = 0; i <= 100; i++) {
+      final candidate = Color.lerp(opaque, target, i / 100)!;
+      if (eventContrastRatio(opaque, candidate) >= eventTextMinContrast) return candidate;
+    }
+  }
+  return eventContrastRatio(opaque, first) >= eventContrastRatio(opaque, second) ? first : second;
+}
