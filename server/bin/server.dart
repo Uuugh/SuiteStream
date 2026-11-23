@@ -9,11 +9,6 @@ import 'package:suitestream_server/oidc.dart';
 import 'package:suitestream_server/postgres_store.dart';
 import 'package:suitestream_server/store.dart';
 
-/// DEP-01.e: retry the database at this interval for up to this long (the
-/// DEF-01 values are not yet defined; adjust when DEF-01 names them).
-const _dbRetryEvery = Duration(seconds: 2);
-const _dbRetryFor = Duration(seconds: 60);
-
 Future<void> main(List<String> args) async {
   if (args.contains('--healthcheck')) {
     // Used by the Docker HEALTHCHECK (the runtime image has no curl).
@@ -41,7 +36,7 @@ Future<void> main(List<String> args) async {
   }
 
   Store? store;
-  final deadline = DateTime.now().add(_dbRetryFor);
+  final deadline = DateTime.now().add(dbRetryFor);
   Object? lastError;
   while (store == null) {
     try {
@@ -52,7 +47,7 @@ Future<void> main(List<String> args) async {
         stderr.writeln('The database cannot be reached: $lastError');
         exit(1);
       }
-      await Future<void>.delayed(_dbRetryEvery);
+      await Future<void>.delayed(dbRetryEvery);
     }
   }
 

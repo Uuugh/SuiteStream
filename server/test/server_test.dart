@@ -14,6 +14,16 @@ import 'fake_oidc.dart';
 const _base = 'https://cal.example.com';
 
 void main() {
+  test('database retry constants match the DEF-01 row', () {
+    expect(dbRetryEvery, const Duration(seconds: 5));
+    expect(dbRetryFor, const Duration(seconds: 60));
+    final row = File('../requirements/common.md')
+        .readAsLinesSync()
+        .firstWhere((l) => l.contains('Database connection retry'));
+    expect(row, contains('5 seconds'));
+    expect(row, contains('60 seconds'));
+  });
+
   late FakeOidc idp;
   late MemoryStore store;
   late Handler handler;

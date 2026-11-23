@@ -37,3 +37,7 @@ Proposed change: items that need a running environment that the team lacks (Dock
 - Local calendars: managed in Settings, so the DEF-01 rule applies and they are stored in the database (applied from the rule; the Product Owner did not answer separately).
 - Database retry: DEF-01 now says every 5 seconds for up to 60 seconds (Product Owner); DEP-01.e already points to DEF-01; the server code still uses 2 s (PBI-071).
 - Retrospective approval: still pending.
+
+## Round 2 (mini-sprint on the Product Owner's retrospective issues)
+
+Fixed: PBI-068 (Reset on its own side with a shared inline "Are you sure?" confirm), PBI-069 (pure black or white event text, 7:1 where reachable), PBI-070 (Resize bar size setting removed; answers question 1), PBI-071 (server retry 5 s / 60 s from one constant, answers question 7). Still open: questions 2 to 6, first press-and-hold timing, Docker verification (PBI-066). Process note: one agent reformatted many test files, which inflates the diff; ask owners not to run `dart format` over files they do not own.

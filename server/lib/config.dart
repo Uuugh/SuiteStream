@@ -1,3 +1,8 @@
+/// DEF-01 "Database connection retry": the server tries the database every
+/// [dbRetryEvery] for up to [dbRetryFor] (DEP-01.e).
+const dbRetryEvery = Duration(seconds: 5);
+const dbRetryFor = Duration(seconds: 60);
+
 /// Server configuration read from environment variables (DEP-05.a: these are
 /// the settings the server needs before it can read the database).
 class ServerConfig {

@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 
 import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
-import 'package:suitestream/src/theme/theme_settings.dart';
 
 /// A keyboard- and pointer-operable resize handle in feature-defined units.
 class ResizeBar extends StatefulWidget {
@@ -123,7 +122,7 @@ class _ResizeBarState extends State<ResizeBar> {
                         : null,
                   ),
                   child: CustomPaint(
-                    size: suiteResizeBarSize * (ThemeSettingsScope.of(context).resizeBar / 100),
+                    size: suiteResizeBarSize,
                     painter: _GripPainter(scheme.onSurfaceVariant),
                   ),
                 ),

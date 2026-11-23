@@ -104,18 +104,22 @@ void main() {
   );
 
   for (final how in _Leave.values) {
-    testWidgets('UIC-45, SET-03.b: Theme stores the press delay at once and keeps it on ${how.name}', (
-      tester,
-    ) async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final c = await _open(tester, prefs, 'settings-theme');
-      await _type(tester, 'setting-press-delay', '0.8');
-      expect(c.longPress, const Duration(milliseconds: 800)); // applied at once
-      await _leave(tester, how);
-      expect(c.longPress, const Duration(milliseconds: 800));
-      expect(_controller(prefs).longPress, const Duration(milliseconds: 800));
-    });
+    testWidgets(
+      'UIC-45, SET-03.b: Theme stores the press delay at once and keeps it on ${how.name}',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final c = await _open(tester, prefs, 'settings-theme');
+        await _type(tester, 'setting-press-delay', '0.8');
+        expect(
+          c.longPress,
+          const Duration(milliseconds: 800),
+        ); // applied at once
+        await _leave(tester, how);
+        expect(c.longPress, const Duration(milliseconds: 800));
+        expect(_controller(prefs).longPress, const Duration(milliseconds: 800));
+      },
+    );
 
     testWidgets(
       'UIC-45, SET-03.b: Theme does not store an invalid press delay on ${how.name} and showed its note',

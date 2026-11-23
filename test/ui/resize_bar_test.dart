@@ -3,6 +3,7 @@ import 'dart:ui' show SemanticsAction;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/ui/resize_bar.dart';
 
 void main() {
@@ -59,5 +60,27 @@ void main() {
           .hasAction(SemanticsAction.decrease),
       isFalse,
     );
+  });
+
+  testWidgets('UIC-16: the grip has the fixed theme size, no setting scales it', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ResizeBar(
+            value: 2,
+            minimum: 1,
+            unitExtent: 20,
+            expanded: true,
+            sliderLabel: 's',
+            collapseLabel: 'c',
+            expandLabel: 'e',
+            onChanged: (_) {},
+            onToggle: () {},
+          ),
+        ),
+      ),
+    );
+    final grips = find.byWidgetPredicate((w) => w is CustomPaint && w.size == suiteResizeBarSize);
+    expect(grips, findsOneWidget);
   });
 }

@@ -67,7 +67,10 @@ void main() {
       expect(inPreview('11:00 Outside print range'), findsNothing);
 
       // UIC-27: Print uses the shared Cancel | Save pair, with Print as the save word.
-      expect(find.descendant(of: preview, matching: find.byType(CancelSavePair)), findsOneWidget);
+      expect(
+        find.descendant(of: preview, matching: find.byType(CancelSavePair)),
+        findsOneWidget,
+      );
       expect(inPreview('Print'), findsWidgets);
       await tester.tap(inPreview('Cancel'));
       await tester.pumpAndSettle();

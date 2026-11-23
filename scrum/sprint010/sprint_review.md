@@ -28,3 +28,14 @@ Not a usage epic; branch `sprint010` is not merged until the Product Owner appro
 - Admin pane does not call the sync push yet; `localCalendars.v1` is not synced (Takahashi: not a Setting).
 - New dependencies need Product Owner approval: app `http` 1.6.0; server shelf 1.4.3, shelf_router 1.1.5, shelf_static 1.2.0, postgres 3.7.0, http 1.6.0, crypto 3.0.7; Docker images (Authentik 2025.10.1 unchecked; Flutter, Dart and Watchtower unpinned).
 - Logout does not end the Authentik session (ACC-02.c partly).
+
+## Round 2 (mini-sprint after the retrospective; branch `sprint010`, no merge)
+
+| PBI | Result | Status |
+|---|---|---|
+| PBI-068 | Shared `InlineConfirmButton` (`lib/src/ui/inline_confirm.dart`: "Are you sure?" with Yes and No; No, Escape and focus loss go back); Reset sits at the bottom of the menu column on its own side of the vertical rule, not beside Close, and asks first; arb `areYouSure`. UIC-48 added. | In Review |
+| PBI-069 | `eventTextColorOn` returns pure black or pure white, whichever contrasts more; no blend; DEF-01 "Event text contrast" 7:1 where black or white reaches it (else the higher of the two); test over all 11 event and 24 calendar colors, light and dark. THM-10.h reworded. | In Review |
+| PBI-070 | "Resize bar size" setting, its stored key, arb keys, SET-03.f and DEF-01 row removed; the grip and the event handle use the fixed `suiteResizeBarSize`. | In Review |
+| PBI-071 | Server retry from `dbRetryEvery` 5 s and `dbRetryFor` 60 s (cite DEF-01); a test reads the DEF-01 row. | In Review |
+
+Checks: analyze 0 issues; 595 Flutter tests and 28 server tests pass; web build succeeds. Visual checks for the Product Owner: Reset in the menu column and its "Are you sure?" Yes/No look and background; event text black or white in all views, details and print (light and dark); no Resize bar size row in Theme; the event bottom handle still works. Not verified: the confirm's background against the "+ notification" look (taken from the plain Add-notification button, no chip exists); print rendering by eye. Note: some test files under `test/calendar` were reformatted by an agent (large diff, no behavior change).

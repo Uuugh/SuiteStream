@@ -139,7 +139,6 @@ final List<_Setting> _settings = [
   // SET-03.m: how long the word of a pressed Cancel | Save pair stays shown (DEF-01).
   _seconds('status-word', 'themeSettingStatusWordTime', minStatusWordTime, maxStatusWordTime, (s, c) => c.timing.statusWordTime, (s, c, v) => c.timing.statusWordTime = v),
   _percent('popup-shadow', 'themeSettingPopupShadow', ThemeSettingsLimits.popupShadowMin, ThemeSettingsLimits.popupShadowMax, (s) => s.popupShadow, (s, v) => s.popupShadow = v),
-  _percent('resize-bar', 'themeSettingResizeBar', ThemeSettingsLimits.resizeBarMin, ThemeSettingsLimits.resizeBarMax, (s) => s.resizeBar, (s, v) => s.resizeBar = v),
   _percent('dropdown-text', 'themeSettingDropdownText', ThemeSettingsLimits.dropdownTextMin, ThemeSettingsLimits.dropdownTextMax, (s) => s.dropdownText, (s, v) => s.dropdownText = v),
   _percent('date-picker', 'themeSettingDatePicker', ThemeSettingsLimits.datePickerMin, ThemeSettingsLimits.datePickerMax, (s) => s.datePicker, (s, v) => s.datePicker = v),
 ];

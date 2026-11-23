@@ -10,12 +10,18 @@ void main() {
     final p = await SharedPreferences.getInstance();
     ThemeSettings(prefs: p)
       ..popupShadow = 150
-      ..resizeBar = 150
       ..dropdownText = 120
       ..datePicker = 120
       ..statusChipTime = const Duration(seconds: 3)
       ..animationTime = const Duration(milliseconds: 700);
     ThemeModeController(prefs: p).mode = ThemeMode.dark;
     expect(p.getKeys(), themeSettingsPrefsKeys);
+  });
+
+  test('PBI-070: a stored theme.resizeBar is never read, written or synced', () async {
+    SharedPreferences.setMockInitialValues({'theme.resizeBar': 150.0});
+    final p = await SharedPreferences.getInstance();
+    expect(ThemeSettings(prefs: p).isDefault, isTrue);
+    expect(themeSettingsPrefsKeys, isNot(contains('theme.resizeBar')));
   });
 }

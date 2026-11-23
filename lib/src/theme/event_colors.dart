@@ -91,22 +91,13 @@ double eventContrastRatio(Color a, Color b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-/// THM-10.h: the text color for an event chip or bar filled with [fill] (opaque; blend
-/// a translucent fill over its surface first). The text is the fill's own hue moved
-/// toward black (light [brightness]: dark text on pale fills) or toward white (dark
-/// [brightness]) in the fewest steps that reach 4.5:1; when that direction cannot
-/// reach it, it moves the other way.
+/// THM-10.h: the text color for an event chip or bar filled with [fill] (opaque; blend a
+/// translucent fill over its surface first): pure black or pure white, whichever has the
+/// higher contrast against the fill, in light and dark alike; never a blend. [brightness]
+/// does not change the result.
 Color eventTextColorOn(Color fill, Brightness brightness) {
   final opaque = fill.withValues(alpha: 1);
-  final light = brightness == Brightness.light;
-  final first = Color(light ? 0xFF000000 : 0xFFFFFFFF);
-  final second = Color(light ? 0xFFFFFFFF : 0xFF000000);
-  for (final target in [first, second]) {
-    if (eventContrastRatio(opaque, target) < eventTextMinContrast) continue;
-    for (var i = 0; i <= 100; i++) {
-      final candidate = Color.lerp(opaque, target, i / 100)!;
-      if (eventContrastRatio(opaque, candidate) >= eventTextMinContrast) return candidate;
-    }
-  }
-  return eventContrastRatio(opaque, first) >= eventContrastRatio(opaque, second) ? first : second;
+  const black = Color(0xFF000000); // THM-10.h: pure black
+  const white = Color(0xFFFFFFFF); // THM-10.h: pure white
+  return eventContrastRatio(opaque, black) >= eventContrastRatio(opaque, white) ? black : white;
 }

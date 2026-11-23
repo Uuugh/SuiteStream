@@ -13,8 +13,8 @@ void main() {
   test('DEF-01 defaults', () {
     final s = ThemeSettings();
     expect(
-      [s.popupShadow, s.resizeBar, s.dropdownText, s.datePicker],
-      [100, 100, 100, 100],
+      [s.popupShadow, s.dropdownText, s.datePicker],
+      [100, 100, 100],
     );
     expect(s.statusChipTime, const Duration(milliseconds: 2400));
     expect(s.animationTime, const Duration(milliseconds: 500));
@@ -24,12 +24,11 @@ void main() {
   test('SET-03.e-j: values are clamped to the DEF-01 ranges', () {
     final s = ThemeSettings()
       ..popupShadow = 500
-      ..resizeBar = 1
       ..dropdownText = 500
       ..datePicker = 1
       ..statusChipTime = const Duration(milliseconds: 100)
       ..animationTime = const Duration(seconds: 9);
-    expect([s.popupShadow, s.resizeBar, s.dropdownText, s.datePicker], [200, 50, 150, 75]);
+    expect([s.popupShadow, s.dropdownText, s.datePicker], [200, 150, 75]);
     expect(s.statusChipTime, const Duration(milliseconds: 500));
     expect(s.animationTime, const Duration(seconds: 2));
     s.popupShadow = -5;
@@ -44,13 +43,12 @@ void main() {
     final p = await prefs();
     ThemeSettings(prefs: p)
       ..popupShadow = 150
-      ..resizeBar = 80
       ..dropdownText = 120
       ..datePicker = 90
       ..statusChipTime = const Duration(seconds: 5)
       ..animationTime = const Duration(milliseconds: 1200);
     final again = ThemeSettings(prefs: p);
-    expect([again.popupShadow, again.resizeBar, again.dropdownText, again.datePicker], [150, 80, 120, 90]);
+    expect([again.popupShadow, again.dropdownText, again.datePicker], [150, 120, 90]);
     expect(again.statusChipTime, const Duration(seconds: 5));
     expect(again.animationTime, const Duration(milliseconds: 1200));
     expect(again.isDefault, isFalse);

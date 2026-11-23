@@ -20,27 +20,58 @@ void main() {
     await initializeDateFormatting();
   });
 
-  Future<bool> ghostAfter(WidgetTester tester, Duration hold, {CalendarController? controller}) async {
+  Future<bool> ghostAfter(
+    WidgetTester tester,
+    Duration hold, {
+    CalendarController? controller,
+  }) async {
     useWindow(tester);
-    final c = controller ?? makeController(events: [makeEvent('a', 20, 9, title: 'Hold')]);
+    final c =
+        controller ??
+        makeController(events: [makeEvent('a', 20, 9, title: 'Hold')]);
     await tester.pumpWidget(appFor(CalendarPage(controller: c)));
-    final g = await tester.startGesture(tester.getCenter(find.byKey(const ValueKey('event-a'))));
+    final g = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('event-a'))),
+    );
     await tester.pump(hold);
-    final started = find.byKey(const ValueKey('drag-ghost')).evaluate().isNotEmpty;
+    final started = find
+        .byKey(const ValueKey('drag-ghost'))
+        .evaluate()
+        .isNotEmpty;
     await g.up();
     await tester.pumpAndSettle();
     return started;
   }
 
-  testWidgets('CAL-03.d: the first press held just over the default delay starts the drag', (tester) async {
-    expect(await ghostAfter(tester, defaultLongPress + const Duration(milliseconds: 50)), isTrue);
-  });
+  testWidgets(
+    'CAL-03.d: the first press held just over the default delay starts the drag',
+    (tester) async {
+      expect(
+        await ghostAfter(
+          tester,
+          defaultLongPress + const Duration(milliseconds: 50),
+        ),
+        isTrue,
+      );
+    },
+  );
 
-  testWidgets('CAL-03.d: the first press held less than the default delay does not start the drag', (tester) async {
-    expect(await ghostAfter(tester, defaultLongPress - const Duration(milliseconds: 50)), isFalse);
-  });
+  testWidgets(
+    'CAL-03.d: the first press held less than the default delay does not start the drag',
+    (tester) async {
+      expect(
+        await ghostAfter(
+          tester,
+          defaultLongPress - const Duration(milliseconds: 50),
+        ),
+        isFalse,
+      );
+    },
+  );
 
-  testWidgets('CAL-03.d: a stored delay is used from the first press', (tester) async {
+  testWidgets('CAL-03.d: a stored delay is used from the first press', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({'view.longPressMs': 600});
     final prefs = await SharedPreferences.getInstance();
     final c = CalendarController(
@@ -52,6 +83,13 @@ void main() {
       clock: () => DateTime.utc(2026, 7, 15, 16),
     );
     expect(c.longPress, const Duration(milliseconds: 600));
-    expect(await ghostAfter(tester, const Duration(milliseconds: 500), controller: c), isFalse);
+    expect(
+      await ghostAfter(
+        tester,
+        const Duration(milliseconds: 500),
+        controller: c,
+      ),
+      isFalse,
+    );
   });
 }

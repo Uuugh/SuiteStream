@@ -9,6 +9,7 @@ import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/theme/tokens.dart';
 import 'package:suitestream/src/ui/popup_size_lock.dart';
+import 'package:suitestream/src/ui/inline_confirm.dart';
 import 'package:suitestream/src/ui/reset_button.dart';
 import 'package:suitestream/src/ui/stepper_arrows.dart';
 import 'package:suitestream/src/ui/suite_dialog.dart';
@@ -51,7 +52,8 @@ Widget _withSync(SettingsSync? sync, Widget child) =>
 
 /// PBI-037 / DEF-01: every pane calls this after it changes a setting; the sync sends the
 /// settings to the database after a short pause (none when no sync is provided).
-void pushSettingsSync(BuildContext context) => SettingsSyncScope.maybeOf(context)?.push();
+void pushSettingsSync(BuildContext context) =>
+    SettingsSyncScope.maybeOf(context)?.push();
 
 /// The panes of Settings, in menu order; Admin is last, at the bottom (SET-14).
 enum SettingsSection {
@@ -237,12 +239,18 @@ class _SettingsDialogState extends State<SettingsDialog> {
       title: Text(m(e.$3)),
       onTap: () => _choose(e.$1),
     );
-    final rule = Divider(key: const ValueKey('settings-menu-rule'), height: 2 * suitePartGap, color: line);
+    final rule = Divider(
+      key: const ValueKey('settings-menu-rule'),
+      height: 2 * suitePartGap,
+      color: line,
+    );
     if (vertical) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: ListView(children: [for (final e in _topEntries) tile(e)])),
+          Expanded(
+            child: ListView(children: [for (final e in _topEntries) tile(e)]),
+          ),
           rule,
           for (final e in _bottomEntries) tile(e),
         ],
@@ -280,7 +288,11 @@ class _SettingsDialogState extends State<SettingsDialog> {
           leave: _leave,
         );
       case SettingsSection.theme:
-        return SettingsThemePane(controller: widget.controller, prefs: widget.prefs, resetHook: _reset);
+        return SettingsThemePane(
+          controller: widget.controller,
+          prefs: widget.prefs,
+          resetHook: _reset,
+        );
       case SettingsSection.sources:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -306,6 +318,31 @@ class _SettingsDialogState extends State<SettingsDialog> {
           ),
         );
     }
+  }
+
+  /// SET-01.g, UIC-46, UIC-48: the open page's Reset, on the menu side of the rule, asks first.
+  Widget _resetButton(BuildContext context) {
+    final m = context.msg;
+    return ListenableBuilder(
+      listenable: _reset,
+      builder: (context, _) => _reset.action == null
+          ? const SizedBox.shrink()
+          : FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: InlineConfirmButton(
+                color: Theme.of(context).colorScheme.error,
+                onConfirm: _reset.action!,
+                builder: (context, start) => TextButton.icon(
+                  key: const ValueKey('setting-theme-reset'),
+                  style: suiteResetButtonStyle(context),
+                  onPressed: start,
+                  icon: const Icon(SuiteIcons.restartAlt),
+                  label: Text(m('themeSettingsReset')),
+                ),
+              ),
+            ),
+    );
   }
 
   @override
@@ -359,7 +396,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         children: [
                           SizedBox(
                             width: 200,
-                            child: _menu(context, vertical: true),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(child: _menu(context, vertical: true)),
+                                _resetButton(context),
+                              ],
+                            ),
                           ),
                           VerticalDivider(
                             width: 2 * suiteDialogPadding,
@@ -373,29 +416,27 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         children: [
                           // The menu takes at most 40 % of the height and scrolls; the page keeps the rest.
                           ConstrainedBox(
-                            constraints: BoxConstraints(maxHeight: height * 0.4),
-                            child: SingleChildScrollView(child: _menu(context, vertical: false)),
+                            constraints: BoxConstraints(
+                              maxHeight: height * 0.4,
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _menu(context, vertical: false),
+                                  _resetButton(context),
+                                ],
+                              ),
+                            ),
                           ),
                           const SizedBox(height: suitePartGap),
                           Expanded(child: _pane(context)),
                         ],
                       ),
               ),
-              // SET-01.g, UIC-46: Reset (when the page has one) sits on the same line as Close.
+              // SET-01.g: Reset sits on the menu side; Close stays here on the content side.
               Row(
                 children: [
-                  ListenableBuilder(
-                    listenable: _reset,
-                    builder: (context, _) => _reset.action == null
-                        ? const SizedBox.shrink()
-                        : TextButton.icon(
-                            key: const ValueKey('setting-theme-reset'),
-                            style: suiteResetButtonStyle(context),
-                            onPressed: _reset.action,
-                            icon: const Icon(SuiteIcons.restartAlt),
-                            label: Text(m('themeSettingsReset')),
-                          ),
-                  ),
                   const Spacer(),
                   TextButton(
                     key: const ValueKey('settings-close'),
@@ -459,7 +500,10 @@ class SettingsSyncRow extends StatelessWidget {
       SyncState.notConfigured => m('syncNotConfigured'),
       SyncState.signedOut => m('syncSignedOut'),
       SyncState.syncing => m('syncSyncing'),
-      SyncState.ok => user == null ? m('syncOk') : '${m('syncSignedInAs', {'name': user})} ${m('syncOk')}',
+      SyncState.ok =>
+        user == null
+            ? m('syncOk')
+            : '${m('syncSignedInAs', {'name': user})} ${m('syncOk')}',
       SyncState.offline => m('syncOffline'),
     };
     final signIn = sync?.signInUrl;
@@ -470,7 +514,11 @@ class SettingsSyncRow extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         spacing: suitePartGap,
         children: [
-          Text(text, key: const ValueKey('settings-sync-state'), style: SuiteText.label(t).copyWith(color: t.muted)),
+          Text(
+            text,
+            key: const ValueKey('settings-sync-state'),
+            style: SuiteText.label(t).copyWith(color: t.muted),
+          ),
           if (state == SyncState.signedOut && signIn != null)
             TextButton(
               key: const ValueKey('settings-sync-sign-in'),

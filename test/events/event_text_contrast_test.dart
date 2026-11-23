@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:suitestream/src/theme/event_colors.dart';
@@ -25,10 +27,24 @@ void main() {
     }
   }
 
-  test('dark text on a pale fill in light mode, light text in dark mode', () {
-    const pale = Color(0xFFFBE983);
-    expect(eventTextColorOn(pale, Brightness.light).computeLuminance(), lessThan(pale.computeLuminance()));
-    const tinted = Color(0xFF2A2F3A);
-    expect(eventTextColorOn(tinted, Brightness.dark).computeLuminance(), greaterThan(tinted.computeLuminance()));
+  for (final brightness in Brightness.values) {
+    for (final p in all) {
+      test('${p.key} ${brightness.name}: text is pure black or white, the higher contrast, 7:1 when reachable', () {
+        final fill = Color(p.argb);
+        final text = eventTextColorOn(fill, brightness);
+        const black = Color(0xFF000000), white = Color(0xFFFFFFFF);
+        expect(text == black || text == white, isTrue);
+        final cb = eventContrastRatio(fill, black), cw = eventContrastRatio(fill, white);
+        expect(eventContrastRatio(fill, text), max(cb, cw));
+        if (cb >= 7 || cw >= 7) expect(eventContrastRatio(fill, text), greaterThanOrEqualTo(7));
+      });
+    }
+  }
+
+  test('pale fill gets black, deep fill gets white, in both brightnesses', () {
+    for (final b in Brightness.values) {
+      expect(eventTextColorOn(const Color(0xFFFBE983), b), const Color(0xFF000000));
+      expect(eventTextColorOn(const Color(0xFF2A2F3A), b), const Color(0xFFFFFFFF));
+    }
   });
 }
