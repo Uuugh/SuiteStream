@@ -26,3 +26,8 @@ Proposed change: items that need a running environment that the team lacks (Dock
 4. Approve the new dependencies and unchecked image tags (list in the review).
 5. Is the header time zone picker a device-only header control (assumed yes), and is language a database setting (assumed yes)?
 6. Are local calendars (`localCalendars.v1`) a Setting for the database or event data?
+
+## Product Owner decisions after the sprint
+
+- Dependencies approved: app `http` 1.6.0; server shelf 1.4.3, shelf_router 1.1.5, shelf_static 1.2.0, postgres 3.7.0, http 1.6.0, crypto 3.0.7; Authentik tag 2025.10.1 (not yet checked against a running stack) and the Flutter, Dart and Watchtower images as written (unpinned).
+- Resize bar size setting removed from Settings > Theme (PBI-070).
