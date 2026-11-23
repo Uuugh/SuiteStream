@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/src/app/bootstrap.dart';
@@ -19,18 +21,20 @@ SuiteEvent event(String id, {String? calendarId}) => SuiteEvent.zoned(
       calendarId: calendarId,
     );
 
-/// Preferences whose writes fail, to prove failures are not swallowed.
+/// Preferences that hold a stored event with no calendar but whose writes fail, to prove failures are not swallowed.
 class _FailingPrefs extends Fake implements SharedPreferences {
   @override
-  String? getString(String key) => null;
+  String? getString(String key) => key == 'events.v1' ? jsonEncode([event('old').toJson()]) : null;
   @override
   bool? getBool(String key) => null;
+  @override
+  int? getInt(String key) => null;
   @override
   Set<String> getKeys() => {};
   @override
   bool containsKey(String key) => false;
   @override
-  Future<bool> setBool(String key, bool value) async => throw StateError('disk full');
+  Future<bool> setString(String key, String value) async => throw StateError('disk full');
 }
 
 void main() {
@@ -41,23 +45,19 @@ void main() {
     return SharedPreferences.getInstance();
   }
 
-  test('first start shows the three sample events once and records it', () async {
+  test('PBI-041: a first start has no automatic sample events and stores nothing extra', () async {
     final prefs = await prefsWith();
     final first = await bootstrapCalendar(prefs: prefs, messages: messages, zone: zone);
-    expect(first.events.map((e) => e.id), ['demo-1', 'demo-2', 'demo-3']);
-    expect(first.events.every((e) => e.calendarId == localCalendarId), isTrue);
-    expect(prefs.getBool(samplesShownKey), isTrue);
-
-    final second = await bootstrapCalendar(prefs: prefs, messages: messages, zone: zone);
-    expect(second.events, isEmpty);
+    expect(first.events, isEmpty);
+    expect(first.calendars.map((c) => c.id), [localCalendarId]);
+    expect(prefs.containsKey('demo.samplesShown'), isFalse);
   });
 
-  test('samples are not shown when the user already has events', () async {
+  test('the user own events are kept and none are added', () async {
     final prefs = await prefsWith();
     await PrefsEventStore(prefs).save([event('mine', calendarId: localCalendarId)]);
     final controller = await bootstrapCalendar(prefs: prefs, messages: messages, zone: zone);
-    expect(controller.events.map((e) => e.id), ['mine']); // no demo-* events
-    expect(prefs.getBool(samplesShownKey), isTrue);
+    expect(controller.events.map((e) => e.id), ['mine']);
   });
 
   test('migration assigns the default calendar to events without one and persists it', () async {
@@ -82,7 +82,7 @@ void main() {
   test('a failing step surfaces as a BootstrapException naming the step', () async {
     await expectLater(
       bootstrapCalendar(prefs: _FailingPrefs(), messages: messages, zone: zone),
-      throwsA(isA<BootstrapException>().having((e) => e.step, 'step', 'remember sample events')),
+      throwsA(isA<BootstrapException>().having((e) => e.step, 'step', 'migrate stored events')),
     );
   });
 }

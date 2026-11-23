@@ -208,6 +208,8 @@ void main() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-calendar')));
+    await tester.pumpAndSettle();
     final size = popup(tester);
     await tester.enterText(
       find.byKey(const ValueKey('setting-default-length')),
@@ -217,7 +219,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('settings-save')));
     await tester.pumpAndSettle();
     expect(
-      find.text('Use a length like 1:00 (from 5 minutes to 24 hours).'),
+      find.text('Use a number with a unit (from 5 minutes to 24 hours).'),
       findsOneWidget,
     );
     expect(popup(tester), size);

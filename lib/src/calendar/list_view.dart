@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
+import '../theme/event_colors.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/time_format.dart';
@@ -54,7 +55,7 @@ class AgendaView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
           child: Row(
             children: [
-              Container(width: 4, height: 18, margin: const EdgeInsets.only(right: 8), color: color == null ? t.run : Color(color)),
+              Container(width: 4, height: 18, margin: const EdgeInsets.only(right: 8), color: Color(color ?? defaultEventColor)),
               SizedBox(width: 120, child: Text(when, style: SuiteText.note(t))),
               Expanded(
                 child: Text(

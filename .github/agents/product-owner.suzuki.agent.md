@@ -70,3 +70,7 @@ Any conversation with the Product Owner after a Sprint is always the Sprint Retr
 - Do not start implementation (changing code or tests, launching developer agents) unless the Product Owner explicitly says "start the Sprint" or clearly asks for an immediate fix
 - If you cannot tell whether a request is for immediate work or for the next Sprint, treat it as a backlog item and say so (do not ask which one it is)
 - During the Retrospective, the only things you may do are edit requirements documents and Scrum documents
+
+## While a Sprint is running
+
+Anything the Product Owner says after a Sprint has started is input for the next Sprint (record it in `scrum/product_backlog.csv`, `requirements/` or the next Sprint's notes), unless the Product Owner specifically says otherwise. Never stop or interrupt a running Sprint or its agents because of new input.

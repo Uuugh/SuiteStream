@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/suite_theme.dart' show defaultAnimationDuration;
+import '../theme/event_colors.dart' show nextCalendarColor;
 import '../time/length_input.dart';
 import '../time/local_zone.dart';
 import '../time/suite_event.dart';
@@ -146,14 +147,15 @@ class CalendarController extends ChangeNotifier {
     }
   }
 
-  Future<bool> saveCalendar(String name, {String? id}) async {
+  /// A new calendar takes [color] or else the next unused calendar color; a rename keeps its color unless [color] is given.
+  Future<bool> saveCalendar(String name, {String? id, int? color}) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return false;
     if (id == null) {
       final calendar = SuiteCalendar(
         id: 'local-${DateTime.now().microsecondsSinceEpoch}',
         name: trimmed,
-        color: null,
+        color: color ?? nextCalendarColor(_calendars.map((c) => c.color)),
       );
       return _saveCalendars([..._calendars, calendar], _defaultCalendarId ?? calendar.id);
     }
@@ -161,7 +163,7 @@ class CalendarController extends ChangeNotifier {
     final updated = [
       for (final c in _calendars)
         if (c.id == id)
-          SuiteCalendar(id: id, name: trimmed, color: c.color, zone: c.zone)
+          SuiteCalendar(id: id, name: trimmed, color: color ?? c.color, zone: c.zone)
         else
           c,
     ];
@@ -301,6 +303,55 @@ class CalendarController extends ChangeNotifier {
     final i = _events.indexWhere((x) => x.id == e.id);
     _events = i < 0 ? [..._events, e] : [for (final x in _events) x.id == e.id ? e : x];
     _changed();
+  }
+
+  /// PBI-041: adds [calendars] and [events] by their ids; one already present is
+  /// replaced, so adding the same data twice never duplicates. Kept at once.
+  Future<bool> addCalendarData(List<SuiteCalendar> calendars, List<SuiteEvent> events) async {
+    final newCalendars = [
+      for (final c in _calendars) calendars.where((n) => n.id == c.id).firstOrNull ?? c,
+      for (final c in calendars)
+        if (_calendars.every((x) => x.id != c.id)) c,
+    ];
+    final ids = {for (final e in events) e.id};
+    final newEvents = [..._events.where((e) => !ids.contains(e.id)), ...events];
+    try {
+      final store = _localCalendarStore;
+      if (store != null && !await store.save(newCalendars, _defaultCalendarId ?? newCalendars.first.id)) return false;
+      await _store?.save(newEvents);
+    } on Exception {
+      return false;
+    }
+    _calendars = newCalendars;
+    _defaultCalendarId ??= newCalendars.first.id;
+    _events = newEvents;
+    notifyListeners();
+    return true;
+  }
+
+  /// PBI-041: removes the calendars with [calendarIds] and every event sitting in
+  /// them or matching [isRemovedEvent], and nothing else. The last remaining
+  /// calendar is never removed (its matching events still are).
+  Future<bool> removeCalendarData(Set<String> calendarIds, {bool Function(SuiteEvent event)? isRemovedEvent}) async {
+    bool gone(SuiteEvent e) => calendarIds.contains(e.calendarId) || (isRemovedEvent?.call(e) ?? false);
+    var newCalendars = _calendars.where((c) => !calendarIds.contains(c.id)).toList();
+    if (newCalendars.isEmpty) newCalendars = List.of(_calendars);
+    final newDefault = newCalendars.any((c) => c.id == _defaultCalendarId) ? _defaultCalendarId! : newCalendars.first.id;
+    final newEvents = _events.where((e) => !gone(e)).toList();
+    try {
+      final store = _localCalendarStore;
+      if (store != null && !await store.save(newCalendars, newDefault)) return false;
+      await _store?.save(newEvents);
+    } on Exception {
+      return false;
+    }
+    _calendars = newCalendars;
+    _defaultCalendarId = newDefault;
+    _events = newEvents;
+    _removed.removeWhere(gone);
+    if (_selectedId != null && newEvents.every((e) => e.id != _selectedId)) _selectedId = null;
+    notifyListeners();
+    return true;
   }
 
   /// DEF-02: how many deletions can be undone.

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/event_colors.dart';
 import '../theme/suite_icons.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
@@ -341,7 +342,7 @@ class _DayColumn extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                     decoration: BoxDecoration(
                       color: t.runBg,
-                      border: Border(left: BorderSide(color: c.colorOf(p.event) == null ? t.run : Color(c.colorOf(p.event)!), width: 3)),
+                      border: Border(left: BorderSide(color: Color(c.colorOf(p.event) ?? defaultEventColor), width: 3)),
                     ),
                     child: Text(
                       '${formatTimeOfDay(p.startMinute ~/ 60, p.startMinute % 60, c.timeFormat)} ${p.event.title}',

@@ -58,3 +58,12 @@ Statuses used in `product_backlog.csv` and `product_backlog_done.csv`:
 | Blocked | Cannot proceed because of an open impediment (see `impediment_log.csv`) or a missing decision; say what blocks it in the PBI. |
 
 PBI-011, PBI-013, PBI-014 and PBI-018 stay In Review; they are the Sprint 006 stretch PBI-032 (review closure).
+
+## Monitoring without the Product Owner (added 2026-11-23)
+
+The orchestrator checks `usage-now.json` first. When it is stale or null (the VS Code extension does not run the status line, so only a terminal session refreshes it), the orchestrator estimates usage itself, without asking:
+
+- Anchor: the Product Owner's last pasted reading and the time it was given.
+- Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens, plus the orchestrator's own turns).
+- Apply the Caution (70%) and Warning (85%) actions to the estimate. Say the number is an estimate, and take any new reading the Product Owner gives as the new anchor.
+- The session window resets at the time in the reading; weekly usage does not reset until its reset time, so check the weekly estimate too.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'theme_settings.dart';
 import 'tokens.dart';
 
 /// THM-01.a: IBM Plex Sans is the font for everything.
@@ -55,6 +56,24 @@ const double suiteDropdownVerticalPadding = (suiteControlHeight - 24) / 2;
 const double suiteLabelHeight = 17;
 /// Gap between two side-by-side fields, and between the two dialog columns.
 const double suiteColumnGap = 10;
+/// UIC-43, THM-10.d: the shadow depth of every popup (dialog, menu, picker, popover, opened
+/// event) at the default Popup shadow setting (100 %). SET-03.e scales it.
+const double suitePopupElevation = 8;
+
+/// Color picker geometry (UIC-10): swatch size, selected check size, gap between swatches.
+const double suiteSwatchSize = 30;
+const double suiteSwatchCheckSize = 18;
+const double suiteSwatchGap = 8;
+
+/// The popup shadow depth for [context]: [suitePopupElevation] scaled by the user's Popup
+/// shadow setting (0 means no shadow).
+double popupElevationOf(BuildContext context) =>
+    suitePopupElevation * ThemeSettingsScope.of(context).popupShadow / 100;
+
+/// A [DialogThemeData] with the popup shadow applied, for dialogs under [context].
+DialogThemeData popupDialogTheme(BuildContext context, DialogThemeData base) =>
+    base.copyWith(elevation: popupElevationOf(context), shadowColor: Theme.of(context).colorScheme.shadow);
+
 const Alignment suiteBadgeAnchor = Alignment.bottomRight;
 const Offset suiteBadgeOffset = Offset(1 / 4, 1 / 6);
 
@@ -137,11 +156,20 @@ ThemeData buildSuiteTheme(Brightness brightness) {
     fontFamily: sansFamily,
     textTheme: textTheme,
     primaryTextTheme: textTheme,
-    dialogTheme: const DialogThemeData(
-      shape: RoundedRectangleBorder(
+    dialogTheme: DialogThemeData(
+      elevation: suitePopupElevation,
+      shadowColor: t.scheme.shadow,
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(suitePanelRadius)),
       ),
     ),
+    menuTheme: MenuThemeData(
+      style: MenuStyle(
+        elevation: const WidgetStatePropertyAll(suitePopupElevation),
+        shadowColor: WidgetStatePropertyAll(t.scheme.shadow),
+      ),
+    ),
+    popupMenuTheme: PopupMenuThemeData(elevation: suitePopupElevation, shadowColor: t.scheme.shadow),
     // One height for every single-line text box and dropdown on the site. A multi-line
     // box overrides it with `constraints: const BoxConstraints()`.
     inputDecorationTheme: const InputDecorationThemeData(

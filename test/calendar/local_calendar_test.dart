@@ -6,7 +6,9 @@ import 'package:suitestream/src/calendar/event_store.dart';
 import 'package:suitestream/src/calendar/local_calendar_store.dart';
 import 'package:suitestream/src/calendar/local_calendars_dialog.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
 import 'package:suitestream/src/time/local_zone.dart';
+import 'package:suitestream/src/time/suite_event.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
 
@@ -117,6 +119,63 @@ void main() {
     expect(controller.calendars.length, 2);
     await tester.tap(find.text('Close'));
     await tester.pumpAndSettle();
+  });
+
+  test('UIC-10, EVT-03.i: a calendar color is kept by the store; a new calendar gets the next unused calendar color', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final store = LocalCalendarStore(prefs);
+    final controller = CalendarController(
+      localZone: const LocalZone.system(zone),
+      timeFormat: TimeFormat.twelveHour,
+      calendars: [SuiteCalendar(id: 'a', name: 'A', color: calendarPalette[0].argb)],
+      localCalendarStore: store,
+    );
+    expect(await controller.saveCalendar('B'), isTrue);
+    expect(controller.calendars.last.color, calendarPalette[1].argb);
+    expect(await controller.saveCalendar('C', color: calendarPalette[9].argb), isTrue);
+    expect(controller.calendars.last.color, calendarPalette[9].argb);
+    expect(await controller.saveCalendar('B2', id: controller.calendars[1].id), isTrue);
+    expect(controller.calendars[1].color, calendarPalette[1].argb); // a rename keeps its color
+    expect(await controller.saveCalendar('B2', id: controller.calendars[1].id, color: calendarPalette[20].argb), isTrue);
+    expect(LocalCalendarStore(prefs).load()!.calendars[1].color, calendarPalette[20].argb);
+    expect(LocalCalendarStore(prefs).load()!.calendars.first.color, calendarPalette[0].argb);
+  });
+
+  testWidgets('UIC-10, UIC-20, CGOW-10: the calendar dialog picks one of 24 calendar colors with the shared picker', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final controller = CalendarController(
+      localZone: const LocalZone.system(zone),
+      timeFormat: TimeFormat.twelveHour,
+      calendars: [SuiteCalendar(id: 'work', name: 'Work', color: 0xFFAB725F)], // not in the palette
+      localCalendarStore: LocalCalendarStore(prefs),
+    );
+    useWindow(tester, const Size(420, 780));
+    await tester.pumpWidget(appFor(Builder(
+      builder: (context) => TextButton(onPressed: () => openLocalCalendars(context, controller), child: const Text('Open')),
+    )));
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    // UIC-20: shown as the nearest palette color (Cocoa).
+    expect((tester.widget<CircleAvatar>(find.byKey(const ValueKey('calendar-dot-work'))).backgroundColor), const Color(0xFFAC725E));
+    await tester.tap(find.text('Add calendar'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Travel');
+    await tester.tap(find.byKey(const ValueKey('calendar-color-button')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('color-default')), findsNothing); // no "calendar default" for a calendar
+    for (final p in calendarPalette) {
+      expect(find.byKey(ValueKey('color-${p.key}')), findsOneWidget, reason: p.name);
+    }
+    expect(find.byKey(const ValueKey('color-tomato')), findsNothing); // not the event palette
+    await tester.tap(find.byKey(const ValueKey('color-cal16')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(controller.calendars.last.name, 'Travel');
+    expect(controller.calendars.last.color, 0xFF4986E7);
+    expect(LocalCalendarStore(prefs).load()!.calendars.last.color, 0xFF4986E7);
   });
 
   testWidgets('SET-01.b: Settings groups the configuration sections and opens Sources directly', (tester) async {

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme/suite_icons.dart';
 import '../theme/suite_theme.dart';
+import '../theme/theme_settings.dart';
 import '../theme/tokens.dart';
 
 /// The trigger is an icon button: a 48 px target with a 24 px icon centered in it.
@@ -136,7 +137,8 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
                 },
                 child: Material(
                   color: t.card,
-                  elevation: 4,
+                  elevation: popupElevationOf(context),
+                  shadowColor: Theme.of(context).colorScheme.shadow,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(suitePanelRadius),
                     side: BorderSide(color: t.line),
@@ -191,7 +193,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
           children: [
             if (item.leading != null) ...[SizedBox(width: triggerIconSize, height: triggerIconSize, child: Center(child: item.leading)), const SizedBox(width: 12)]
             else if (item.icon != null) ...[Icon(item.icon, size: triggerIconSize), const SizedBox(width: 12)],
-            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis))),
+            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: SuiteText.bodySize * ThemeSettingsScope.of(context).dropdownText / 100)))),
             // The check's place is always reserved, so choosing or clearing an item never resizes the menu.
             SizedBox(width: 18, child: selected ? Icon(SuiteIcons.check, size: 18, color: t.accent, semanticLabel: 'selected') : null),
           ],
@@ -212,7 +214,7 @@ extension on _SuiteDropdownState {
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: triggerIconInset, right: suiteDialogPadding),
         decoration: BoxDecoration(border: Border(bottom: BorderSide(color: t.line))),
-        child: Text(a.label, style: TextStyle(color: t.accent, fontWeight: FontWeight.w600)),
+        child: Text(a.label, style: TextStyle(color: t.accent, fontWeight: FontWeight.w600, fontSize: SuiteText.bodySize * ThemeSettingsScope.of(context).dropdownText / 100)),
       ),
     );
   }

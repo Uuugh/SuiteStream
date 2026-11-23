@@ -94,3 +94,7 @@ Any conversation with the Product Owner after a Sprint is always the Sprint Retr
 ## Commit on retrospective approval
 
 Approval of the Sprint Retrospective by the Product Owner means "commit and push the sprint's work now" (see `.github/skills/sprint-retrospective/SKILL.md`, "Commit on approval"). Analyze and test first, commit once, push to the remote, then start the next sprint's planning.
+
+## While a Sprint is running
+
+Anything the Product Owner says after a Sprint has started is input for the next Sprint (record it in `scrum/product_backlog.csv`, `requirements/` or the next Sprint's notes), unless the Product Owner specifically says otherwise. Never stop or interrupt a running Sprint or its agents because of new input.

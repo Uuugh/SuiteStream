@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../theme/suite_icons.dart';
@@ -13,6 +14,7 @@ import '../time/time_format.dart';
 import '../time/time_input.dart';
 import '../time/zones.dart';
 import '../ui/cancel_save_pair.dart';
+import '../ui/color_picker.dart';
 import '../ui/confirm.dart';
 import '../ui/error_note.dart';
 import '../ui/popup_size_lock.dart';
@@ -20,6 +22,7 @@ import '../ui/suite_dialog.dart';
 import '../ui/stepper_arrows.dart';
 import '../ui/zone_picker.dart';
 import 'calendar_controller.dart';
+import 'calendar_defaults.dart';
 import 'date_picker.dart';
 import 'event_drag.dart';
 
@@ -97,8 +100,19 @@ Future<void> openEventDialog(
   DateTime? day,
   int? startMinute,
   bool allDay = false,
-}) {
+  SharedPreferences? prefs,
+}) async {
   final msgs = context.msg;
+  // EVT-01.m: with no spot clicked, a new event starts at the default time (Settings > Calendar).
+  var defaultStart = standardEventStartMinutes;
+  if (event == null && duplicateOf == null && startMinute == null && !allDay) {
+    try {
+      defaultStart = CalendarDefaults.load(prefs ?? await SharedPreferences.getInstance()).startMinutes;
+    } on Object {
+      // keep 9:00
+    }
+  }
+  if (!context.mounted) return;
   final phone = MediaQuery.sizeOf(context).width <= phoneMaxWidth;
   return showSuiteDialog<void>(
     context: context,
@@ -120,6 +134,7 @@ Future<void> openEventDialog(
               day: day,
               startMinute: startMinute,
               allDay: allDay,
+              defaultStartMinutes: defaultStart,
             ),
           ),
         ),
@@ -138,6 +153,7 @@ class EventDialog extends StatefulWidget {
     this.day,
     this.startMinute,
     this.allDay = false,
+    this.defaultStartMinutes = standardEventStartMinutes,
   });
 
   final CalendarController controller;
@@ -152,6 +168,9 @@ class EventDialog extends StatefulWidget {
 
   /// A click in the all-day row starts an all-day event.
   final bool allDay;
+
+  /// EVT-01.m: the start of a new event when no spot was clicked (CalendarDefaults.startMinutes).
+  final int defaultStartMinutes;
 
   @override
   State<EventDialog> createState() => _EventDialogState();
@@ -234,7 +253,7 @@ class _EventDialogState extends State<EventDialog> {
       // EVT-01.m: a new event starts at 9:00 for an hour on the day clicked, or today.
       final d = widget.day ?? c.today;
       _allDay = widget.allDay;
-      final startMin = widget.startMinute ?? newEventStartMinutes;
+      final startMin = widget.startMinute ?? widget.defaultStartMinutes;
       final endTotal =
           startMin +
           c
@@ -1180,29 +1199,22 @@ class _EventDialogState extends State<EventDialog> {
   Widget _colorButton(Messages m) {
     final t = context.tokens;
     final cal = c.calendars.where((x) => x.id == _calendarId).firstOrNull;
-    final fallback = cal?.color ?? t.scheme.primary.toARGB32();
-    final shown = _color ?? fallback;
-    final name = _color == null
-        ? m('defaultColor')
-        : '#${(shown & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+    final fallback = cal?.color ?? defaultEventColor;
+    // UIC-20: a color outside the palette is shown as the nearest palette color.
+    final shown = _color == null ? fallback : nearestEventColor(_color!);
+    final name = _color == null ? m('defaultColor') : paletteColorName(m, nearestPaletteColor(_color!, eventPalette));
     return InkWell(
       key: const ValueKey('event-color-button'),
       borderRadius: BorderRadius.circular(8),
       onTap: () async {
-        final msgs = context.msg;
-        final picked = await showSuiteDialog<int>(
-          context: context,
-          animate: false,
-          builder: (_) => MessagesScope(
-            messages: msgs,
-            child: _PaletteDialog(
-              current: _color,
-              calendarColor: fallback,
-            ),
-          ),
+        final picked = await showColorPicker(
+          context,
+          palette: eventPalette,
+          current: _color,
+          defaultColor: fallback,
         );
         if (!mounted || picked == null) return;
-        setState(() => _color = picked == _paletteDefault ? null : picked);
+        setState(() => _color = picked == colorPickerDefault ? null : picked);
       },
       child: InputDecorator(
         decoration: _decoration(dropdown: true),
@@ -1399,86 +1411,5 @@ class _ReminderRow {
     if (n == null || n < 0) return null;
     final m = n * unit.inMinutes;
     return m > longestReminderLead ? null : m;
-  }
-}
-
-/// The value the palette returns for "calendar default".
-const int _paletteDefault = -1;
-
-/// UIC-10: theme-derived event colors and the editor's calendar default.
-class _PaletteDialog extends StatelessWidget {
-  const _PaletteDialog({required this.current, required this.calendarColor});
-
-  final int? current;
-  final int calendarColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-    final m = context.msg;
-    return Dialog(
-      backgroundColor: t.card,
-      child: Padding(
-        padding: const EdgeInsets.all(suiteDialogPadding),
-        child: SizedBox(
-          width: 260,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ChoiceChip(
-                key: const ValueKey('color-default'),
-                label: Text(m('calendarDefault')),
-                avatar: CircleAvatar(
-                  backgroundColor: Color(calendarColor),
-                  radius: 6,
-                ),
-                selected: current == null,
-                onSelected: (_) => Navigator.of(context).pop(_paletteDefault),
-              ),
-              const SizedBox(height: suitePartGap),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final p in eventColors(t.scheme).entries)
-                    InkWell(
-                      key: ValueKey('color-${p.key}'),
-                      customBorder: const CircleBorder(),
-                      onTap: () => Navigator.of(context).pop(p.value.toARGB32()),
-                      child: Tooltip(
-                        message: '#${(p.value.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}',
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: p.value,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: current == p.value.toARGB32()
-                                  ? t.text
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          child: current == p.value.toARGB32()
-                              ? Icon(
-                                  SuiteIcons.check,
-                                  size: 18,
-                                  color: ThemeData.estimateBrightnessForColor(p.value) == Brightness.dark
-                                      ? t.scheme.surfaceBright
-                                      : t.scheme.shadow,
-                                )
-                              : null,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

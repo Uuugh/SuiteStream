@@ -25,7 +25,10 @@ Future<T?> showSuiteDialog<T>({
         : AnimationStyle.noAnimation,
     builder: (context) {
       final width = MediaQuery.sizeOf(context).width;
-      final theme = Theme.of(context);
+      // UIC-43: the popup shadow, scaled by the Popup shadow setting.
+      final theme = Theme.of(context).copyWith(
+        dialogTheme: popupDialogTheme(context, Theme.of(context).dialogTheme),
+      );
       final child = width <= phoneMaxWidth
           ? Theme(
               data: theme.copyWith(
@@ -37,7 +40,7 @@ Future<T?> showSuiteDialog<T>({
               ),
               child: Builder(builder: builder),
             )
-          : builder(context);
+          : Theme(data: theme, child: Builder(builder: builder));
       final transition = ModalRoute.of(context)?.animation;
       if (!animate || transition == null) return child;
       return AnimatedBuilder(
