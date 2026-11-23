@@ -16,11 +16,12 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-03.b | backlog | Icons are 13 to 24 px. Adding an icon does not change an existing one. | — |
 | THM-04 | backlog | Corners are rounded rectangles, never pills, and components have the sizes below; every border is 1 px. | — |
 | THM-04.a | backlog | Controls have 8 px corners. Sections, modules, pop-ups and menus have 12 px corners. Small marks (a color, today, a switch) have 4 to 6 px corners. | — |
-| THM-04.b | backlog | Module headers are 50 px high; controls (fields and buttons) are 34 px high. | — |
+| THM-04.b | planned | Controls (fields and buttons) are 34 px high: one height for every single-line text box and dropdown on the site, set once as the control height token. | test/ui/control_height_test.dart, test/events/event_dialog_test.dart |
+| THM-04.f | backlog | Module headers are 50 px high. | — |
 | THM-04.c | backlog | Status/Action buttons are 132 × 50 px. Cancel/Save buttons are 130 × 34 px. | — |
 | THM-04.d | backlog | Icon buttons are 34 × 34 px in the general toolbar and 28 × 28 px in the compact calendar toolbar; the calendar header's previous and next buttons are 34 × 34 px. | — |
 | THM-04.e | backlog | Today's day in the calendar and the focus outline are marks of 2 px, not borders. | — |
-| THM-01.e | backlog | A field label is 12 px and sits over a 34 px field. | — |
+| THM-01.e | planned | A field label is 12 px and sits over a 34 px field. | test/ui/control_height_test.dart, test/events/event_dialog_test.dart |
 | THM-05 | backlog | Buttons share one look, and a status has one look per meaning. | — |
 | THM-05.a | backlog | Icon buttons show their hover state. | — |
 | THM-05.c | backlog | A disabled Cancel \| Save pair cannot be activated. A first change triggers the pulse in THM-06.c. | — |
@@ -42,11 +43,13 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-08.a | backlog | In a phone-width window a dialog's corners are square and edge to edge (UIC-01). | — |
 | THM-08.b | backlog | The grip of a handle is two columns of three faint dots, centered on the module's 50 px header or on the rule line. | — |
 | THM-08.c | backlog | The (?) icon is 15 px, raised after the word it explains. | — |
-| THM-09 | backlog | The event color palette (UIC-10) is Google Calendar's eleven colors. | — |
-| THM-09.a | backlog | Tomato #d50000, Flamingo #e67c73, Tangerine #f4511e, Banana #f6bf26, Sage #33b679, Basil #0b8043, Peacock #039be5, Blueberry #3f51b5, Lavender #7986cb, Grape #8e24aa, Graphite #616161. | — |
-| THM-09.b | backlog | The default event color is #1d4ed8. | — |
+| THM-09 | planned | The event color palette (UIC-10) is Google Calendar's eleven colors. | test/events/event_logic_test.dart, test/events/event_dialog_test.dart |
+| THM-09.a | planned | Tomato #d50000, Flamingo #e67c73, Tangerine #f4511e, Banana #f6bf26, Sage #33b679, Basil #0b8043, Peacock #039be5, Blueberry #3f51b5, Lavender #7986cb, Grape #8e24aa, Graphite #616161. | test/events/event_logic_test.dart, test/events/event_dialog_test.dart |
+| THM-09.b | planned | The default event color is #1d4ed8. | test/events/event_logic_test.dart, test/events/event_dialog_test.dart |
 | THM-10 | backlog | An event on the calendar has the look below. | — |
 | THM-10.c | backlog | A hidden or deleted event is shown muted and struck through, on the calendar and in print. | — |
-| THM-10.d | backlog | Event text in the hourly grid is 11.5 px, and an opened event has a shadow. | — |
+| THM-10.d | planned | An opened event has a shadow, like every popup (UIC-43). Not built yet (CAL-10.d is backlog; Ito is building it in week_view); no test covers it, popup_shadow_test.dart covers the other popups only. | — |
+| THM-10.g | backlog | Event text in the hourly grid is 11.5 px. | — |
+| THM-10.h | backlog | Event text reaches a contrast of 4.5:1 against its own chip or bar in light and dark, whatever the event color (a pale color such as yellow gets dark text in light mode); the same rule covers every view and print. | — |
 | THM-10.e | backlog | An event in a lane is narrower than its share of the column by 3 px (the lane gap) and starts 1 px right of its lane's edge (the lane offset). | — |
 | THM-10.f | backlog | A List row's date column is 150 px wide. | — |

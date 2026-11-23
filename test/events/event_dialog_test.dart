@@ -1,10 +1,13 @@
 import 'dart:ui' show PointerDeviceKind;
 
+import 'package:suitestream/src/theme/event_colors.dart';
 import 'package:suitestream/src/theme/suite_icons.dart';
-import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/event_dialog.dart';
@@ -42,9 +45,6 @@ Future<void> save(WidgetTester tester) async {
   await tester.tap(find.byKey(const ValueKey('event-save')));
   await tester.pumpAndSettle();
 }
-
-String themeHex(Color color) =>
-    '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
 
 void main() {
   deleteIconTests();
@@ -89,6 +89,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.descendant(of: find.byKey(const ValueKey('event-start-date')), matching: find.text('Jul 15, 2026')), findsOneWidget);
     expect(fieldText(tester, 'event-start-time'), '09:00 am');
+  });
+
+  testWidgets('EVT-01.m: with no spot clicked a new event starts at the default time from Settings > Calendar', (tester) async {
+    SharedPreferences.setMockInitialValues({CalendarDefaults.startKey: 14 * 60 + 30});
+    final prefs = await SharedPreferences.getInstance();
+    final c = makeController();
+    await tester.pumpWidget(appFor(Builder(builder: (context) => TextButton(onPressed: () => openEventDialog(context, c, prefs: prefs), child: const Text('go'))), size: tall));
+    await tester.tap(find.text('go'));
+    await tester.pumpAndSettle();
+    expect(fieldText(tester, 'event-start-time'), '02:30 pm');
+    expect(fieldText(tester, 'event-end-time'), '03:30 pm');
   });
 
   testWidgets('EVT-02.a: times show in the page notation and accept typed forms', (tester) async {
@@ -386,40 +397,45 @@ void main() {
     expect(c.events.single.color, importedColor);
   });
 
-  testWidgets('EVT-03.b, THM-09.a: a choice from the active theme appears on the calendar and in the dialog', (tester) async {
+  testWidgets('EVT-03.b, THM-09, THM-09.a, UIC-10: the picker offers Google\'s eleven event colors; a pick shows on the calendar and in the dialog', (tester) async {
     final c = await pumpCalendar(tester);
     await openDay(tester, 20);
     await typeIn(tester, 'event-title', 'Colorful');
     await tester.tap(find.byKey(const ValueKey('event-color-button'))); // the palette opens from one button
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('color-primary')), findsOneWidget);
-    expect(find.byKey(const ValueKey('color-outline')), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('color-primary')));
+    expect(find.byKey(const ValueKey('color-default')), findsOneWidget);
+    for (final p in eventPalette) {
+      expect(find.byKey(ValueKey('color-${p.key}')), findsOneWidget, reason: p.name);
+    }
+    expect(find.byWidgetPredicate((w) => w is InkWell && w.key.toString().startsWith("[<'color-")), findsNWidgets(11));
+    expect(find.byKey(const ValueKey('color-primary')), findsNothing); // no theme-derived colors
+    expect(find.bySemanticsLabel('Tomato'), findsOneWidget); // accessible names
+    await tester.tap(find.byKey(const ValueKey('color-grape')));
     await tester.pumpAndSettle();
     await save(tester);
-    expect(c.events.single.color, SuiteTokens.light.scheme.primary.toARGB32());
+    expect(c.events.single.color, 0xFF8E24AA);
     final bar = find.descendant(
       of: find.byKey(ValueKey('event-${c.events.single.id}')),
-      matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == SuiteTokens.light.scheme.primary.withValues(alpha: 0.18)),
+      matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == const Color(0xFF8E24AA).withValues(alpha: 0.18)),
     );
     expect(bar, findsOneWidget);
     c.selectEvent(c.events.single.id);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('details-edit')));
     await tester.pumpAndSettle();
-    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text(themeHex(SuiteTokens.light.scheme.primary))), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Grape')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('event-color-button')));
     await tester.pumpAndSettle();
-    expect(find.descendant(of: find.byKey(const ValueKey('color-primary')), matching: find.byIcon(SuiteIcons.check)), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('color-grape')), matching: find.byIcon(SuiteIcons.check)), findsOneWidget);
   });
 
-  testWidgets('EVT-03.d, THM-09.b: fallback colors follow the calendar and the theme until an explicit color is picked', (tester) async {
+  testWidgets('EVT-03.d, THM-09.b, UIC-10.a: the default follows the calendar until a color is picked; a picked color survives a later calendar choice', (tester) async {
     final c = await pumpCalendar(tester);
     await openDay(tester, 20);
     await typeIn(tester, 'event-title', 'Follow');
     Color swatch() => ((tester.widget<Container>(find.byKey(const ValueKey('event-color-swatch')))).decoration! as BoxDecoration).color!;
     expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Default color')), findsOneWidget);
-    expect(swatch(), SuiteTokens.light.scheme.primary); // no calendar: the default color
+    expect(swatch(), Color(defaultEventColor)); // no calendar color: the default event color (THM-09.b)
     await tester.tap(find.byKey(const ValueKey('event-calendar')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Home').last);
@@ -427,19 +443,57 @@ void main() {
     expect(swatch(), const Color(0xFF2A9D8F)); // it follows the calendar
     await tester.tap(find.byKey(const ValueKey('event-color-button')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('color-tertiary')));
+    await tester.tap(find.byKey(const ValueKey('color-peacock')));
     await tester.pumpAndSettle();
-    expect(swatch(), SuiteTokens.light.scheme.tertiary);
+    expect(swatch(), const Color(0xFF039BE5));
     await tester.tap(find.byKey(const ValueKey('event-calendar')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Work').last);
     await tester.pumpAndSettle();
-    expect(swatch(), SuiteTokens.light.scheme.tertiary); // a picked color survives a later calendar choice
-    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text(themeHex(SuiteTokens.light.scheme.tertiary))), findsOneWidget);
+    expect(swatch(), const Color(0xFF039BE5)); // a picked color survives a later calendar choice
+    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Peacock')), findsOneWidget);
     await save(tester);
-    expect(c.events.single.color, SuiteTokens.light.scheme.tertiary.toARGB32());
+    expect(c.events.single.color, 0xFF039BE5);
   });
 
+  testWidgets('UIC-20: a stored color outside the palette is shown as the nearest palette color and kept until another is picked', (tester) async {
+    final imported = makeEvent('theirs', 20, 9, title: 'Theirs').copyWith(custom: false, color: 0xFFD00A0A);
+    final c = await pumpCalendar(tester, events: [imported]);
+    c.selectEvent('theirs');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('details-edit')));
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Tomato')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('event-color-button')));
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: find.byKey(const ValueKey('color-tomato')), matching: find.byIcon(SuiteIcons.check)), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('color-default')));
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Default color')), findsOneWidget);
+  });
+
+  testWidgets('THM-04.b, THM-01.e: every box in a reminder row (method, number, unit) is the 34 px control height', (tester) async {
+    await pumpCalendar(tester);
+    await openDay(tester, 20);
+    await tester.ensureVisible(find.byKey(const ValueKey('reminder-add')));
+    await tester.tap(find.byKey(const ValueKey('reminder-add')));
+    await tester.pumpAndSettle();
+    for (final key in ['reminder-method-0', 'reminder-number-0', 'reminder-unit-0']) {
+      final box = find.descendant(of: find.byKey(ValueKey(key)), matching: find.byType(InputDecorator)).first;
+      expect(tester.getSize(box).height, suiteControlHeight, reason: key);
+    }
+    expect(tester.getSize(find.byKey(const ValueKey('reminder-method-0'))).height, suiteControlHeight);
+    expect(tester.getSize(find.byKey(const ValueKey('reminder-unit-0'))).height, suiteControlHeight);
+  });
+
+  testWidgets('EVT-02.n: a new event\'s end is the start plus the default event length, in whatever unit it was set', (tester) async {
+    final c = await pumpCalendar(tester);
+    c.defaultLength = const Duration(hours: 2, minutes: 30);
+    await openDay(tester, 20);
+    await typeIn(tester, 'event-title', 'Long');
+    await save(tester);
+    expect(c.events.single.endUtc.difference(c.events.single.startUtc), const Duration(hours: 2, minutes: 30));
+  });
 
   testWidgets('EVT-07.a: clicking an event opens its details in place; they stay open when the calendar is redrawn until Close', (tester) async {
     final e = makeEvent('a', 20, 10, title: 'Dentist', calendarId: 'work').copyWith(location: '12 Oak St', notes: 'Bring the form', edited: true);

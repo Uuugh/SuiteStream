@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
+import '../theme/event_colors.dart';
 import '../theme/suite_theme.dart';
 import '../time/time_format.dart';
 import '../ui/cancel_save_pair.dart';
@@ -20,7 +21,7 @@ Future<void> showCalendarPrint(
   final messages = context.msg;
   final colors = Theme.of(context).colorScheme;
   final sheet = _PrintSheet.fromCalendar(controller, messages, colors, title);
-  return showDialog<void>(
+  return showSuiteDialog<void>(
     context: context,
     builder: (_) => _PrintPreview(messages: messages, sheet: sheet),
   );
@@ -248,7 +249,7 @@ class _PrintSheet {
                         : ''
                   : '${_eventTime(event.startIn(location), calendar.timeFormat)} – '
                         '${_eventTime(event.endIn(location), calendar.timeFormat)}',
-              Color(calendar.colorOf(event) ?? colors.primary.toARGB32()),
+              Color(calendar.colorOf(event) ?? defaultEventColor),
               event.deleted || event.hiddenFromGoogle,
               event.allDay
                   ? null

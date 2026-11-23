@@ -82,9 +82,11 @@ class InfoPopoverButton extends StatelessWidget {
         tooltip ?? MaterialLocalizations.of(context).moreButtonTooltip;
     return MenuAnchor(
       useRootOverlay: true,
-      style: const MenuStyle(
-        padding: WidgetStatePropertyAll(EdgeInsets.zero),
-        shape: WidgetStatePropertyAll(
+      style: MenuStyle(
+        padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+        elevation: WidgetStatePropertyAll(popupElevationOf(context)),
+        shadowColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.shadow),
+        shape: const WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(suitePanelRadius)),
           ),

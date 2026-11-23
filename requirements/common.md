@@ -20,7 +20,7 @@
 | UIC-17 | backlog | UI components are kept separate from the features that use them: a component's look comes only from the theme, and a feature supplies only its content and what the component does there. So changing the theme restyles every feature at once, and a new feature reuses the components as they are. | — |
 | UIC-18 | backlog | One shared strength bar appears directly beneath any field where the user enters a secret (a password, a feed token), showing how strong the entry is as they type. It measures randomness (bits), not length alone; the bar only shows, and the field's feature decides whether an entry is accepted. Beside it, a hint recommends what to do (for example, the recommended minimum, or to use the generated value). The field's feature supplies the recommendation. | — |
 | UIC-19 | backlog | An entry that is not valid is marked at its own field with a note saying what is wrong, and it does not affect the other fields' valid values. A feature row says which entries are valid, and refers here for how the problem is shown. | — |
-| UIC-20 | backlog | A color that is not in the shared palette (from an older rule, an import, or a destination that supports fewer colors) is represented by the nearest palette color wherever it is shown or sent (UIC-10). | — |
+| UIC-20 | planned | A color that is not in the shared palette (from an older rule, an import, or a destination that supports fewer colors) is represented by the nearest palette color wherever it is shown or sent (UIC-10). | test/events/event_logic_test.dart, test/events/event_dialog_test.dart |
 | UIC-21 | done | One shared filter, used by the Calendar filter and History (and any feature with a filter). It is built on the shared dropdown (UIC-12): the user can select one, several, all or none of its choices; Select all shows everything and Select none shows nothing; the filter shows when it is active; the choices are saved and kept; a change applies at once (UIC-13). A feature supplies only the choices and what they filter. | test/calendar/filter_test.dart |
 | UIC-24 | backlog | A section whose items can be added has a + control as the rightmost item of its header's right zone; it opens the dialog for adding (UIC-01). | — |
 | UIC-25 | backlog | A button that does one thing and shows no state (an icon button, +, Copy, Open, Expand, Close) just does it; Copy then shows "Copied" in place of its icon for the time in DEF-01. | — |
@@ -64,8 +64,9 @@
 | UIC-38 | backlog | Every password box has a Show/Hide button (msg:showPassword, msg:hidePassword); the box is hidden again when its form is sent. | — |
 | UIC-39 | backlog | The time zone picker lists a Common group of the zones in DEF-01, in that order, then msg:allTimeZones (region and city names only), without names that start with Etc/, SystemV/, posix/ or right/; the default zone is marked ★; a value that is not UTC or in the list is not valid (msg:unknownTimeZone, UIC-19); choosing the default or nothing clears the stored choice. | — |
 | UIC-42 | planned | A popup is not resized once it is drawn. Choosing or unchoosing something (all-day, a different end time zone, a view in the date picker) only shows or hides fields, and a hidden field keeps its place; adding or removing a row the user lists (a reminder) may grow or shrink the popup; an error line does not resize it. | test/calendar/popup_size_test.dart |
-| UIC-43 | backlog | A popup opens with a shadow (THM-10.d), whatever opens it: a dialog, a menu, a picker, a popover or an opened event. | — |
-| UIC-44 | backlog | Every common UI element in this file has a setting under Settings > Theme (SET-03) that configures its look or behavior, with its default in DEF-01 (or in the element's own row when it is not a number); Reset in Settings > Theme restores them. A new common element comes with its setting. | — |
+| UIC-43 | planned | A popup opens with a shadow (THM-10.d), whatever opens it. Built and tested: dialogs, the dropdown menu and the color picker. Not built: an opened event (CAL-10.d, THM-10.d) and the hour-density menu does not yet scale with the Popup shadow setting. | test/ui/popup_shadow_test.dart (dialogs, menus, picker) |
+| UIC-44 | backlog | Every common UI element in this file gets a setting under Settings > Theme (SET-03) that configures its look or behavior, with its default in DEF-01; Reset in Settings > Theme restores them. Built so far: six settings (animation time, popup shadow, resize bar, dropdown text, date picker, status chip time with no consumer yet) and the default theme; the rest are backlog (SET-03.k lists them). A new common element comes with its setting. | test/theme/theme_settings_test.dart (the six built settings) |
+| UIC-45 | backlog | A Settings page saves its changes on its own when it loses focus (the user leaves Settings or chooses another Settings page), unless its feature specifies its own Cancel | Save; an invalid value is not saved and keeps its note. Settings has a back button in the left zone of its header (UIC-14) that leaves Settings. | — |
 | UIC-40 | planned | A label in every supported language fits its control without cutting a word. | test/calendar/popup_size_test.dart |
 | UIC-41 | planned | Every time or number text field offers up and down arrows (and the Up and Down keys) that step its value: a time by the drag step in DEF-01, a number by one, a length by 15 minutes and a delay by 0.1 seconds, never past the field's limits. | test/calendar/ux_test.dart |
 | UIC-23 | backlog | Wherever a range of dates is asked for (Print Preview, search, feeds, destinations, import) one shared control is used: From | To | All. Either end may be left empty; All means an empty range and clears both dates; the fields show hints in the date's format; an end before the start is not valid (UIC-19). | — |
@@ -100,8 +101,8 @@
 | UIC-07.a | backlog | A (?) is help: how to do something. It sits right after the word it explains; hover, focus or a click shows it. Its pop-up opens with its upper left at the icon; past the window's right edge, its upper right sits at that edge; past the bottom, its lower corners sit at the bottom. Explanations live in an (i) or a (?), never on the page. | — |
 | UIC-08 | backlog | A checkbox's label ticks it when clicked; empty space beside the label does not. |
 | UIC-09 | backlog | The calendar picker is a small month calendar with previous/next month and Today; it opens on a given month, can mark items unselectable, and closes when an item is picked. |
-| UIC-10 | backlog | One shared color palette of named colors (Google's eleven event colors) is used wherever a color is chosen (rule action, event, calendar); the event editor adds a "calendar default" choice. A picked color shows and closes the palette. |
-| UIC-10.a | backlog | A click opens the palette (in a module, while it is expanded); the choice goes with the module's Save. The colors are THM-09. | — |
+| UIC-10 | planned | One shared color palette of named colors (Google's eleven event colors) is used wherever a color is chosen (rule action, event, calendar); the event editor adds a "calendar default" choice. A picked color shows and closes the palette. | test/events/event_dialog_test.dart, test/events/event_logic_test.dart, test/ui/popup_shadow_test.dart |
+| UIC-10.a | planned | A click opens the palette (in a module, while it is expanded); the choice goes with the module's Save. The colors are THM-09. | test/events/event_dialog_test.dart, test/calendar/local_calendar_test.dart |
 | UIC-11 | backlog | One shared emoji picker, with search, is used wherever an emoji is chosen. |
 | UIC-11.a | backlog | The common emoji sit beside the field; a rounded "Search for more emojis" field opens every emoji (up to Emoji 13.0, no flags, drawn by the device), ten a line, scrolling, filtered as the user types. | — |
 | UIC-11.b | backlog | Newer emoji display older-Windows compatibility guidance, while older compatible choices do not. Editing or choosing an older emoji clears the compatibility warning; choosing a newer one displays it. Shared explanatory help follows UIC-07. |
@@ -134,8 +135,7 @@ SuiteStream), **rule** (made by a rule).
 |---|---|---|---|
 | Update check schedule | weekly | hourly, weekly, monthly (30 days), never | database (Site Admin) |
 | Running-update memory | 15 minutes | | default only |
-| Animation intensity | 100 % | 0 to 200 % | device |
-| Animation duration | 100 % | 25 to 300 % | device |
+| Animation intensity (backlog, SET-03.c; not built, the animation time below is the built setting) | 100 % | 0 to 200 % | device |
 | Popup shadow strength | 100 % | 0 to 200 % | device |
 | Resize bar size | 100 % | 50 to 200 % | device |
 | Dropdown text size | 100 % | 75 to 150 % | device |
@@ -152,7 +152,7 @@ SuiteStream), **rule** (made by a rule).
 | Animation time (Cancel \| Save slide, word change, pulse, hover) | 0.5 seconds | 0 to 2 seconds (0 = none) | device |
 | Save pulse after the first change | five pulses, each two animation times long | | default only |
 | Done, failed or found result held | 2.4 seconds | | default only |
-| Good status word shown before it shrinks | 2.4 seconds | 0.5 to 10 seconds | device |
+| Status chip time (SET-03.j): good status word shown before it shrinks | 2.4 seconds | 0.5 to 10 seconds | device |
 | Working status shown at least | 0.7 seconds (Check now), 0.5 seconds per Connect step | | default only |
 | Typing delay before a search or a regex test | 300 milliseconds | | default only |
 | Google retry: first wait | 5 seconds, doubled each attempt | longest wait 15 minutes | default only |

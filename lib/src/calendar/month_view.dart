@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
+import '../theme/event_colors.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/suite_event.dart';
@@ -198,7 +199,7 @@ class _EventLine extends StatelessWidget {
     final text = event.allDay ? event.title : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} ${event.title}';
     final color = c.colorOf(event);
     final muted = event.deleted || event.hiddenFromGoogle;
-    final base = muted ? t.muted : (color == null ? t.run : Color(color));
+    final base = muted ? t.muted : Color(color ?? defaultEventColor);
     return DragMovable(
       key: ValueKey('event-${event.id}'),
       longPress: c.longPress,

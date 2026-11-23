@@ -21,9 +21,9 @@ The main page shows the calendar and the Settings entry. Settings contains Sourc
 | SHL-02.f | done | Values inserted into translated messages are escaped rather than interpreted as markup. | test/l10n/messages_test.dart |
 | SHL-02.g | backlog | The subscription page and Google setup-error guide follow the visitor’s supported browser language. | — |
 | SHL-02.h | backlog | A browser form error presents a localized error page with a way to return to the preceding page; API error responses follow SHL-05. | — |
-| SHL-03 | backlog | The page uses a light, dark or system theme, and starts in the saved one. | — |
-| SHL-03.a | backlog | With no saved theme override, the page uses Match system; choosing Dark applies it and indicates it as the selected choice. The page starts in the saved theme without first showing another (SHL-03 owns the choice control). | — |
-| SHL-03.b | backlog | The Light / Dark / Match system choice is one icon when closed, a button plus menu like the view picker, replacing a three-way cycling button. | — |
+| SHL-03 | planned | The page uses a light, dark or system theme, and starts in the saved one. | test/theme/theme_mode_test.dart, test/calendar/settings_theme_test.dart |
+| SHL-03.a | planned | With no saved theme override, the page uses Match system; choosing Dark applies it and indicates it as the selected choice. The page starts in the saved theme without first showing another (SHL-03 owns the choice control). | test/theme/theme_mode_test.dart |
+| SHL-03.b | planned | The Light / Dark / Match system choice is one icon when closed, a button plus menu like the view picker, replacing a three-way cycling button. | test/theme/theme_mode_test.dart |
 | SHL-03.c | backlog | The sign-in and initial-setup pages follow the saved theme. | — |
 | SHL-05 | backlog | The page loads everything from the installation and keeps its errors machine-readable for programs. | — |
 | SHL-05.a | backlog | Rendering a SuiteStream page loads its resources, including its fonts (the Mono font with its license), from the SuiteStream installation, without contacting external resource providers such as Google Fonts. | — |

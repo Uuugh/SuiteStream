@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/src/calendar/event_dialog.dart';
 import 'package:suitestream/src/calendar/event_details.dart';
 import 'package:suitestream/src/calendar/event_store.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
 import 'package:suitestream/src/time/suite_event.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/time_input.dart';
@@ -12,6 +13,7 @@ import 'package:suitestream/src/time/zones.dart';
 import '../calendar/test_support.dart';
 
 void main() {
+  paletteTests();
   setUpAll(() async {
     initZones();
     await initializeDateFormatting();
@@ -173,5 +175,49 @@ void main() {
     expect(eventRangeText(m, allDay, loc, TimeFormat.twelveHour), 'Wed, Jul 15 (all day)');
     final span = SuiteEvent.allDay(id: 'd', title: 'Trip', year: 2026, month: 7, day: 15, zone: zone, days: 3);
     expect(eventRangeText(m, span, loc, TimeFormat.twelveHour), 'Wed, Jul 15 – Fri, Jul 17 (all day)');
+  });
+}
+
+void paletteTests() {
+  test('THM-09.a, DEF-01: eleven event colors and 24 calendar colors, all distinct', () {
+    expect(eventPalette.map((p) => hexOf(p.argb)), [
+      '#d50000', '#e67c73', '#f4511e', '#f6bf26', '#33b679', '#0b8043', '#039be5', '#3f51b5', '#7986cb', '#8e24aa', '#616161',
+    ]);
+    expect(calendarPalette, hasLength(24));
+    expect(calendarPalette.first.argb, 0xFFAC725E);
+    expect(calendarPalette.last.argb, 0xFFA47AE2);
+    expect(calendarPalette.map((p) => p.argb).toSet(), hasLength(24));
+    expect(calendarPalette.map((p) => p.key).toSet(), hasLength(24));
+    expect(defaultEventColor, 0xFF1D4ED8); // THM-09.b
+  });
+
+  test('UIC-20: a color outside the palette maps to the palette color with the least squared RGB difference', () {
+    for (final p in eventPalette) {
+      expect(nearestEventColor(p.argb), p.argb);
+    }
+    for (final p in calendarPalette) {
+      expect(nearestCalendarColor(p.argb), p.argb);
+    }
+    expect(nearestEventColor(0xFFD00A0A), 0xFFD50000); // near Tomato
+    expect(nearestEventColor(0xFF000000), 0xFF0B8043); // black is nearest Basil (21k) rather than Graphite (28k)
+    expect(nearestEventColor(0x00D00A0A), 0xFFD50000); // alpha ignored
+    // Brute-force check of the rule on a few colors.
+    for (final argb in [0xFF123456, 0xFF987654, 0xFFABCDEF, 0xFF3366CC]) {
+      int d(int a, int b) {
+        final dr = ((a >> 16) & 255) - ((b >> 16) & 255), dg = ((a >> 8) & 255) - ((b >> 8) & 255), db = (a & 255) - (b & 255);
+        return dr * dr + dg * dg + db * db;
+      }
+      final best = nearestCalendarColor(argb);
+      for (final p in calendarPalette) {
+        expect(d(argb, best), lessThanOrEqualTo(d(argb, p.argb)));
+      }
+    }
+  });
+
+  test('EVT-03.i: a new calendar takes the first unused calendar color', () {
+    expect(nextCalendarColor(const []), calendarPalette[0].argb);
+    expect(nextCalendarColor([calendarPalette[0].argb, null]), calendarPalette[1].argb);
+    expect(nextCalendarColor([for (final p in calendarPalette) p.argb]), calendarPalette[0].argb);
+    expect(nextCalendarColor([for (final p in calendarPalette) p.argb, calendarPalette[0].argb]), calendarPalette[1].argb);
   });
 }

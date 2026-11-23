@@ -5,6 +5,7 @@ import '../theme/suite_icons.dart';
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
+import '../theme/theme_mode_controller.dart';
 import '../theme/tokens.dart';
 import '../time/time_format.dart';
 import '../ui/anchored_badge.dart';
@@ -224,6 +225,22 @@ class _Header extends StatelessWidget {
         ),
         onPressed: () => c.timeFormat = c.timeFormat == TimeFormat.twelveHour ? TimeFormat.twentyFourHour : TimeFormat.twelveHour,
       ),
+      // SHL-03.b: Light / Dark / Match system is one icon, a menu like the view picker.
+      if (ThemeModeScope.maybeOf(context) case final themeController?)
+        Semantics(
+          label: m('themeName'),
+          child: SuiteDropdown<ThemeMode>(
+            key: const ValueKey('theme-menu'),
+            icon: ThemeModeIcons.of(themeController.mode),
+            tooltip: m('themeTooltip', {'name': m(themeModeMessageKey(themeController.mode))}),
+            items: [
+              for (final mode in ThemeMode.values)
+                DropdownItem(value: mode, label: m(themeModeMessageKey(mode)), icon: ThemeModeIcons.of(mode)),
+            ],
+            selected: {themeController.mode},
+            onChanged: (s) => themeController.mode = s.first,
+          ),
+        ),
       IconButton(
         key: const ValueKey('calendar-print-button'),
         style: suiteIconButtonStyle(),

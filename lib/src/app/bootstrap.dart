@@ -9,9 +9,6 @@ import '../time/local_zone.dart';
 import '../time/suite_event.dart';
 import '../time/time_format.dart';
 
-/// Preference that remembers the sample events were already offered once.
-const samplesShownKey = 'demo.samplesShown';
-
 /// Id of the calendar every installation starts with.
 const localCalendarId = 'local';
 
@@ -34,30 +31,14 @@ Future<T> _step<T>(String step, Future<T> Function() body) async {
   }
 }
 
-/// Builds the calendar controller from stored data: first-run sample events,
+/// Builds the calendar controller from stored data: no automatic sample events (PBI-041: Settings > Admin adds test data),
 /// the silent migration of events without a calendar, and the synthesized
 /// work and home calendars. Any failure is thrown as a [BootstrapException].
 Future<CalendarController> bootstrapCalendar({
   required SharedPreferences prefs,
   required Messages messages,
   required String zone,
-  DateTime? now,
 }) async {
-  final today = now ?? DateTime.now();
-  SuiteEvent sample(String id, String title, int hour, {bool edited = false, bool hiddenFromGoogle = false}) =>
-      SuiteEvent.zoned(
-        id: id,
-        title: title,
-        year: today.year,
-        month: today.month,
-        day: today.day,
-        hour: hour,
-        minute: 0,
-        length: const Duration(hours: 1),
-        zone: zone,
-        calendarId: localCalendarId,
-      ).withState(edited: edited, hiddenFromGoogle: hiddenFromGoogle);
-
   final store = PrefsEventStore(prefs);
   final localCalendarStore = LocalCalendarStore(prefs);
   final savedEvents = await _step('read stored events', () async => store.load());
@@ -84,13 +65,6 @@ Future<CalendarController> bootstrapCalendar({
     );
   }
 
-  // The first start shows a few sample events; later starts show what the user kept.
-  final alreadyShown = prefs.getBool(samplesShownKey) == true;
-  final showSamples = !alreadyShown && savedEvents.isEmpty;
-  if (!alreadyShown) {
-    await _step('remember sample events', () => prefs.setBool(samplesShownKey, true));
-  }
-
   return CalendarController(
     store: store,
     prefs: prefs,
@@ -99,12 +73,5 @@ Future<CalendarController> bootstrapCalendar({
     filter: EventFilter(prefs: prefs),
     localCalendarStore: localCalendarStore,
     calendars: initialCalendars,
-    events: !showSamples
-        ? const []
-        : [
-            sample('demo-1', 'Sample event', 10),
-            sample('demo-2', 'Lunch', 12, edited: true),
-            sample('demo-3', 'Hidden from Google', 15, hiddenFromGoogle: true),
-          ],
   );
 }

@@ -78,7 +78,9 @@ void main() {
       );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    expect(fieldText(tester, 'setting-default-length'), '1:00');
+    await tester.tap(find.byKey(const ValueKey('settings-calendar')));
+    await tester.pumpAndSettle();
+    expect(fieldText(tester, 'setting-default-length'), '1');
       await tester.enterText(
         find.byKey(const ValueKey('setting-default-length')),
         'soon',
@@ -87,13 +89,13 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('settings-save')));
     await tester.pumpAndSettle();
       expect(
-        find.text('Use a length like 1:00 (from 5 minutes to 24 hours).'),
+        find.text('Use a number with a unit (from 5 minutes to 24 hours).'),
         findsOneWidget,
       );
     expect(c.defaultLength, const Duration(hours: 1));
       await tester.enterText(
         find.byKey(const ValueKey('setting-default-length')),
-        '1:30',
+        '1.5',
       );
     await tester.pump();
     await tester.tap(find.byKey(const ValueKey('settings-save')));
@@ -109,9 +111,11 @@ void main() {
     // Cancel leaves it.
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-calendar')));
+    await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const ValueKey('setting-default-length')),
-        '3:00',
+        '3',
       );
     await tester.pump();
     await tester.tap(find.byKey(const ValueKey('settings-cancel')));
@@ -635,7 +639,7 @@ void pressDelayTests() {
     },
   );
 
-  test('SET-10: an animation time is read in seconds or milliseconds, from 0 to 2 seconds', () {
+  test('SET-03.g: an animation time is read in seconds or milliseconds, from 0 to 2 seconds', () {
     expect(parseAnimationInput('0'), Duration.zero);
     expect(parseAnimationInput('0,5'), const Duration(milliseconds: 500));
     expect(parseAnimationInput('1.5 s'), const Duration(milliseconds: 1500));
@@ -646,7 +650,7 @@ void pressDelayTests() {
     expect(parseAnimationInput(''), isNull);
   });
 
-  testWidgets('SET-10: the animation time is a setting, 0.5 seconds until changed, kept on the device', (tester) async {
+  testWidgets('SET-03.g: the animation time is a setting, 0.5 seconds until changed, kept on the device', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     useWindow(tester, tall);
@@ -666,17 +670,15 @@ void pressDelayTests() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    expect(fieldText(tester, 'setting-animation'), '0.5');
+    await tester.tap(find.byKey(const ValueKey('settings-theme')));
+    await tester.pumpAndSettle();
+    expect(fieldText(tester, 'setting-animation'), '0.5 s');
     await tester.enterText(find.byKey(const ValueKey('setting-animation')), '3');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
-    expect(find.text('Use a time from 0 to 2 seconds.'), findsOneWidget);
+    expect(find.text('Use a number from 0 to 2.'), findsOneWidget);
     expect(c.animationDuration, const Duration(milliseconds: 500));
     await tester.enterText(find.byKey(const ValueKey('setting-animation')), '0');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
     expect(c.animationDuration, Duration.zero);
     final again = CalendarController(
       localZone: const LocalZone.system(zone),
@@ -753,9 +755,13 @@ void stepperTests() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-calendar')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('setting-default-length-up')));
     await tester.pump();
-    expect(fieldText(tester, 'setting-default-length'), '1:15');
+    expect(fieldText(tester, 'setting-default-length'), '1.25');
+    await tester.tap(find.byKey(const ValueKey('settings-general')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('setting-press-delay-up')));
     await tester.pump();
     expect(fieldText(tester, 'setting-press-delay'), '0.4');

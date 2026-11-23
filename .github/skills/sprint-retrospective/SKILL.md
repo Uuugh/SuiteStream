@@ -62,6 +62,7 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 
 ### 7. Periodic Requirements and Test Audit
 - Count completed `sprint_retrospective.md` records, including the current retrospective. On every fifth retrospective (5th, 10th, 15th, etc.), audit completed requirements and their associated tests.
+- Kobayashi runs this audit and applies the `flutter-dart-code-review` skill to `lib/` and `test/` alongside the requirement checks below.
 - Check for mismatches between requirement wording/status and test behavior, missing or stale test traceability, and relevant edge cases not covered.
 - Identify duplicated tests or opportunities to combine related coverage. A shared test may cover multiple requirement IDs only when each behavior and relevant edge case remains traceable; do not reduce coverage for efficiency.
 - Record findings and prioritized actions in the retrospective, with owners and deadlines. Do not change requirement status or remove tests without supporting evidence.
@@ -84,9 +85,10 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 - The sprint ends with the sprint retrospective.
 - Preserve all necessary elements in the record while keeping it as concise as possible.
 
-## Commit on approval
+## Commit and merge on approval
 
-When the Product Owner approves the retrospective, commit the sprint's work automatically, before the next sprint starts:
-run `flutter analyze` and the full test suite first (commit only if they pass; otherwise report the failures and stop);
-stage everything for the sprint except stray or generated files; use one commit with a message like
-"Complete Sprint NNN <short summary>"; then push to the current branch's remote.
+Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill). When the Product Owner approves the retrospective:
+run `flutter analyze` and the full test suite first (continue only if they pass; otherwise report the failures and stop);
+commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
+"Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
+The next sprint starts on a new branch from the updated `main`.

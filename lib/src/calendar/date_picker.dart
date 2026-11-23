@@ -4,13 +4,15 @@ import '../theme/suite_icons.dart';
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
+import '../theme/theme_settings.dart';
+import '../ui/suite_dialog.dart';
 import '../theme/tokens.dart';
 import 'calendar_controller.dart';
 
 /// Opens the date picker over the calendar and applies the choice.
 Future<void> pickDate(BuildContext context, CalendarController c) async {
   final msgs = context.msg;
-  final picked = await showDialog<(int, int, int?)>(
+  final picked = await showSuiteDialog<(int, int, int?)>(
     context: context,
     builder: (_) => MessagesScope(
       messages: msgs,
@@ -59,13 +61,17 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
   Widget build(BuildContext context) {
     final t = context.tokens;
     final m = context.msg;
+    // SET-03.i: the Date picker size setting scales the whole picker (100 % = as designed).
+    final scale = ThemeSettingsScope.of(context).datePicker / 100;
+    Widget scaled(Widget child) => scale == 1
+        ? SizedBox(width: _width, child: child)
+        : SizedBox(width: _width * scale, child: FittedBox(fit: BoxFit.fitWidth, child: SizedBox(width: _width, child: child)));
     return Dialog(
       backgroundColor: t.card,
       child: Padding(
         padding: const EdgeInsets.all(suiteDialogPadding),
-        child: SizedBox(
-          width: _width,
-          child: Column(
+        child: scaled(
+          Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (_mode == _PickerMode.days) _daysHeader(t, m) else _yearHeader(t, m),
@@ -270,7 +276,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
 /// Picking a month alone gives the 1st of that month.
 Future<DateTime?> pickDay(BuildContext context, {required DateTime initial, required DateTime today}) async {
   final msgs = context.msg;
-  final picked = await showDialog<(int, int, int?)>(
+  final picked = await showSuiteDialog<(int, int, int?)>(
     context: context,
     builder: (_) => MessagesScope(messages: msgs, child: DatePickerDialog(focused: initial, today: today)),
   );

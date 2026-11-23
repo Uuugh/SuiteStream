@@ -10,6 +10,7 @@ import '../time/time_format.dart';
 import '../time/zones.dart';
 import '../ui/confirm.dart';
 import '../ui/popup_size_lock.dart';
+import '../ui/suite_dialog.dart';
 import 'calendar_controller.dart';
 import 'event_dialog.dart';
 
@@ -175,7 +176,7 @@ class _EventDetailsHostState extends State<EventDetailsHost> {
     if (!mounted) return;
     final c = widget.controller;
     final msgs = context.msg;
-    await showDialog<void>(
+    await showSuiteDialog<void>(
       context: context,
       builder: (dialogContext) => MessagesScope(
         messages: msgs,

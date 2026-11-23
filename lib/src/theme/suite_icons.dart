@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 abstract final class SuiteIcons {
   static const fontFamily = 'Material Symbols Rounded';
 
+  static const brightnessAuto = IconData(0xe1ab, fontFamily: fontFamily);
+  static const darkMode = IconData(0xe51c, fontFamily: fontFamily);
+  static const lightMode = IconData(0xe518, fontFamily: fontFamily);
   static const add = IconData(0xe145, fontFamily: fontFamily);
   static const arrowBack = IconData(
     0xe5c4,

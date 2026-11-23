@@ -1473,3 +1473,4 @@ Columns: `batch` (R1, R2, ... in order), `date`, `old ID`, `new ID(s)` (several 
 | R47 | 2026-11-23 | THM-08 | retired | Product Owner decision 2026-11-23: module and section colors come from the theme |
 | R47 | 2026-11-23 | THM-02.e, THM-02.f | THM-02.a | Restored as one row: muted text reaches 4.5:1 (test exists) |
 | R47 | 2026-11-23 | THM-10.c | THM-10.c | Restored in one sentence: hidden or deleted event is muted and struck through |
+| R48 | 2026-11-23 | DSH-01 to DSH-15 and all their sub-rows (CalendarStream-dashboard requirements/dashboard.md) | SBD-01 to SBD-15 (requirements/scrumboard.md) | Product Owner direction 2026-11-23: adopt the dashboard as the ScrumBoard (SBD); web page only, so DSH-01 is reworded and DSH-01.e (desktop app) is dropped; status proposed became backlog (agreed); msg:dsh* keys become msg:sbd*; evidence column removed |
