@@ -96,3 +96,12 @@ Use the Kobayashi agent to audit the refinement results:
 - Aim to use no more than 10% of developer capacity.
 - Aim to keep enough PBIs in Ready status for the next 2–3 sprints.
 - Preserve all necessary elements in the record while keeping it as concise as possible.
+## Epics
+
+A PBI too big for one sprint (about 8 points or more, or one that cannot be tested as a whole) is split. The original PBI becomes an **epic** and is not built itself:
+
+- Its status reads `Epic (split into PBI-x to PBI-y)` and its size is the sum of its children (informational, never counted in a sprint).
+- Each child is a story: it has its own PBI id, a size, acceptance criteria and a status, and names its parent epic at the start of its description ("Part of PBI-040: ...").
+- A child must be small enough to finish and test within one sprint and cites the requirement rows it will meet.
+- Only stories are committed to a sprint; an epic is done when all its children are done and accepted by the Product Owner.
+- Already used this way: PBI-010 and PBI-019 (children PBI-029 to 031) and PBI-039 (children PBI-042 to 045). The ScrumBoard (SBD-06) draws the same story, epic and sprint blocks.
