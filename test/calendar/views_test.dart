@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/list_view.dart';
@@ -301,10 +302,10 @@ void main() {
     useWindow(tester);
     final c = makeController(view: CalendarView.week);
     await tester.pumpWidget(appFor(CalendarPage(controller: c)));
-    expect(find.byIcon(Icons.view_week), findsOneWidget);
-    expect(find.byIcon(Icons.calendar_month), findsNothing);
+    expect(find.byIcon(SuiteIcons.viewWeek), findsOneWidget);
+    expect(find.byIcon(SuiteIcons.calendarMonth), findsNothing);
     expect(find.byTooltip('View: Week'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.view_week));
+    await tester.tap(find.byIcon(SuiteIcons.viewWeek));
     await tester.pumpAndSettle();
     for (final v in CalendarView.values) {
       final item = find.byKey(ValueKey('dropdown-item-$v'));

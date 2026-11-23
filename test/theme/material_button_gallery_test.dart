@@ -326,7 +326,5 @@ class _ArrowPainter extends CustomPainter {
   bool shouldRepaint(_ArrowPainter oldDelegate) => oldDelegate.color != color;
 }
 
-String _hex(Color color) {
-  String byte(int value) => value.toRadixString(16).padLeft(2, '0');
-  return '#${byte(color.red)}${byte(color.green)}${byte(color.blue)}'.toUpperCase();
-}
+String _hex(Color color) =>
+    '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';

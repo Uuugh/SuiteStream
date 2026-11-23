@@ -18,7 +18,7 @@
 | UIC-17 | backlog | UI components are kept separate from the features that use them: a component's look comes only from the theme, and a feature supplies only its content and what the component does there. So changing the theme restyles every feature at once, and a new feature reuses the components as they are. | — |
 | UIC-18 | backlog | One shared strength bar appears directly beneath any field where the user enters a secret (a password, a feed token), showing how strong the entry is as they type. It measures randomness (bits), not length alone; the bar only shows, and the field's feature decides whether an entry is accepted. Beside it, a hint recommends what to do (for example, the recommended minimum, or to use the generated value). The field's feature supplies the recommendation. | — |
 | UIC-19 | backlog | An entry that is not valid is marked at its own field with a note saying what is wrong, and it does not affect the other fields' valid values. A feature row says which entries are valid, and refers here for how the problem is shown. | — |
-| UIC-20 | backlog | A color that is not in the shared palette (from an older rule, an import, or a destination that supports fewer colors) is represented by the nearest palette color wherever it is shown or sent (UIC-10). | — |
+| UIC-20 | backlog | Saved and imported colors are preserved exactly in the app. When a destination only accepts its own colors, map them to its supported choices when sending. | — |
 | UIC-21 | done | One shared filter, used by the Calendar filter and History (and any feature with a filter). It is built on the shared dropdown (UIC-12): the user can select one, several, all or none of its choices; Select all shows everything and Select none shows nothing; the filter shows when it is active; the choices are saved and kept; a change applies at once (UIC-13). A feature supplies only the choices and what they filter. | test/calendar/filter_test.dart |
 | UIC-24 | backlog | A section whose items can be added has a + control as the rightmost item of its header's right zone; it opens the dialog for adding (UIC-01). | — |
 | UIC-25 | backlog | A button that does one thing and shows no state (an icon button, +, Copy, Open, Expand, Close) just does it; Copy then shows "Copied" in place of its icon for the time in DEF-01. | — |
@@ -45,14 +45,14 @@
 | UIC-30.a | backlog | The handle is always visible and takes no extra space; there is none when there is nothing to reorder (a list of one). | — |
 | UIC-30.b | backlog | Dragging the grip reorders; ▲ and ▼ reorder with the keyboard. The grips are on the left, or on the right when the user chooses (SET-03). | — |
 | UIC-31 | backlog | Every + opens a dialog (UIC-01) centered; a question is a dialog too, never the browser's own alert or confirm box. | — |
-| UIC-31.a | backlog | A question's answers are on one line, or one under the other when they are sentences; a second line under the question is a note, muted and not bold. | — |
+| UIC-31.a | backlog | A question's answers are on one line, or one under the other when they are sentences. A second line under the question is a note in normal weight. | — |
 | UIC-31.b | backlog | A choice of calendars is a drop-down of ticks. | — |
 | UIC-31.c | backlog | The anchored month, view and language menus do not dim the page and do not fill the phone; they keep their compact panel. | — |
 | UIC-32 | backlog | In-page words are click paths and short lines (Place › Place › Field: value › Button), with no paragraphs; the why goes in a (?). Status words are a word or two (UIC-28). No sentence on the page is longer than 20 words, apart from a (?), the calendar and the log. | — |
 | UIC-33 | backlog | The Import row is the same in every calendar: the heading, the file field (a file icon and "Choose Calendar.ics…", filling the line), the dates (UIC-23) and the button on the right. For CCS+ it is Manual Upload, which replaces the schedule, so it has no dates. | — |
 | UIC-34 | backlog | A box means the user can change it: fixed text (a title, the release channel) is plain text, never in a field box. A part that looks like a module but has nothing to fold (Settings > Updates) uses the module header layout, always open, with no Expand. | — |
 | UIC-35 | backlog | A Copy button sits inside its field, like the password box's eye. A pair of credential fields (client ID and secret) is laid out like a login, connected or not. | — |
-| UIC-36 | backlog | In every dialog and form a field has a muted label over it and a value that cannot be changed (an event's calendar) is plain text; related fields share a line (Calendar \| Title; Starts \| Ends, each with its Time under it). | — |
+| UIC-36 | backlog | In every dialog and form a label sits above its field. A value that cannot be changed (an event's calendar) is plain text. Related fields share a line (Calendar \| Title, Starts \| Ends, each with its Time under it). | — |
 | UIC-37 | backlog | One shared image editor sets an image for a place in the app (the logo, the favicon): the user picks a file, crops it, and the editor saves it as a PNG that fits the limits in DEF-01 for that place. |
 | UIC-37.a | backlog | The editor accepts PNG, SVG, WebP, JPEG and ICO files. |
 | UIC-37.b | backlog | The crop frame keeps the shape within the minimum and maximum aspect ratio of the place (DEF-01); the user moves and zooms the picture under the frame and sees the result before saving. |
@@ -86,11 +86,8 @@
 | UIC-01 | backlog | A dialog opens centered over a dimmed backdrop. In a phone-width window it fills the screen and shows a Back control instead of the dialog header. |
 | UIC-02 | backlog | Back closes the dialog. Escape closes only the topmost open layer (a menu, time list or picker) and a second Escape closes the dialog. A dialog opened from another returns to it when closed. |
 | UIC-03 | backlog | A dialog fits the window height; its content area grows with a taller field (such as Notes). |
-| UIC-05 | backlog | A section (Calendar, Sources, Feeds, All Rules, Event Templates, History...) is a header and a body; its body stays hidden until expanded, and clicking the title alone does not expand it. |
+| UIC-05 | backlog | A section has a header and a visible body. Sources, Feeds, All Rules, Event Templates and History are opened from Settings (SET-01.b). Modules within a section use their shared expand and collapse rules (UIC-29). |
 | UIC-05.a | backlog | Every section's header reads: icon, title, space, status lines, health, Print (PRT-01.h), + (UIC-24). Calendars and Feeds have no status lines; All Rules and Event Templates have up to three (the conflicts or errors, otherwise how many); + is in the top right corner. |
-| UIC-05.b | backlog | A folded section says "Expand to Configure" (Calendars, Feeds, All Rules, Event Templates) or "Expand for Details" (History). |
-| UIC-05.c | backlog | A section the user left open folds by itself after the time in DEF-01; each section is judged on its own. |
-| UIC-05.d | backlog | The open or closed state of a section is a user setting (SET-01). |
 | UIC-05.e | backlog | A section that contains modules lists them in their saved order and reorders them as UIC-30 says; the new order is saved immediately. |
 | UIC-05.f | backlog | The + of a section opens a dialog listing the kinds of connection the section can add, by their kind text (CON-02.d); choosing one opens that connection's own setup. |
 | UIC-05.g | backlog | A section's health is Healthy when all its items are healthy and Unhealthy when any one of them is in error; what puts an item in error is stated by its own feature. An item whose health is disabled (turned off, or with nothing to sync) does not count. |
@@ -99,8 +96,8 @@
 | UIC-07.a | backlog | A (?) is help: how to do something. It sits right after the word it explains; hover, focus or a click shows it. Its pop-up opens with its upper left at the icon; past the window's right edge, its upper right sits at that edge; past the bottom, its lower corners sit at the bottom. Explanations live in an (i) or a (?), never on the page. | — |
 | UIC-08 | backlog | A checkbox's label ticks it when clicked; empty space beside the label does not. |
 | UIC-09 | backlog | The calendar picker is a small month calendar with previous/next month and Today; it opens on a given month, can mark items unselectable, and closes when an item is picked. |
-| UIC-10 | backlog | One shared color palette of named colors (Google's eleven event colors) is used wherever a color is chosen (rule action, event, calendar); the event editor adds a "calendar default" choice. A picked color shows and closes the palette. |
-| UIC-10.a | backlog | A click opens the palette (in a module, while it is expanded); the choice goes with the module's Save. The colors are THM-09. | — |
+| UIC-10 | backlog | One shared picker (THM-09) supplies color choices for a rule action, event or calendar. The event editor offers a calendar-default choice. Picking a color displays the choice and closes the picker. | — |
+| UIC-10.a | backlog | A click opens the picker. In a module, the picker opens while the module is expanded and the choice is saved with the module. | — |
 | UIC-11 | backlog | One shared emoji picker, with search, is used wherever an emoji is chosen. |
 | UIC-11.a | backlog | The common emoji sit beside the field; a rounded "Search for more emojis" field opens every emoji (up to Emoji 13.0, no flags, drawn by the device), ten a line, scrolling, filtered as the user types. | — |
 | UIC-11.b | backlog | Newer emoji display older-Windows compatibility guidance, while older compatible choices do not. Editing or choosing an older emoji clears the compatibility warning; choosing a newer one displays it. Shared explanatory help follows UIC-07. |
@@ -154,7 +151,6 @@ SuiteStream), **rule** (made by a rule).
 | Google retry: jitter | up to 25 % added | | default only |
 | Instant-update renewal | 1 day before it expires | | default only |
 | Instant-update retry after refusal | 6 hours | | default only |
-| Section left open folds after | 24 hours | | default only |
 | Database connection retry | every 3 seconds, for up to 60 seconds | | default only |
 | Phone-width window | 700 px wide or narrower | | default only |
 | Stream token: generated length and strength | 22 characters, at least 128 bits of randomness | 1 to 128 characters | default only |
@@ -246,7 +242,6 @@ SuiteStream), **rule** (made by a rule).
 | Google job timing | wait 2 seconds after a wake-up; at least 60 seconds between runs; full check at least every 24 hours | | default only |
 | Events added in Google remembered as left alone | 500 | 500 | default only |
 | Instant-update channel random values | identifier 16 bytes, token 32 bytes | | default only |
-| Google calendar colors | 1 #ac725e, 2 #d06b64, 3 #f83a22, 4 #fa573c, 5 #ff7537, 6 #ffad46, 7 #42d692, 8 #16a765, 9 #7bd148, 10 #b3dc6c, 11 #fbe983, 12 #fad165, 13 #92e1c0, 14 #9fe1e7, 15 #9fc6e7, 16 #4986e7, 17 #9a9cff, 18 #b99aff, 19 #c2c2c2, 20 #cabdbf, 21 #cca6ac, 22 #f691b2, 23 #cd74e6, 24 #a47ae2 | | default only |
 | History lines kept | 1,000 | | default only |
 | History lines shown on the page | 300 | | default only |
 | Report History lines | 60 | | default only |
@@ -289,8 +284,6 @@ SuiteStream), **rule** (made by a rule).
 | Hour area height | at most 560 px, plus the stretch | | default only |
 | Shortest event drawn in the hourly grid | 15 minutes | | default only |
 | Layout refit delay after a resize | 80 milliseconds | | default only |
-| Full page height margin | 36 px | at least 260 px | default only |
-| Full page hour area minimum | 200 px | | default only |
 | Narrow list width | 600 px wide or narrower | | default only |
 | Print pages at most | Month 24, Week and 5-day 60, Day 62 | | default only |
 | Print range | | at most 731 days after From | default only |

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import '../l10n/dates.dart';
@@ -13,6 +14,7 @@ import 'event_drag.dart';
 /// Height of one event line in a day cell, and of the date number's row.
 const double monthLineHeight = 16;
 const double monthDateRowHeight = 24;
+const double minMonthGridWidth = 640;
 
 /// CAL-01.a, CAL-01.i: the Month view.
 class MonthView extends StatelessWidget {
@@ -22,11 +24,28 @@ class MonthView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.msg.locale;
+    return LayoutBuilder(
+      builder: (context, box) {
+        if (box.maxWidth >= minMonthGridWidth) {
+          return _grid(context, locale);
+        }
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: minMonthGridWidth,
+            height: box.maxHeight,
+            child: _grid(context, locale),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _grid(BuildContext context, String locale) {
     final t = context.tokens;
     final c = controller;
-    final locale = context.msg.locale;
     final start = c.monthGridStart;
-    final weeks = c.monthGridWeeks;
     return Column(
       children: [
         Row(
@@ -44,26 +63,36 @@ class MonthView extends StatelessWidget {
               ),
           ],
         ),
-        Expanded(
-          child: Column(
-            children: [
-              for (var w = 0; w < weeks; w++)
-                Expanded(
-                  child: Row(
-                    children: [
-                      for (var d = 0; d < 7; d++)
-                        Expanded(
-                          child: _DayCell(
-                            controller: c,
-                            day: DateTime(start.year, start.month, start.day + w * 7 + d),
-                          ),
-                        ),
-                    ],
+        Expanded(child: _MonthWeeks(controller: c, start: start)),
+      ],
+    );
+  }
+}
+
+class _MonthWeeks extends StatelessWidget {
+  const _MonthWeeks({required this.controller, required this.start});
+
+  final CalendarController controller;
+  final DateTime start;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var w = 0; w < controller.monthGridWeeks; w++)
+          Expanded(
+            child: Row(
+              children: [
+                for (var d = 0; d < 7; d++)
+                  Expanded(
+                    child: _DayCell(
+                      controller: controller,
+                      day: DateTime(start.year, start.month, start.day + w * 7 + d),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -114,9 +143,11 @@ class _DayCell extends StatelessWidget {
         builder: (context, box) {
           // CAL-01.g: the cell shows how many of its visible events do not fit.
           final lines = ((box.maxHeight - 4 - monthDateRowHeight) / monthLineHeight).floor();
-          final fit = events.length <= lines ? events.length : (lines - 1).clamp(0, events.length);
+          final fit = events.length <= lines
+              ? events.length
+              : (lines - 1).clamp(0, events.length);
           final hidden = events.length - fit;
-          return Column(
+          final content = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Align(
@@ -144,6 +175,7 @@ class _DayCell extends StatelessWidget {
                 ),
             ],
           );
+          return content;
           },
         ),
       ),

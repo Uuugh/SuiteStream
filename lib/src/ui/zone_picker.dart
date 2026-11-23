@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../theme/suite_icons.dart';
 import '../l10n/messages.dart';
+import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/zones.dart';
+import 'suite_dialog.dart';
 
 /// DEF-01: the Common time zones, in this order.
 const List<String> commonZones = [
@@ -42,7 +45,7 @@ bool isValidZoneChoice(String name) => name == 'UTC' || allZoneNames().contains(
 /// Opens the time zone list (UIC-39) and returns the zone chosen, or null.
 Future<String?> pickZone(BuildContext context, {required String current, required String defaultZone}) {
   final msgs = context.msg;
-  return showDialog<String>(
+  return showSuiteDialog<String>(
     context: context,
     builder: (_) => MessagesScope(messages: msgs, child: _ZoneDialog(current: current, defaultZone: defaultZone)),
   );
@@ -71,7 +74,7 @@ class ZoneField extends StatelessWidget {
           labelText: label,
           isDense: true,
           border: OutlineInputBorder(borderSide: BorderSide(color: t.line)),
-          suffixIcon: const Icon(Icons.arrow_drop_down),
+          suffixIcon: const Icon(SuiteIcons.arrowDropDown),
         ),
         child: Text(value == defaultZone ? '$value ★' : value, overflow: TextOverflow.ellipsis),
       ),
@@ -114,11 +117,11 @@ class _ZoneDialogState extends State<_ZoneDialog> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(suiteDialogPadding),
               child: TextField(
                 key: const ValueKey('zone-filter'),
                 autofocus: true,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.search), isDense: true),
+                decoration: const InputDecoration(prefixIcon: Icon(SuiteIcons.search), isDense: true),
                 onChanged: (v) => setState(() => _filter = v),
               ),
             ),

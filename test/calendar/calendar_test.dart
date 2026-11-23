@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
+import 'package:suitestream/src/calendar/month_view.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/calendar/week_layout.dart';
 import 'package:suitestream/src/calendar/week_view.dart';
@@ -58,6 +61,48 @@ void main() {
     await initializeDateFormatting();
   });
 
+  testWidgets('CAL-04: calendar height and hourly density persist in whole lines', (tester) async {
+    tester.view.physicalSize = const Size(1000, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    CalendarController controller() => CalendarController(
+          localZone: const LocalZone.system(_zone),
+          timeFormat: TimeFormat.twelveHour,
+          view: CalendarView.month,
+          prefs: prefs,
+        );
+    final c = controller();
+    await tester.pumpWidget(_app(CalendarPage(controller: c)));
+    final month = find.byType(MonthView);
+    final original = tester.getSize(month).height;
+    await tester.tap(find.byTooltip('Collapse the calendar to its minimum height'));
+    await tester.pumpAndSettle();
+    final collapsed = tester.getSize(month).height;
+    expect(collapsed, lessThan(original));
+    expect(c.calendarHeightLines, 0);
+    await tester.tap(find.bySemanticsLabel(RegExp('Stretch the calendar')));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(month).height, collapsed + monthLineHeight);
+    expect(controller().calendarHeightLines, 1);
+    c.view = CalendarView.day;
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('hour-density')));
+    await tester.pumpAndSettle();
+    final density = find.byWidgetPredicate(
+      (widget) => widget is CheckedPopupMenuItem<int> && widget.value == 3,
+    );
+    await tester.tap(density);
+    await tester.pumpAndSettle();
+    expect(controller().hourLines, 3);
+    expect(
+      tester.getSize(find.byKey(ValueKey('slot-${c.focused.year}-${c.focused.month}-${c.focused.day}'))).height,
+      24 * 3 * eventLineHeight,
+    );
+  });
+
   testWidgets('CAL-01.a: the calendar displays the events of its source calendars', (tester) async {
     tester.view.physicalSize = const Size(1000, 800);
     tester.view.devicePixelRatio = 1;
@@ -97,7 +142,7 @@ void main() {
     final deco = cell.foregroundDecoration! as BoxDecoration;
     final border = deco.border! as Border;
     expect(border.top.width, 2);
-    expect(border.top.color, SuiteTokensLight.accent);
+    expect(border.top.color, Theme.of(tester.element(find.byKey(const ValueKey('today-marker')))).colorScheme.primary);
     final other = tester.widget<Container>(find.byKey(const ValueKey('day-2026-7-16')));
     expect((other.foregroundDecoration! as BoxDecoration).border, isNull);
   });
@@ -166,9 +211,9 @@ void main() {
     final c = _controller();
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
     expect(find.byType(HourlyView), findsNothing);
-    await tester.tap(find.byIcon(Icons.calendar_month).last);
+    await tester.tap(find.byIcon(SuiteIcons.calendarMonth).last);
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.check), findsOneWidget); // the chosen view is indicated
+    expect(find.byIcon(SuiteIcons.check), findsOneWidget); // the chosen view is indicated
     await tester.tap(find.byKey(const ValueKey('dropdown-item-CalendarView.week')));
     await tester.pumpAndSettle();
     expect(c.view, CalendarView.week);
@@ -284,7 +329,7 @@ void main() {
         alignment: Alignment.topCenter,
         child: SuiteDropdown<String>(
           multi: true,
-          icon: Icons.filter_list,
+          icon: SuiteIcons.filterList,
           items: const [
             DropdownItem(value: 'a', label: 'Work'),
             DropdownItem(value: 'b', label: 'Home'),
@@ -296,7 +341,7 @@ void main() {
         ),
       );
     })));
-    await tester.tap(find.byIcon(Icons.filter_list));
+    await tester.tap(find.byIcon(SuiteIcons.filterList));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Work'));
     await tester.pumpAndSettle();
@@ -328,11 +373,6 @@ void main() {
   });
 }
 
-/// The light accent color (THM-02.g), read from the token set under test.
-class SuiteTokensLight {
-  static const accent = Color(0xFF40609C);
-}
-
 void alignmentTests() {
   testWidgets('UIC-12: every dropdown icon lines up vertically with the trigger icon', (tester) async {
     tester.view.physicalSize = const Size(1000, 800);
@@ -340,13 +380,13 @@ void alignmentTests() {
     addTearDown(tester.view.reset);
     final c = _controller();
     await tester.pumpWidget(_app(CalendarPage(controller: c), size: const Size(1000, 800)));
-    final triggerX = tester.getCenter(find.byIcon(Icons.calendar_month).last).dx;
-    await tester.tap(find.byIcon(Icons.calendar_month).last);
+    final triggerX = tester.getCenter(find.byIcon(SuiteIcons.calendarMonth).last).dx;
+    await tester.tap(find.byIcon(SuiteIcons.calendarMonth).last);
     await tester.pumpAndSettle();
     final item = find.byKey(const ValueKey('dropdown-item-CalendarView.month'));
-    final monthIcon = find.descendant(of: item, matching: find.byIcon(Icons.calendar_month));
+    final monthIcon = find.descendant(of: item, matching: find.byIcon(SuiteIcons.calendarMonth));
     final weekIcon = find.descendant(
-        of: find.byKey(const ValueKey('dropdown-item-CalendarView.week')), matching: find.byIcon(Icons.view_week));
+        of: find.byKey(const ValueKey('dropdown-item-CalendarView.week')), matching: find.byIcon(SuiteIcons.viewWeek));
     expect(tester.getCenter(monthIcon).dx, triggerX);
     expect(tester.getCenter(weekIcon).dx, triggerX);
     // The whole menu stays inside the window.

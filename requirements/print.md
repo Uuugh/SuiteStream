@@ -5,13 +5,13 @@ Printing what the user sees. Print is its own feature, used by every section of 
 | ID | status | statement | test |
 |---|---|---|---|
 | PRT-01 | backlog | Printing anything opens Print Preview, where the user chooses what to print, its theme and its orientation; the printed result shows what the user sees. | — |
-| PRT-01.a | backlog | The print follows what the user sees: the Local or temporary time zone, the time format (TIM-10), the language and the active filter (UIC-21). | — |
+| PRT-01.a | planned | The print follows what the user sees: the Local or temporary time zone, the time format (TIM-10), the language and the active filter (UIC-21). | test/calendar/calendar_print_test.dart |
 | PRT-01.b | backlog | The user's print choices (what to print, theme, orientation) are user settings (SET-01), and Print Preview opens with them; before any are saved, it starts with what is on screen. | — |
 | PRT-01.c | backlog | The orientation is one segmented choice in Print Preview: Auto, Landscape or Portrait. Auto is chosen from what is printed; the feature being printed says which orientation each kind of content gets (CAL-05.a). | — |
 | PRT-01.d | backlog | Each print sheet fits one page of the paper: Letter for English, A4 otherwise. A day or page that would not fit gets smaller type, and whole titles wrap. | — |
 | PRT-01.i | backlog | The paper's margins are 5 mm. | — |
 | PRT-01.e | backlog | Printed titles wrap to show the complete title. | — |
-| PRT-01.f | backlog | A print honors the theme the user chose: Light prints on white paper and Dark on dark paper. | — |
+| PRT-01.f | backlog | Print Preview and the printed result honor the theme selected for printing. | — |
 | PRT-01.g | backlog | Print Preview opens as a dialog (UIC-01 to UIC-03), and a date range in it, where the content has one, is the shared control (UIC-23). | — |
 | PRT-01.h | backlog | Every section of the page can be printed; each section says what is printed and its orientation (PRT-01.c). The print layout of All Rules, Event Templates and History is still to be designed. | — |
 | PRT-02 | backlog | The calendar prints pages of days, weeks and months from a date range, as the rows below say. | — |
@@ -26,5 +26,5 @@ Printing what the user sees. Print is its own feature, used by every section of 
 | PRT-02.i | backlog | From starts as the 1st of the current month and To as the last day of From's month, in the displayed zone. | — |
 | PRT-02.j | backlog | The range reaches at most the number of days in DEF-01 after From. | — |
 | PRT-02.k | backlog | Print type scales with the sheet so the preview and the paper look alike; the heading is the heading size in DEF-01 times the base size. | — |
-| PRT-02.l | backlog | The background colors of a print are printed exactly. | — |
-| PRT-02.m | backlog | A printed event is tinted by its own color or its rule's color; an event from United's schedule without one by its calendar's color; an event added here or by a rule has the custom look (THM-10.b); a hidden event is struck through at the printed hidden opacity (THM-10.c). | — |
+| PRT-02.l | backlog | The printed background matches the background shown in the chosen print theme in Print Preview. | — |
+| PRT-02.m | backlog | Printed events display their resolved event colors (EVT-03.i), and hidden events are struck through (THM-10.c). | — |

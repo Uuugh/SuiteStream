@@ -1,5 +1,6 @@
 # Requirements: rules
 
+All Rules lives in Settings (SET-01.b).
 The app's Rules: the rule model and engine, the rule dialog, All Rules, link rules.
 
 | ID | status | statement | test |
@@ -114,11 +115,11 @@ The app's Rules: the rule model and engine, the rule dialog, All Rules, link rul
 | RUL-12 | backlog | A rule is shown in words: its conditions, then what it does. | — |
 | RUL-12.a | backlog | A condition reads field, operator and value, such as msg:title msg:opContains “RDO” with the mark Aa added when case matters; a range reads a – b; msg:fieldDays lists days separated by commas, and a day range reads first day – last day. | — |
 | RUL-12.b | backlog | A rule reads its conditions joined by msg:joinAnd or msg:joinOr, with its brackets, then → and its actions; with no condition it starts with msg:everyEvent. | — |
-| RUL-12.c | backlog | An action reads msg:actChangeToAllDay, msg:actChangeLength ({value} as h:mm), msg:actChangeField ({field} is the field's name, {value} the new text), msg:actAddToField ({text} with line breaks shown as ⏎, {field}), msg:actEmojiInFront ({emoji}), msg:actColorNamed ({name} the palette name), msg:actDeleteEvent or msg:actCreateEvent ({title}, {offset} as h:mm, {placement} one of msg:placeBeforeStart, msg:placeAfterStart, msg:placeAfterEnd). | — |
+| RUL-12.c | backlog | An action reads msg:actChangeToAllDay, msg:actChangeLength ({value} as h:mm), msg:actChangeField ({field} is the field's name, {value} the new text), msg:actAddToField ({text} with line breaks shown as ⏎, {field}), msg:actEmojiInFront ({emoji}), msg:actColorNamed ({name} the color's display name), msg:actDeleteEvent or msg:actCreateEvent ({title}, {offset} as h:mm, {placement} one of msg:placeBeforeStart, msg:placeAfterStart, msg:placeAfterEnd). | — |
 | RUL-12.d | backlog | A link rule reads msg:linkedTo, →, then msg:actDeleteEvent and msg:actMoveWithLinked separated by semicolons. | — |
 | RUL-13 | backlog | Each kind of action has its own entry rules and effect. | — |
-| RUL-13.a | backlog | A color is kept as lower-case #rrggbb; a stored color that is not one of the palette colors (THM-09) is shown as the palette color with the smallest squared difference in red, green and blue (UIC-20). | — |
-| RUL-13.b | backlog | A new Color action starts as Tomato (THM-09.a). | — |
+| RUL-13.a | backlog | A color is kept as lower-case #rrggbb and is preserved when shown (UIC-20). | — |
+| RUL-13.b | backlog | A new Color action starts with a choice from the active Material color scheme (THM-09). | — |
 | RUL-13.c | backlog | A + after the last action adds an Emoji action; every action has an x that removes it, hidden while only one action is left. | — |
 | RUL-13.d | backlog | An action that is not valid when rules are read back is dropped; the rule stays while one action remains. | — |
 | RUL-13.e | backlog | An Emoji action's text is at most the emoji length in DEF-01, with white space collapsed and without the characters < > & and double quotes; empty text drops the action. | — |
@@ -152,7 +153,7 @@ The app's Rules: the rule model and engine, the rule dialog, All Rules, link rul
 | RUL-16.e | backlog | Apply to shows one tick box for each calendar with its color; msg:allCalendars and the single calendars exclude each other, and with no calendar yet it shows msg:noCalendarYet. | — |
 | RUL-16.f | backlog | Saving keeps only calendars that exist, each once; a rule may apply to no calendar and then does nothing. | — |
 | RUL-17 | backlog | All Rules shows what the rules are and which need attention (RUL-07). | — |
-| RUL-17.a | backlog | The header has the + of UIC-24 and a count box, msg:ruleCountOne or msg:ruleCount ({n}), green while no conflict is open and amber with msg:rulesToCheck ({n} conflicts) otherwise. | — |
+| RUL-17.a | backlog | The header has the + of UIC-24 and a count box, msg:ruleCountOne or msg:ruleCount ({n}) when no conflict is open, and msg:rulesToCheck ({n} conflicts) otherwise. | — |
 | RUL-17.b | backlog | With no conflict open, the status lines are msg:rulesForAll, msg:rulesForChosen and msg:rulesWithoutCalendar ({n} rules each); otherwise up to the number of lines in DEF-01 show the conflicts. | — |
 | RUL-17.c | backlog | An empty list shows msg:noRulesYet. | — |
 | RUL-17.d | backlog | A rule line shows the rule in words (RUL-12), a badge naming its calendars (RUL-05.i), edit, copy and delete buttons, the handle of UIC-30 and a mark while a conflict of it is open. | — |
@@ -173,7 +174,7 @@ The app's Rules: the rule model and engine, the rule dialog, All Rules, link rul
 | RUL-04.j | backlog | The note that Record changes adds to an event's notes reads msg:changedNote ({date}, {parts} the changed parts separated by semicolons: msg:changePartTime, msg:changePartTitle, msg:changePartLocation, an empty value shown as —); only the last changes in DEF-01 are kept per event, each separated from other notes by a blank line. | — |
 | RUL-04.k | backlog | A noted change is also recorded in History as msg:historyChanged ({calendar}, {title}, {parts}); an event that vanished from its source is recorded as msg:historyRemoved ({calendar}, {title}, {when} its day and time) and its notes are discarded. | — |
 | RUL-04.l | backlog | Nothing is recorded for a calendar's first download. | — |
-| RUL-06.l | backlog | The title made for an untitled rule is the rule in words (RUL-12), for example Title contains “RDO” → Color (Tomato), with white space collapsed. | — |
+| RUL-06.l | backlog | The title made for an untitled rule is the rule in words (RUL-12), with white space collapsed. | — |
 | RUL-07.g | backlog | A new rule that has at least one condition is a duplicate of a stored rule when their conditions are identical, their sets of actions are identical (order ignored) and they share a calendar; link rules are not compared. The user sees msg:thisLooksTheSameAs ({label}) and chooses as RUL-07.c says. | — |
 | RUL-07.h | backlog | Merging into a rule that no longer exists shows msg:ruleIsntThereAnyMore and changes nothing. | — |
 | RUL-07.i | backlog | Two rules conflict when they share a calendar and the higher one matches at least everything the lower one matches: it has no conditions, or the same conditions (text is compared ignoring case; a case-sensitive condition or a regex is compared exactly); a link rule is never part of a conflict. | — |

@@ -24,6 +24,12 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 
 | sprint003 | T01 to T14 and the Product Owner's review changes (event dialog, store, header, drag, popups, settings) | 2026-11-21 to 22 | Sonnet 5.5 | 30–40 (est.) | 20 / 92 | 66 / 98 | 46 | Before-reading is the sprint 002 after-reading; after-reading supplied by the Product Owner on 2026-11-22. The week rose 6 points and is above the 85% Warning level: no new job should start until the weekly reset (Wed Nov 25, 5:00 PM) |
 
+## ChatGPT
+
+| Date | Context | 5-hour limit remaining | 5-hour reset in | Weekly limit remaining | Weekly reset in |
+|---|---|---:|---|---:|---|
+| 2026-11-22 | Sprint 005 planning, awaiting approval | 85% | 3h 33m | 98% | 6d 22h |
+
 ## Copilot Fusion
 
 These product usage readings are tracked separately from Claude's session and weekly percentages; they are not added

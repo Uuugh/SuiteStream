@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/suite_icons.dart';
 import '../l10n/messages.dart';
 import '../ui/suite_dropdown.dart';
 import 'calendar_controller.dart';
@@ -34,7 +35,14 @@ class CalendarFilterButton extends StatelessWidget {
         DropdownItem(
           value: calendarValue(cal.id),
           label: cal.name,
-          leading: Container(width: 14, height: 14, decoration: BoxDecoration(color: Color(cal.color), shape: BoxShape.circle)),
+          leading: Container(
+            width: 14,
+            height: 14,
+            decoration: BoxDecoration(
+              color: cal.color == null ? Theme.of(context).colorScheme.primary : Color(cal.color!),
+              shape: BoxShape.circle,
+            ),
+          ),
         ),
       for (final s in EventState.values) DropdownItem(value: stateValue(s), label: _stateLabel(m, s)),
     ];
@@ -45,7 +53,7 @@ class CalendarFilterButton extends StatelessWidget {
         if (f.stateShown(s)) stateValue(s),
     };
     return SuiteDropdown<String>(
-      icon: Icons.filter_list,
+      icon: SuiteIcons.filterList,
       tooltip: m('calendarFilter'),
       multi: true,
       active: f.active,

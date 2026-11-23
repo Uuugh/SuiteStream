@@ -95,7 +95,14 @@ class _DragMovableState extends State<DragMovable> {
               child: Opacity(
                 opacity: 0.9,
                 child: DecoratedBox(
-                  decoration: const BoxDecoration(boxShadow: [BoxShadow(blurRadius: 8, color: Color(0x66000000))]),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 8,
+                        color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.4),
+                      ),
+                    ],
+                  ),
                   child: widget.child,
                 ),
               ),

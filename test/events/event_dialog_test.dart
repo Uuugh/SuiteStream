@@ -1,3 +1,7 @@
+import 'dart:ui' show PointerDeviceKind;
+
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -38,6 +42,9 @@ Future<void> save(WidgetTester tester) async {
   await tester.tap(find.byKey(const ValueKey('event-save')));
   await tester.pumpAndSettle();
 }
+
+String themeHex(Color color) =>
+    '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
 
 void main() {
   deleteIconTests();
@@ -353,7 +360,8 @@ void main() {
   });
 
   testWidgets('EVT-01.q: saving an event with no change records no edit', (tester) async {
-    final imported = makeEvent('theirs', 20, 9, title: 'Theirs').copyWith(custom: false);
+    const importedColor = 0xFF812345;
+    final imported = makeEvent('theirs', 20, 9, title: 'Theirs').copyWith(custom: false, color: importedColor);
     final c = await pumpCalendar(tester, events: [imported]);
     c.selectEvent('theirs');
     await tester.pumpAndSettle();
@@ -375,42 +383,43 @@ void main() {
     await save(tester);
     expect(c.events.single.edited, isTrue);
     expect(c.events.single.title, 'Theirs, moved');
+    expect(c.events.single.color, importedColor);
   });
 
-  testWidgets('EVT-03.b: an event color is one of the shared palette colors and shows on the calendar and in the dialog', (tester) async {
+  testWidgets('EVT-03.b, THM-09.a: a choice from the active theme appears on the calendar and in the dialog', (tester) async {
     final c = await pumpCalendar(tester);
     await openDay(tester, 20);
     await typeIn(tester, 'event-title', 'Colorful');
     await tester.tap(find.byKey(const ValueKey('event-color-button'))); // the palette opens from one button
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('color-Tomato')), findsOneWidget);
-    expect(find.byKey(const ValueKey('color-Graphite')), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('color-Tomato')));
+    expect(find.byKey(const ValueKey('color-primary')), findsOneWidget);
+    expect(find.byKey(const ValueKey('color-outline')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('color-primary')));
     await tester.pumpAndSettle();
     await save(tester);
-    expect(c.events.single.color, 0xFFD50000);
+    expect(c.events.single.color, SuiteTokens.light.scheme.primary.toARGB32());
     final bar = find.descendant(
       of: find.byKey(ValueKey('event-${c.events.single.id}')),
-      matching: find.byWidgetPredicate((w) => w is Container && w.color == const Color(0xFFD50000)),
+      matching: find.byWidgetPredicate((w) => w is Container && w.color == SuiteTokens.light.scheme.primary),
     );
     expect(bar, findsOneWidget);
     c.selectEvent(c.events.single.id);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('details-edit')));
     await tester.pumpAndSettle();
-    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Tomato')), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text(themeHex(SuiteTokens.light.scheme.primary))), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('event-color-button')));
     await tester.pumpAndSettle();
-    expect(find.descendant(of: find.byKey(const ValueKey('color-Tomato')), matching: find.byIcon(Icons.check)), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('color-primary')), matching: find.byIcon(SuiteIcons.check)), findsOneWidget);
   });
 
-  testWidgets('EVT-03.d: the default color follows the chosen calendar until a color is picked; a picked color survives a later calendar choice', (tester) async {
+  testWidgets('EVT-03.d, THM-09.b: fallback colors follow the calendar and the theme until an explicit color is picked', (tester) async {
     final c = await pumpCalendar(tester);
     await openDay(tester, 20);
     await typeIn(tester, 'event-title', 'Follow');
     Color swatch() => ((tester.widget<Container>(find.byKey(const ValueKey('event-color-swatch')))).decoration! as BoxDecoration).color!;
     expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Default color')), findsOneWidget);
-    expect(swatch(), const Color(0xFF1D4ED8)); // no calendar: the default color
+    expect(swatch(), SuiteTokens.light.scheme.primary); // no calendar: the default color
     await tester.tap(find.byKey(const ValueKey('event-calendar')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Home').last);
@@ -418,17 +427,17 @@ void main() {
     expect(swatch(), const Color(0xFF2A9D8F)); // it follows the calendar
     await tester.tap(find.byKey(const ValueKey('event-color-button')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('color-Grape')));
+    await tester.tap(find.byKey(const ValueKey('color-tertiary')));
     await tester.pumpAndSettle();
-    expect(swatch(), const Color(0xFF8E24AA));
+    expect(swatch(), SuiteTokens.light.scheme.tertiary);
     await tester.tap(find.byKey(const ValueKey('event-calendar')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Work').last);
     await tester.pumpAndSettle();
-    expect(swatch(), const Color(0xFF8E24AA)); // a picked color survives a later calendar choice
-    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text('Grape')), findsOneWidget);
+    expect(swatch(), SuiteTokens.light.scheme.tertiary); // a picked color survives a later calendar choice
+    expect(find.descendant(of: find.byKey(const ValueKey('event-color-button')), matching: find.text(themeHex(SuiteTokens.light.scheme.tertiary))), findsOneWidget);
     await save(tester);
-    expect(c.events.single.color, 0xFF8E24AA);
+    expect(c.events.single.color, SuiteTokens.light.scheme.tertiary.toARGB32());
   });
 
 
@@ -444,7 +453,7 @@ void main() {
     expect(title.style!.fontWeight, FontWeight.w700);
     expect(tester.widget<Text>(find.byKey(const ValueKey('details-range'))).data, 'Mon, Jul 20, 10:00 am–11:00 am');
     expect(tester.widget<Text>(find.byKey(const ValueKey('details-location'))).data, '12 Oak St');
-    expect(find.byIcon(Icons.place_outlined), findsOneWidget); // the location has a pin
+    expect(find.byIcon(SuiteIcons.locationOn), findsOneWidget); // the location has a pin
     expect(tester.widget<Text>(find.byKey(const ValueKey('details-notes'))).data, 'Bring the form');
     expect(find.text('Edited here'), findsOneWidget); // a state line
     // Redrawing the calendar (another view) keeps them open.
@@ -573,6 +582,60 @@ void duplicateTests() {
 }
 
 void reminderTests() {
+  for (final (width, brightness) in [(1000.0, Brightness.light), (650.0, Brightness.dark)]) {
+    testWidgets('EVT-01.s: Notes stays steady as notifications resize the ${brightness.name} dialog at width $width', (tester) async {
+      final window = Size(width, 1500);
+      useWindow(tester, window);
+      final c = makeController();
+      await tester.pumpWidget(appFor(CalendarPage(controller: c), size: window, brightness: brightness));
+      await tester.tap(find.byKey(const ValueKey('add-event-button')));
+      await tester.pumpAndSettle();
+
+      final notes = find.byKey(const ValueKey('event-notes'));
+      final editable = find.descendant(of: notes, matching: find.byType(EditableText));
+      final popup = find.byKey(const ValueKey('popup-locked'));
+      final add = find.byKey(const ValueKey('reminder-add'));
+      final remove = find.byKey(const ValueKey('reminder-remove-0'));
+      final text = List.filled(30, 'Event note').join('\n');
+      await tester.enterText(notes, text);
+      final editor = tester.widget<EditableText>(editable);
+      const selection = TextSelection(baseOffset: 264, extentOffset: 266);
+      editor.controller.selection = selection;
+      await tester.pumpAndSettle();
+
+      final baseHeight = tester.getSize(popup).height;
+      final baseNoteHeight = tester.getSize(notes).height;
+      final outerScroll = tester.state<ScrollableState>(find
+          .descendant(of: popup, matching: find.byType(Scrollable))
+          .first);
+      final initialOffset = outerScroll.position.pixels;
+      for (final button in [add, remove]) {
+        await tester.tap(button, kind: PointerDeviceKind.mouse);
+        await tester.pump();
+        final resizedPopup = tester.getRect(popup);
+        final resizedNotes = tester.getRect(notes);
+        if (button == add) {
+          expect(resizedPopup.height, greaterThan(baseHeight));
+          if (width > 700) expect(resizedNotes.height, greaterThan(baseNoteHeight));
+        } else {
+          expect(resizedPopup.height, baseHeight);
+          expect(resizedNotes.height, baseNoteHeight);
+        }
+        if (width <= 700) expect(resizedNotes.height, baseNoteHeight);
+
+        await tester.pumpAndSettle();
+        expect(tester.getRect(popup), resizedPopup);
+        expect(tester.getRect(notes), resizedNotes);
+        expect(tester.widget<EditableText>(editable).controller.value,
+            TextEditingValue(text: text, selection: selection));
+        expect(editor.focusNode.hasFocus, isTrue);
+        expect(tester.state<ScrollableState>(find
+            .descendant(of: popup, matching: find.byType(Scrollable))
+            .first), same(outerScroll));
+        expect(outerScroll.position.pixels, initialOffset);
+      }
+    });
+  }
   Future<void> setRow(WidgetTester tester, int i, String number, String unitKey) async {
     await tester.ensureVisible(find.byKey(ValueKey('reminder-number-$i')));
     await typeIn(tester, 'reminder-number-$i', number);
@@ -780,7 +843,7 @@ void deleteIconTests() {
     await tester.tap(find.byKey(const ValueKey('details-edit')));
     await tester.pumpAndSettle();
     final del = find.byKey(const ValueKey('event-delete'));
-    final icon = find.descendant(of: del, matching: find.byIcon(Icons.delete_outline));
+    final icon = find.descendant(of: del, matching: find.byIcon(SuiteIcons.delete));
     final word = find.descendant(of: del, matching: find.text('Delete event'));
     expect(icon, findsOneWidget);
     expect(tester.getCenter(icon).dx < tester.getCenter(word).dx, isTrue); // before the word
@@ -790,7 +853,7 @@ void deleteIconTests() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('details-edit')));
     await tester.pumpAndSettle();
-    expect(find.descendant(of: find.byKey(const ValueKey('event-delete')), matching: find.byIcon(Icons.visibility_off_outlined)), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('event-delete')), matching: find.byIcon(SuiteIcons.visibilityOff)), findsOneWidget);
     expect(find.descendant(of: find.byKey(const ValueKey('event-delete')), matching: find.text('Hide')), findsOneWidget);
   });
 }

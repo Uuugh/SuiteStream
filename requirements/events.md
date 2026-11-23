@@ -6,7 +6,7 @@ The event pop-up, linked events, hiding and reverting.
 |---|---|---|---|
 | EVT-01 | backlog | The user adds, edits and removes events of their own, in a dialog. | — |
 | EVT-01.a | planned | Clicking a day in Month, a day's title in List, or an empty spot in Week, 5-day or Day (an empty all-day cell for an all-day event), or the + button, opens the new-event dialog for that date; in Week, 5-day and Day the start time is where the click occurred. The dialog follows the shared dialog rules (UIC-01, UIC-02). | test/calendar/ux_test.dart |
-| EVT-01.b | planned | A new event defaults to the system clock's time zone, or to the calendar's time zone when the calendar has one selected. It can be saved into any calendar chosen in the source selector; with none chosen it goes to the initial Local calendar. A custom event appears on its calendar page. | test/events/event_dialog_test.dart |
+| EVT-01.b | planned | A new event defaults to the device's time zone preference (SET-02.a), or to the calendar's time zone when the calendar has one selected. It can be saved into any calendar chosen in the source selector. With none chosen it goes to the default Local calendar (CLCL-03). A custom event appears on its calendar page. | test/events/event_dialog_test.dart |
 | EVT-01.c | backlog | Title, start date and end date are required. A start or end time left empty is filled in (EVT-02.n). | — |
 | EVT-01.d | backlog | The confirmation after saving an event names the event. | — |
 | EVT-01.e | planned | A custom event is deleted (asking first, UIC-06) and leaves its calendar; cancelling leaves it.\ | test/events/event_dialog_test.dart |
@@ -22,7 +22,7 @@ The event pop-up, linked events, hiding and reverting.
 | EVT-02.e | planned | An all-day event (TIM-04) is entered without times. | test/events/event_dialog_test.dart |
 | EVT-03 | backlog | An event has a place, a color, reminders and an online meeting address. | — |
 | EVT-03.a | planned | The location field updates a map link whose address is the URL-encoded location; the map action opens the location in Google Maps. | test/events/event_logic_test.dart |
-| EVT-03.b | planned | An event color is one of the shared palette colors (UIC-10, UIC-20); the chosen color shows on the calendar and on the edit page. | test/events/event_dialog_test.dart |
+| EVT-03.b | planned | The editor offers the shared color picker (UIC-10). The chosen color shows on the calendar and on the edit page. Previously stored and imported colors remain available on the event (UIC-20). | test/events/event_dialog_test.dart |
 | EVT-03.c | backlog | An event's own color beats its source color and any rule tag; changing an imported event's color keeps it and marks the event edited, not stale. | — |
 | EVT-03.d | planned | The default color follows the chosen calendar until a color is picked; a picked color survives a later calendar choice. | test/events/event_dialog_test.dart |
 | EVT-03.e | planned | An event's reminders are rows of a method (Notification), a number and a unit (minutes, hours, days or weeks), each from the event start back to the longest lead in DEF-01; at most the number in DEF-01 can be set, only valid ones are stored (15, 60 and 20,000 minutes stores 15, 60), and none stores nothing. | test/events/event_dialog_test.dart |
@@ -49,7 +49,7 @@ The event pop-up, linked events, hiding and reverting.
 | EVT-06.a | planned | When editing an event, Duplicate (a copy icon next to the calendar's name in the dialog, and in the event tools) opens an editor holding a copy of the event in the same calendar; the user may then choose a different calendar with the calendar dropdown before saving. The Duplicate icon in the calendar view (the event tools) stays as it is. | test/events/event_dialog_test.dart |
 | EVT-06.b | backlog | The event dialog offers Move for the events CAP-03 allows to move. | — |
 | EVT-06.c | backlog | Print includes the event card, not only the calendar grid. | — |
-| EVT-03.i | planned | An event's color is its own color, else the color of the rule that gave it one, else its calendar's color, else the default event color (THM-09.b). | test/events/event_logic_test.dart |
+| EVT-03.i | planned | An event's color is its own color, else the color of the rule that gave it one, else its calendar's color, else the active theme fallback (THM-09.b). | test/events/event_logic_test.dart |
 | EVT-07 | planned | Clicking an event on the calendar opens its details in a popup over the calendar, so the calendar is not resized. | test/calendar/ux_test.dart |
 | EVT-07.a | planned | The details show the title in bold, the range text, the location with a pin, the notes, the state lines and the tools; they stay open when the calendar is redrawn until Close (msg:closeButton). | test/events/event_dialog_test.dart |
 | EVT-07.b | planned | The range text is "day, start–end" for one day and "day start – day end" across days; an all-day event shows its day, or its first and last days, followed by msg:allDay3. | test/events/event_logic_test.dart |
@@ -67,10 +67,11 @@ The event pop-up, linked events, hiding and reverting.
 | EVT-01.l | planned | Title, location, online meeting address and notes are cut to their lengths in DEF-01; the Notes field is as tall as DEF-01 says; required fields carry an asterisk. | test/events/event_dialog_test.dart |
 | EVT-01.m | planned | A new event starts at the start time and length in DEF-01 on the day clicked, or on today when no day was clicked. | test/events/event_dialog_test.dart |
 | EVT-01.n | backlog | An event that is no longer in its calendar shows msg:thatEventIsnTIn when opened; an event made by a rule cannot be opened, saved or deleted and shows msg:eventMadeByRule (CAP-01). | — |
-| EVT-01.o | backlog | An event without a title is not valid (UIC-19) and shows msg:theEventNeedsATitle; a color that is not offered shows msg:chooseOneOfTheColors. | — |
+| EVT-01.o | backlog | An event without a title is not valid (UIC-19) and shows msg:theEventNeedsATitle. | — |
 | EVT-01.p | planned | The online meeting address is empty or a link starting with http:// or https:// with no spaces; otherwise it is not valid (UIC-19) and shows msg:onlineMeetingNeedsLink. Its open button works only for a valid link. | test/events/event_dialog_test.dart |
 | EVT-01.q | planned | Saving an event with no change, when it had no edit before, records no edit. | test/events/event_dialog_test.dart |
 | EVT-01.r | backlog | History records a saved new event as msg:added, a saved change to an event of the user's as msg:updated and a saved change to an event from a calendar source as msg:edited ({title}, {date} its start day; for msg:edited the title is the original title). | — |
+| EVT-01.s | planned | Adding or removing a notification resizes the event dialog smoothly. The Notes field keeps its text and selection, the dialog keeps unsaved edits, and scrolling moves only as needed to keep controls reachable and the focused field in view. | test/events/event_dialog_test.dart |
 | EVT-02.f | planned | For an all-day event the end date is the last day, included; an end date before the start date is not valid (UIC-19) and shows msg:theLastDayIsBefore; an empty end date means the start date; the time fields are hidden and keep their values. | test/events/event_dialog_test.dart |
 | EVT-02.g | planned | Changing the start date of an all-day event keeps its number of days. | test/events/event_dialog_test.dart |
 | EVT-02.h | backlog | An end that is not after the start is not valid (UIC-19) and shows msg:theEndHasToBe; dates and times that cannot be read show msg:checkTheDatesAndTimes. | — |

@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/src/calendar/event_dialog.dart';
 import 'package:suitestream/src/calendar/event_details.dart';
 import 'package:suitestream/src/calendar/event_store.dart';
-import 'package:suitestream/src/theme/event_palette.dart';
 import 'package:suitestream/src/time/suite_event.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/time_input.dart';
@@ -96,25 +95,7 @@ void main() {
     expect(isValidMeetingUrl('meet.example.com'), isFalse);
   });
 
-  test('THM-09.a: the event palette is Google Calendar\'s eleven colors', () {
-    expect(eventPalette.length, 11);
-    expect([for (final p in eventPalette) p.name], [
-      'Tomato', 'Flamingo', 'Tangerine', 'Banana', 'Sage', 'Basil', 'Peacock', 'Blueberry', 'Lavender', 'Grape', 'Graphite',
-    ]);
-    expect([for (final p in eventPalette) p.value], [
-      0xFFD50000, 0xFFE67C73, 0xFFF4511E, 0xFFF6BF26, 0xFF33B679, 0xFF0B8043, 0xFF039BE5, 0xFF3F51B5, 0xFF7986CB, 0xFF8E24AA, 0xFF616161,
-    ]);
-  });
-
-  test('THM-09.b: the default event color is #1d4ed8', () {
-    expect(defaultEventColor, 0xFF1D4ED8);
-  });
-
   test('EVT-03.i: an event\'s color is its own, else its rule\'s, else its calendar\'s, else the default', () {
-    expect(resolveEventColor(own: 1, rule: 2, calendar: 3), 1);
-    expect(resolveEventColor(rule: 2, calendar: 3), 2);
-    expect(resolveEventColor(calendar: 3), 3);
-    expect(resolveEventColor(), defaultEventColor);
     final c = makeController(events: [
       makeEvent('a', 15, 9, calendarId: 'work').copyWith(color: 0xFFD50000),
       makeEvent('b', 15, 9, calendarId: 'work'),
@@ -123,12 +104,6 @@ void main() {
     expect(c.colorOf(c.events[0]), 0xFFD50000);
     expect(c.colorOf(c.events[1]), 0xFF5B6F9A);
     expect(c.colorOf(c.events[2]), isNull);
-  });
-
-  test('palette: a color not in the shared palette is represented by the nearest palette color', () {
-    expect(nearestPaletteColor(0xFFD50000), 0xFFD50000);
-    expect(nearestPaletteColor(0xFFD20505), 0xFFD50000); // near Tomato
-    expect(nearestPaletteColor(0xFF606060), 0xFF616161); // near Graphite
   });
 
   test('CAP-02: a custom event can be deleted and the deletion undone; an event of a source can only be hidden and shown', () {

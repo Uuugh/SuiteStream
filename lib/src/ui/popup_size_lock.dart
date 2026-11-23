@@ -31,21 +31,16 @@ class _PopupSizeLockState extends State<PopupSizeLock> {
 
   @override
   Widget build(BuildContext context) {
-    final content = KeyedSubtree(key: _content, child: widget.child);
     if (_height == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
-      // First draw: the natural size, which is then kept.
-      return Column(mainAxisSize: MainAxisSize.min, children: [content]);
     }
-    return LayoutBuilder(
-      builder: (context, box) {
-        final h = box.maxHeight.isFinite && box.maxHeight < _height! ? box.maxHeight : _height!;
-        return SizedBox(
-          key: const ValueKey('popup-locked'),
-          height: h,
-          child: SingleChildScrollView(child: content),
-        );
-      },
+    // Keep the viewport and fields mounted while measuring the natural height.
+    return SizedBox(
+      key: const ValueKey('popup-locked'),
+      height: _height,
+      child: SingleChildScrollView(
+        child: KeyedSubtree(key: _content, child: widget.child),
+      ),
     );
   }
 }

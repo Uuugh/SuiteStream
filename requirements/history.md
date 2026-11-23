@@ -19,7 +19,7 @@
 | HIS-02.a | backlog | History names the type of each change: Calendar, Rule, Event, Sync, Feed, Google, Settings or Update. | — |
 | HIS-02.b | backlog | History has a filter that follows the common filter rules (UIC-21), with three parts: the change type (the types in HIS-02), words in its entries, and the time of its entries. | — |
 | HIS-02.c | backlog | The user can choose the order of History's columns by sliding a header, or with the left and right arrows when a header is focused; Undo starts at the end. | — |
-| HIS-02.d | backlog | History is a table: Time \| Type \| Event \| Undo; folded it shows the latest lines with Undo and Redo where they apply, newest first (a stack). | — |
+| HIS-02.d | backlog | History is a table: Time \| Type \| Event \| Undo with newest entries first and Undo and Redo where they apply. | — |
 | HIS-02.e | backlog | Something done outside SuiteStream (deleted in Google, removed by United) has no Undo icon; Restore is on the event. | — |
 | HIS-02.f | backlog | An accepted sign-in is shown as a ✓ with no words; the word stays as its tooltip and accessible name. | — |
 | HIS-02.g | backlog | History's three latest lines sit left-aligned in its section header, before its Healthy box. | — |
@@ -71,11 +71,11 @@
 | HIS-05.o | backlog | Update lines have type Update: msg:updateAvailableAuto, msg:updateAvailablePress or msg:updateAvailableSuitestreamRunThe by how the update can be installed ({v} the version); msg:updatingTo and msg:autoUpdatingTo when an update starts; and, as warnings, msg:updateNotStarted and msg:autoUpdateNotStarted ({reason} the cause). | — |
 | HIS-05.p | backlog | Sign-in protection records, as warnings, msg:statusPageLockedForAfter and msg:lockedManyAddresses ({n} the count and {minutes} the period in DEF-01), and with type Settings msg:unlockLinkUsedFrom. | — |
 | HIS-05.q | backlog | Importing logins from the old secret files at start-up records msg:importedTheCcsUidAnd, msg:importedTheCcsUidAnd2 or msg:importedTheStatusPageLogin. | — |
-| HIS-06 | backlog | The open History section shows the state of its sources and Google before its table. | — |
-| HIS-06.a | backlog | The open section shows in this order: one status line per source, the Google line, the filter, the table (msg:nothingYet when it has no lines), the footer and the debug links of DIA-01. | — |
-| HIS-06.b | backlog | A source's status line shows msg:notYet, msg:accepted or msg:rejected with its time for the sign-in of a connection that signs in; then msg:lastCheck, msg:scheduleChanged, msg:nextCheck and msg:eventsInFeed ({n}); and, when above 0, msg:rejectedSignInsInA ({n}) in red. The source's name is in bold when there is more than one. | — |
+| HIS-06 | backlog | Settings > History shows the state of its sources and Google before its table. | — |
+| HIS-06.a | backlog | History shows in this order: one status line per source, the Google line, the filter, the table (msg:nothingYet when it has no lines), the footer and the debug links of DIA-01. | — |
+| HIS-06.b | backlog | A source's status line shows msg:notYet, msg:accepted or msg:rejected with its time for the sign-in of a connection that signs in; then msg:lastCheck, msg:scheduleChanged, msg:nextCheck and msg:eventsInFeed ({n}); and, when above 0, msg:rejectedSignInsInA ({n}). The source's name is in bold when there is more than one. | — |
 | HIS-06.c | backlog | A time in the status line is a clock time when it is today, otherwise the short date and a clock time, and msg:never when there is none. | — |
-| HIS-06.d | backlog | The Google line is shown when a Google account is connected: an error in red when its last call failed, msg:syncing while a sync runs, otherwise the time of the last sync or msg:notYet. | — |
+| HIS-06.d | backlog | The Google line is shown when a Google account is connected: an error when its last call failed, msg:syncing while a sync runs, otherwise the time of the last sync or msg:notYet. | — |
 | HIS-06.e | backlog | Activity is unhealthy when a source's status is Sign-in rejected, Blocked, Error, Internal error or Paused, or when Google is connected and its last call failed; Healthy, Running, Starting and Setup do not make it unhealthy. | — |
 | HIS-06.f | backlog | The table lists the newest lines, the number in DEF-01, newest first. | — |
 | HIS-06.g | backlog | A saved column order that holds each of the four columns once is used; any other is replaced by the default order, and a bad order is not saved and shows msg:historyColumnOrderUnknown. | — |

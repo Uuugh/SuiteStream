@@ -10,6 +10,7 @@ import '../time/zones.dart';
 import 'event_drag.dart';
 import 'event_filter.dart';
 import 'event_store.dart';
+import 'local_calendar_store.dart';
 
 /// CAL-01.b: the calendar's views.
 enum CalendarView { month, week, fiveDay, day, list }
@@ -17,6 +18,11 @@ enum CalendarView { month, week, fiveDay, day, list }
 /// DEF-01: supported calendar years, 2000 to 2100.
 const int firstSupportedYear = 2000;
 const int lastSupportedYear = 2100;
+
+/// DEF-01: hourly density is saved as event lines per hour.
+const int defaultHourLines = 2;
+const int minHourLines = 1;
+const int maxHourLines = 6;
 
 /// The state of the main calendar. UIC-13: every change notifies at once.
 class CalendarController extends ChangeNotifier {
@@ -31,7 +37,9 @@ class CalendarController extends ChangeNotifier {
     DateTime? focused,
     CalendarView? view,
     SharedPreferences? prefs,
+    LocalCalendarStore? localCalendarStore,
   })  : _prefs = prefs,
+        _localCalendarStore = localCalendarStore,
         _localZone = localZone,
         _timeFormat = timeFormat,
         _store = store,
@@ -42,6 +50,17 @@ class CalendarController extends ChangeNotifier {
         _view = view ?? CalendarView.month,
         _viewChosen = view != null {
     _loadViewSettings(view == null);
+    if (localCalendarStore != null) {
+      final saved = localCalendarStore.load();
+      if (saved != null && saved.calendars.isNotEmpty) {
+        _calendars = saved.calendars;
+        _defaultCalendarId = _calendars.any((c) => c.id == saved.defaultId)
+            ? saved.defaultId
+            : _calendars.first.id;
+      } else {
+        _defaultCalendarId = _calendars.firstOrNull?.id;
+      }
+    }
     _focused = _supported(focused ?? today) ? _dateOnly(focused ?? today) : today;
     this.filter.addListener(notifyListeners); // FLT-01.d: every view follows the filter
   }
@@ -50,6 +69,9 @@ class CalendarController extends ChangeNotifier {
   final EventFilter filter;
   final EventStore? _store;
   final SharedPreferences? _prefs;
+  final LocalCalendarStore? _localCalendarStore;
+  String? _defaultCalendarId;
+  bool _savingCalendars = false;
   String? _viewZone;
   LocalZone _localZone;
   TimeFormat _timeFormat;
@@ -59,6 +81,36 @@ class CalendarController extends ChangeNotifier {
   bool _viewChosen;
   bool _phone = false;
   late DateTime _focused;
+
+  int _hourLines = defaultHourLines;
+  int? _monthHeightLines;
+  int? _hourlyHeightLines;
+
+  int get hourLines => _hourLines;
+  set hourLines(int value) {
+    final lines = value.clamp(minHourLines, maxHourLines);
+    if (lines == _hourLines) return;
+    _hourLines = lines;
+    _prefs?.setInt(_hourLinesKey, lines);
+    notifyListeners();
+  }
+
+  /// Extra whole event lines beyond the view's minimum. Until the user adjusts
+  /// the calendar, it fills the available space.
+  int? get calendarHeightLines =>
+      view == CalendarView.month ? _monthHeightLines : _hourlyHeightLines;
+  set calendarHeightLines(int value) {
+    final lines = value < 0 ? 0 : value;
+    if (lines == calendarHeightLines) return;
+    if (view == CalendarView.month) {
+      _monthHeightLines = lines;
+      _prefs?.setInt(_monthHeightKey, lines);
+    } else {
+      _hourlyHeightLines = lines;
+      _prefs?.setInt(_hourlyHeightKey, lines);
+    }
+    notifyListeners();
+  }
 
   /// TIM-03: the Local zone is the system zone or a fixed zone from Settings;
   /// CAL-02.a: the calendar's own time zone picker shows another zone for now.
@@ -78,6 +130,87 @@ class CalendarController extends ChangeNotifier {
   TimeFormat get timeFormat => _timeFormat;
   List<SuiteEvent> get events => List.unmodifiable(_events);
   List<SuiteCalendar> get calendars => List.unmodifiable(_calendars);
+  String? get defaultCalendarId => _defaultCalendarId;
+
+  bool canDeleteCalendar(String id) =>
+      _calendars.length > 1 &&
+      _events.every((event) => event.calendarId != id) &&
+      _removed.every((event) => event.calendarId != id);
+
+  bool canClearLastCalendar(String id) =>
+      _calendars.length == 1 &&
+      _calendars.single.id == id &&
+      _events.any((event) => event.calendarId == id);
+
+  /// Empty the only local calendar while retaining its identity and preferences.
+  Future<bool> clearLastCalendar(String id) async {
+    if (_savingCalendars || !canClearLastCalendar(id)) return false;
+    final remaining = _events.where((event) => event.calendarId != id).toList();
+    _savingCalendars = true;
+    try {
+      await _store?.save(remaining);
+      _events = remaining;
+      _removed.removeWhere((event) => event.calendarId == id);
+      if (_selectedId != null && remaining.every((event) => event.id != _selectedId)) {
+        _selectedId = null;
+      }
+      notifyListeners();
+      return true;
+    } on Exception {
+      return false;
+    } finally {
+      _savingCalendars = false;
+    }
+  }
+
+  Future<bool> saveCalendar(String name, {String? id}) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return false;
+    if (id == null) {
+      final calendar = SuiteCalendar(
+        id: 'local-${DateTime.now().microsecondsSinceEpoch}',
+        name: trimmed,
+        color: null,
+      );
+      return _saveCalendars([..._calendars, calendar], _defaultCalendarId ?? calendar.id);
+    }
+    if (_calendars.every((c) => c.id != id)) return false;
+    final updated = [
+      for (final c in _calendars)
+        if (c.id == id)
+          SuiteCalendar(id: id, name: trimmed, color: c.color, zone: c.zone)
+        else
+          c,
+    ];
+    return _saveCalendars(updated, _defaultCalendarId ?? id);
+  }
+
+  Future<bool> setDefaultCalendar(String id) =>
+      _calendars.any((c) => c.id == id) ? _saveCalendars(_calendars, id) : Future.value(false);
+
+  Future<bool> deleteCalendar(String id) async {
+    if (!canDeleteCalendar(id) || _calendars.every((c) => c.id != id)) return false;
+    final remaining = _calendars.where((c) => c.id != id).toList();
+    final defaultId = _defaultCalendarId == id ? remaining.first.id : _defaultCalendarId ?? remaining.first.id;
+    return _saveCalendars(remaining, defaultId);
+  }
+
+  Future<bool> _saveCalendars(List<SuiteCalendar> calendars, String defaultId) async {
+    final store = _localCalendarStore;
+    if (_savingCalendars || store == null) return false;
+    _savingCalendars = true;
+    try {
+      if (!await store.save(calendars, defaultId)) return false;
+      _calendars = calendars;
+      _defaultCalendarId = defaultId;
+      notifyListeners();
+      return true;
+    } on Exception {
+      return false;
+    } finally {
+      _savingCalendars = false;
+    }
+  }
 
   /// CAL-01.k, CAL-01.f: until the user chooses a view it is Month, except in a
   /// phone-width window (DEF-01), where it is List.
@@ -99,19 +232,35 @@ class CalendarController extends ChangeNotifier {
   static const _lengthKey = 'event.defaultLength';
   static const _pressKey = 'view.longPressMs';
   static const _zoneKey = 'view.zone';
+  static const _deviceZoneKey = 'settings.fixedZone';
   static const _viewKey = 'view.mode';
   static const _formatKey = 'view.timeFormat';
+  static const _hourLinesKey = 'view.hourLines';
+  static const _monthHeightKey = 'view.monthHeightLines';
+  static const _hourlyHeightKey = 'view.hourlyHeightLines';
 
   /// CAL-06.b: the time zone, the view and the time format are kept on the device.
   void _loadViewSettings(bool loadView) {
     final p = _prefs;
     if (p == null) return;
+    _hourLines = (p.getInt(_hourLinesKey) ?? defaultHourLines)
+        .clamp(minHourLines, maxHourLines);
+    final monthHeight = p.getInt(_monthHeightKey);
+    if (monthHeight != null && monthHeight >= 0) _monthHeightLines = monthHeight;
+    final hourlyHeight = p.getInt(_hourlyHeightKey);
+    if (hourlyHeight != null && hourlyHeight >= 0) {
+      _hourlyHeightLines = hourlyHeight;
+    }
     final press = p.getInt(_pressKey);
     if (press != null) _longPress = clampLongPress(Duration(milliseconds: press));
     final len = p.getInt(_lengthKey);
     if (len != null) _defaultLength = clampEventLength(Duration(minutes: len));
     final z = p.getString(_zoneKey);
     if (z != null && z.isNotEmpty && isKnownZone(z)) _viewZone = z;
+    final fixed = p.getString(_deviceZoneKey);
+    if (fixed != null && isKnownZone(fixed)) {
+      _localZone = LocalZone.fixed(fixed, systemZone: _localZone.systemZoneName);
+    }
     final f = p.getString(_formatKey);
     if (f != null) _timeFormat = f == '24' ? TimeFormat.twentyFourHour : TimeFormat.twelveHour;
     final v = p.getString(_viewKey);
@@ -146,6 +295,12 @@ class CalendarController extends ChangeNotifier {
 
   set localZone(LocalZone z) {
     _localZone = z;
+    final fixed = z.fixedZoneName;
+    if (fixed == null) {
+      _prefs?.remove(_deviceZoneKey);
+    } else {
+      _prefs?.setString(_deviceZoneKey, fixed);
+    }
     notifyListeners();
   }
 

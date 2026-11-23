@@ -6,7 +6,7 @@
 |---|---|---|---|
 | SET-01 | backlog | Settings holds the user's own view settings and the shared Site Admin settings, in separate parts, each opened in a dialog. | — |
 | SET-01.a | backlog | Settings has two headings. **User** items are stored on the device (view preferences: Theme, Time Zones, time notation, Search) and can differ from device to device. **Site Admin** items are stored once in the database and are the same on every device and browser: Login, Domains, Google API, Updates (whether to check at all, automatic updating, how often), Default time zone, Backup and Restore, Logo and favicon, more as added. Every item opens as a pop-up. | — |
-| SET-01.b | backlog | In Full mode, the page's sections are hidden elsewhere and listed above Settings under a Configure heading. | — |
+| SET-01.b | backlog | Settings lists Sources, Feeds, All Rules, Event Templates and History under Configure. Opening a section shows its body directly. Individual modules retain their expand and collapse behavior (UIC-29). | test/calendar/local_calendar_test.dart |
 | SET-01.c | backlog | The Settings pop-up follows the shared dialog rules (UIC-01 to UIC-03) and its Cancel \| Save pair uses the shared size and behavior rules (THM-04.c, UIC-27). | — |
 | SET-01.d | backlog | Settings lists its parts in this order: Updates, Login & password, Domains, Theme last, then any others; each part has its own Cancel \| Save. | — |
 | SET-02 | backlog | The user chooses how time zones and search work on their device. | — |

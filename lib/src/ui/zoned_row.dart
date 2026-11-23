@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/suite_theme.dart';
+
 /// UIC-14: every row of controls (a section's header, for one) has a left, a
 /// center and a right zone. Their contents are aligned left, centered and right by
 /// default, and each zone keeps its own alignment. The feature says what goes in
@@ -17,7 +19,10 @@ class ZonedRow extends StatelessWidget {
     this.leftMinWidth = 0,
     this.centerMinWidth = 0,
     this.rightMinWidth = 0,
-    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: 8,
+      vertical: suitePartGap,
+    ),
   });
 
   final List<Widget> left;
@@ -28,41 +33,95 @@ class ZonedRow extends StatelessWidget {
   final double rightMinWidth;
   final EdgeInsets padding;
 
-  Widget _zone(Key key, List<Widget> children, MainAxisAlignment align) =>
-      Row(key: key, mainAxisSize: MainAxisSize.min, mainAxisAlignment: align, children: children);
+  Widget _zone(
+    Key key,
+    List<Widget> children,
+    double minWidth, {
+    bool reverseScroll = false,
+  }) => LayoutBuilder(
+    builder: (context, box) {
+      final row = Row(
+        textDirection: TextDirection.ltr,
+        mainAxisSize: MainAxisSize.min,
+        children: children,
+      );
+      final needsFlex = children.any((child) => child is Flexible);
+      // Give flexible labels a real width so their ellipsis can take effect.
+      final compressedWidth = minWidth * 0.8;
+      final width = box.maxWidth < compressedWidth
+          ? compressedWidth
+          : box.maxWidth;
+      return SingleChildScrollView(
+        key: key,
+        scrollDirection: Axis.horizontal,
+        reverse: reverseScroll,
+        child: needsFlex && width.isFinite
+            ? ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: width),
+                child: row,
+              )
+            : row,
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, box) {
-      final needed = leftMinWidth + centerMinWidth + rightMinWidth + padding.horizontal;
-      final fits = box.maxWidth >= needed;
-      final l = _zone(const ValueKey('zone-left'), left, MainAxisAlignment.start);
-      final c = _zone(const ValueKey('zone-center'), center, MainAxisAlignment.center);
-      final r = _zone(const ValueKey('zone-right'), right, MainAxisAlignment.end);
-      if (fits) {
+    return LayoutBuilder(
+      builder: (context, box) {
+        final outsideWidth = leftMinWidth > rightMinWidth
+            ? leftMinWidth
+            : rightMinWidth;
+        final needed = centerMinWidth + 2 * outsideWidth + padding.horizontal;
+        final fits = box.maxWidth >= needed;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
+        final l = _zone(
+          const ValueKey('zone-left'),
+          left,
+          leftMinWidth,
+          reverseScroll: isRtl,
+        );
+        final c = _zone(const ValueKey('zone-center'), center, centerMinWidth);
+        final r = _zone(
+          const ValueKey('zone-right'),
+          right,
+          rightMinWidth,
+          reverseScroll: !isRtl,
+        );
+        if (fits) {
+          return Padding(
+            padding: padding,
+            child: Row(
+              textDirection: TextDirection.ltr,
+              children: [
+                Expanded(
+                  child: Align(alignment: Alignment.centerLeft, child: l),
+                ),
+                if (center.isNotEmpty) c,
+                Expanded(
+                  child: Align(alignment: Alignment.centerRight, child: r),
+                ),
+              ],
+            ),
+          );
+        }
+        // Too narrow: left on top, then center, then right, each keeping its alignment.
         return Padding(
           padding: padding,
-          child: Row(
+          child: Column(
+            key: const ValueKey('zones-stacked'),
+            spacing: suiteStackedZoneGap,
             children: [
-              Expanded(child: Align(alignment: Alignment.centerLeft, child: l)),
-              if (center.isNotEmpty) c,
-              Expanded(child: Align(alignment: Alignment.centerRight, child: r)),
+              if (left.isNotEmpty)
+                Align(alignment: Alignment.centerLeft, child: l),
+              if (center.isNotEmpty)
+                Align(alignment: Alignment.center, child: c),
+              if (right.isNotEmpty)
+                Align(alignment: Alignment.centerRight, child: r),
             ],
           ),
         );
-      }
-      // Too narrow: left on top, then center, then right, each keeping its alignment.
-      return Padding(
-        padding: padding,
-        child: Column(
-          key: const ValueKey('zones-stacked'),
-          children: [
-            if (left.isNotEmpty) Align(alignment: Alignment.centerLeft, child: l),
-            if (center.isNotEmpty) Align(alignment: Alignment.center, child: c),
-            if (right.isNotEmpty) Align(alignment: Alignment.centerRight, child: r),
-          ],
-        ),
-      );
-    });
+      },
+    );
   }
 }

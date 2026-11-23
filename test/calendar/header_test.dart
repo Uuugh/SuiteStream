@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/time/local_zone.dart';
@@ -136,7 +137,7 @@ void zoneTests() {
     for (final k in ['zone-button', 'clock-button', 'add-event-button']) {
       expect(right.contains(tester.getCenter(find.byKey(ValueKey(k)))), isTrue, reason: k);
     }
-    expect(right.contains(tester.getCenter(find.byIcon(Icons.filter_list))), isTrue);
+    expect(right.contains(tester.getCenter(find.byIcon(SuiteIcons.filterList))), isTrue);
     expect(right.contains(tester.getCenter(find.byIcon(viewIcon(c.view)))), isTrue);
     expect(left.right <= right.left, isTrue);
     expect(find.byKey(const ValueKey('zones-stacked')), findsNothing);
@@ -146,7 +147,7 @@ void zoneTests() {
     useWindow(tester, const Size(1000, 900));
     final c = makeController();
     await tester.pumpWidget(appFor(CalendarPage(controller: c), size: const Size(1000, 900)));
-    await tester.tap(find.byIcon(Icons.filter_list));
+    await tester.tap(find.byIcon(SuiteIcons.filterList));
     await tester.pumpAndSettle();
     final menu = tester.getRect(find.byKey(const ValueKey('dropdown-item-state:changedBySource')));
     expect(menu.right <= 1000, isTrue);

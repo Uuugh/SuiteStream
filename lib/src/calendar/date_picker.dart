@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/suite_icons.dart';
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
@@ -106,7 +107,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
           IconButton(
             key: const ValueKey('picker-prev-month'),
             tooltip: m('previousMonth'),
-            icon: const Icon(Icons.chevron_left),
+            icon: const Icon(SuiteIcons.chevronLeft),
             onPressed: () => _shiftMonth(-1),
           ),
           Expanded(
@@ -122,7 +123,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
           IconButton(
             key: const ValueKey('picker-next-month'),
             tooltip: m('nextMonth'),
-            icon: const Icon(Icons.chevron_right),
+            icon: const Icon(SuiteIcons.chevronRight),
             onPressed: () => _shiftMonth(1),
           ),
         ],
@@ -135,7 +136,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
           IconButton(
             key: const ValueKey('year-prev'),
             tooltip: m('previousYear'),
-            icon: const Icon(Icons.chevron_left),
+            icon: const Icon(SuiteIcons.chevronLeft),
             onPressed: () => setState(() => _year--),
           ),
           TextButton(
@@ -145,14 +146,14 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('$_year', style: SuiteText.label(t)),
-                Icon(_mode == _PickerMode.years ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                Icon(_mode == _PickerMode.years ? SuiteIcons.arrowDropUp : SuiteIcons.arrowDropDown),
               ],
             ),
           ),
           IconButton(
             key: const ValueKey('year-next'),
             tooltip: m('nextYear'),
-            icon: const Icon(Icons.chevron_right),
+            icon: const Icon(SuiteIcons.chevronRight),
             onPressed: () => setState(() => _year++),
           ),
         ],

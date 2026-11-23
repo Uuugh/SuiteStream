@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../theme/tokens.dart';
+import '../theme/suite_theme.dart';
 
 /// THM-04.c: Cancel | Save buttons are 130 × 34 px (the pair together).
 const double pairWidth = 130;
-const double pairHeight = 34;
+const double pairHeight = suiteControlHeight;
 
 /// UIC-27: the Cancel | Save pair: two joined buttons that sit at the bottom of
 /// what they save. The same pair carries a question's answers, No | Yes
@@ -13,7 +13,7 @@ const double pairHeight = 34;
 /// Cancel is the quiet side. The Save pilot uses the theme's normal accent look,
 /// dims it while inactive, and fills with accent on hover
 /// (THM-05.b, UIC-27.b-c).
-class CancelSavePair extends StatelessWidget {
+class CancelSavePair extends StatefulWidget {
   const CancelSavePair({
     super.key,
     required this.cancelLabel,
@@ -42,61 +42,100 @@ class CancelSavePair extends StatelessWidget {
   final bool useThemedSaveStates;
 
   @override
+  State<CancelSavePair> createState() => _CancelSavePairState();
+}
+
+class _CancelSavePairState extends State<CancelSavePair>
+    with SingleTickerProviderStateMixin {
+  late final _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 5),
+  );
+
+  @override
+  void didUpdateWidget(CancelSavePair oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.saveEnabled) {
+      _pulse.reset();
+    } else if (!oldWidget.saveEnabled &&
+        !MediaQuery.disableAnimationsOf(context)) {
+      _pulse.forward(from: 0);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) _pulse.reset();
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  void _activate(VoidCallback action) {
+    _pulse.reset();
+    action();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final t = context.tokens;
+    final scheme = Theme.of(context).colorScheme;
     final quiet = _Look(
-      background: t.card,
-      hover: t.soft,
-      foreground: t.accent,
+      background: scheme.surfaceContainerLow,
+      hover: scheme.surfaceContainerHighest,
+      foreground: scheme.primary,
     );
-    final legacySave = _Look(
-      background: Color.alphaBlend(t.accent.withValues(alpha: 0.5), t.card),
-      hover: t.accent,
-      foreground: t.onAccent,
+    final filledSave = _Look(
+      background: scheme.primaryContainer,
+      hover: scheme.primary,
+      foreground: scheme.onPrimaryContainer,
+      hoverForeground: scheme.onPrimary,
     );
     final inactiveSave = _Look(
-      background: t.card,
-      hover: t.card,
-      foreground: t.accent.withValues(alpha: 0.33),
+      background: scheme.surfaceContainerLow,
+      hover: scheme.surfaceContainerLow,
+      foreground: scheme.onSurfaceVariant,
     );
     final activeSave = _Look(
-      background: t.card,
-      hover: t.accent,
-      foreground: t.accent,
-      hoverForeground: t.onAccent,
+      background: scheme.surfaceContainerLow,
+      hover: scheme.primary,
+      foreground: scheme.primary,
+      hoverForeground: scheme.onPrimary,
     );
+    const corners = BorderRadius.all(Radius.circular(suiteControlRadius));
     return ClipRRect(
-      borderRadius: BorderRadius.circular(
-        8,
-      ), // THM-04.a: controls have 8 px corners
+      borderRadius: corners,
       child: Container(
         width: pairWidth,
         height: pairHeight,
         decoration: BoxDecoration(
-          border: Border.all(color: t.line),
-          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: scheme.outlineVariant),
+          borderRadius: corners,
         ),
         child: Row(
           children: [
             Expanded(
               child: _Side(
-                key: cancelKey,
-                label: cancelLabel,
-                enabled: cancelEnabled,
+                key: widget.cancelKey,
+                label: widget.cancelLabel,
+                enabled: widget.cancelEnabled,
                 look: quiet,
-                onPressed: onCancel,
+                onPressed: () => _activate(widget.onCancel),
               ),
             ),
             Expanded(
               child: _Side(
-                key: saveKey,
-                label: saveLabel,
-                enabled: saveEnabled,
-                look: useThemedSaveStates
-                    ? (saveEnabled ? activeSave : inactiveSave)
-                    : (saveEnabled ? legacySave : quiet),
-                onPressed: onSave,
-                inert: !saveEnabled,
+                key: widget.saveKey,
+                label: widget.saveLabel,
+                enabled: widget.saveEnabled,
+                look: widget.saveEnabled
+                    ? (widget.useThemedSaveStates ? activeSave : filledSave)
+                    : inactiveSave,
+                onPressed: () => _activate(widget.onSave),
+                pulse: _pulse,
               ),
             ),
           ],
@@ -126,7 +165,7 @@ class _Side extends StatefulWidget {
     required this.enabled,
     required this.look,
     required this.onPressed,
-    this.inert = false,
+    this.pulse,
   });
 
   final String label;
@@ -134,8 +173,7 @@ class _Side extends StatefulWidget {
   final _Look look;
   final VoidCallback onPressed;
 
-  /// A disabled Save: it uses the inactive look and does nothing.
-  final bool inert;
+  final Animation<double>? pulse;
 
   @override
   State<_Side> createState() => _SideState();
@@ -146,28 +184,49 @@ class _SideState extends State<_Side> {
 
   @override
   Widget build(BuildContext context) {
-    final active = widget.enabled && !widget.inert;
+    final active = widget.enabled;
     final look = widget.look;
-    return Opacity(
-      opacity: widget.enabled || widget.inert ? 1 : 0.4,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hover = true),
-        onExit: (_) => setState(() => _hover = false),
-        cursor: active ? SystemMouseCursors.click : SystemMouseCursors.basic,
-        child: Material(
-          color: active && _hover ? look.hover : look.background,
-          child: InkWell(
-            onTap: active ? widget.onPressed : null,
-            hoverColor: Colors.transparent,
-            child: Center(
-              child: Text(
-                widget.label,
-                style: TextStyle(
-                  color: active && _hover
-                      ? look.hoverForeground ?? look.foreground
-                      : look.foreground,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
+    return Semantics(
+      button: true,
+      enabled: active,
+      child: Opacity(
+        opacity: active ? 1 : 0.45,
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _hover = true),
+          onExit: (_) => setState(() => _hover = false),
+          cursor: active ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          child: AnimatedBuilder(
+            animation: widget.pulse ?? const AlwaysStoppedAnimation(0.0),
+            builder: (context, child) {
+              final progress = (widget.pulse?.value ?? 0) * 5;
+              final phase = progress % 1;
+              final strength = active && !_hover
+                  ? 0.12 * (1 - (2 * phase - 1).abs())
+                  : 0.0;
+              return Material(
+                color: active && _hover
+                    ? look.hover
+                    : Color.alphaBlend(
+                        look.foreground.withValues(alpha: strength),
+                        look.background,
+                      ),
+                child: child,
+              );
+            },
+            child: InkWell(
+              onTap: active ? widget.onPressed : null,
+              canRequestFocus: active,
+              hoverColor: Colors.transparent,
+              child: Center(
+                child: Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: active && _hover
+                        ? look.hoverForeground ?? look.foreground
+                        : look.foreground,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ),

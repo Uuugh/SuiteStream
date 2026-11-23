@@ -1,3 +1,4 @@
 sprint,planned_points,completed_points,carried_over_points,sprint_start,sprint_end,notes
 sprint001,26,26,0,2026-11-21,2026-11-21,Planned for 5 days; completed in one day by one Claude session. Points were estimates with no history. CAL-01.b accepted for Month and Week only.
 sprint002,15,15,0,2026-11-21,2026-11-21,Finished in one day. Planned rows not delivered because the features they need are not built: FLT-01.c and FLT-01.d (Full page and Print) and the non-picker parts of CAL-06.c. Four filter rows (FLT-01.f/g/h/j) were removed by the Product Owner and CAL-01.t was added.
+sprint005,47,32,15,2026-11-22,2026-11-22,Suzuki accepted six scoped items. Shared UI and non-color theme work returned to backlog. Full page and section collapse retired by the Product Owner.

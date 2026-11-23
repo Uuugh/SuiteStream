@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/suite_icons.dart';
 import '../theme/tokens.dart';
 
 /// Every time or number text field offers up and down arrows that step its value:
@@ -26,8 +27,8 @@ class StepperArrows extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        arrow(upKey, Icons.keyboard_arrow_up, onUp),
-        arrow(downKey, Icons.keyboard_arrow_down, onDown),
+        arrow(upKey, SuiteIcons.keyboardArrowUp, onUp),
+        arrow(downKey, SuiteIcons.keyboardArrowDown, onDown),
       ],
     );
   }

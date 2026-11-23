@@ -2,24 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/messages.dart';
+import '../theme/suite_icons.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/length_input.dart';
+import '../time/local_zone.dart';
 import '../ui/cancel_save_pair.dart';
 import '../ui/popup_size_lock.dart';
 import '../ui/stepper_arrows.dart';
+import '../ui/suite_dialog.dart';
+import '../ui/zone_picker.dart';
 import 'calendar_controller.dart';
 import 'event_drag.dart';
+import 'local_calendars_dialog.dart';
 
 /// Opens the user's settings (view settings, kept on the device).
 Future<void> openSettingsDialog(BuildContext context, CalendarController c) {
   final msgs = context.msg;
-  return showDialog<void>(
+  return showSuiteDialog<void>(
     context: context,
-    builder: (_) => MessagesScope(
+    builder: (dialogContext) => MessagesScope(
       messages: msgs,
       child: Dialog(
-        backgroundColor: context.tokens.card,
+        backgroundColor: dialogContext.tokens.card,
         child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 420), child: PopupSizeLock(child: SettingsDialog(controller: c))),
       ),
     ),
@@ -44,6 +49,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
   late final String _initialPress = _press.text;
   String? _lengthError;
   String? _pressError;
+  late String? _fixedZone = widget.controller.baseZone.fixedZoneName;
 
   @override
   void dispose() {
@@ -52,7 +58,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
     super.dispose();
   }
 
-  bool get _changed => _length.text.trim() != _initialLength || _press.text.trim() != _initialPress;
+  bool get _changed =>
+      _length.text.trim() != _initialLength ||
+      _press.text.trim() != _initialPress ||
+      _fixedZone != widget.controller.baseZone.fixedZoneName;
 
   void _save() {
     final m = context.msg;
@@ -67,6 +76,11 @@ class _SettingsDialogState extends State<SettingsDialog> {
     }
     widget.controller.defaultLength = length;
     widget.controller.longPress = press;
+    final fixed = _fixedZone;
+    final system = widget.controller.baseZone.systemZoneName;
+    widget.controller.localZone = fixed == null
+        ? LocalZone.system(system)
+        : LocalZone.fixed(fixed, systemZone: system);
     Navigator.of(context).pop();
   }
 
@@ -128,10 +142,52 @@ class _SettingsDialogState extends State<SettingsDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(m('settings'), style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width)),
+          const SizedBox(height: suitePartGap),
+          Text(m('settingsConfigure'), style: SuiteText.label(t)),
+          ListTile(
+            key: const ValueKey('settings-sources'),
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            title: Text(m('settingsSources')),
+            trailing: const Icon(SuiteIcons.chevronRight),
+            onTap: () => openLocalCalendars(context, widget.controller),
+          ),
+          for (final key in ['settingsFeeds', 'settingsRules', 'settingsTemplates', 'settingsHistory'])
+            ListTile(
+              key: ValueKey(key),
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              enabled: false,
+              title: Text(m(key)),
+              trailing: Text(m('settingsUnavailable')),
+            ),
           const SizedBox(height: 12),
           _field(m('defaultEventLength'), 'setting-default-length', _length, _lengthError, () => _lengthError = null, _stepLength),
           const SizedBox(height: 12),
           _field(m('pressDelay'), 'setting-press-delay', _press, _pressError, () => _pressError = null, _stepPress),
+          const SizedBox(height: 12),
+          Text(m('timeZones'), style: SuiteText.label(t)),
+          Wrap(
+            spacing: 8,
+            children: [
+              ChoiceChip(
+                key: const ValueKey('setting-zone-system'),
+                label: Text(m('followSystemTimeZone')),
+                selected: _fixedZone == null,
+                onSelected: (_) => setState(() => _fixedZone = null),
+              ),
+              ChoiceChip(
+                key: const ValueKey('setting-zone-fixed'),
+                label: Text(_fixedZone ?? m('fixedTimeZone')),
+                selected: _fixedZone != null,
+                onSelected: (_) async {
+                  final system = widget.controller.baseZone.systemZoneName;
+                  final result = await pickZone(context, current: _fixedZone ?? system, defaultZone: system);
+                  if (mounted && result != null) setState(() => _fixedZone = result);
+                },
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerRight,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../theme/suite_icons.dart';
 import '../l10n/messages.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
@@ -82,7 +83,7 @@ class EventDetails extends StatelessWidget {
           Text(eventRangeText(m, e, c.localZone.location, c.timeFormat), key: const ValueKey('details-range'), style: SuiteText.note(t)),
           if (e.location.isNotEmpty)
             Row(children: [
-              const Icon(Icons.place_outlined, size: 16),
+              const Icon(SuiteIcons.locationOn, size: 16),
               const SizedBox(width: 4),
               Expanded(child: Text(e.location, key: const ValueKey('details-location'), style: SuiteText.body(t))),
             ]),
@@ -99,20 +100,20 @@ class EventDetails extends StatelessWidget {
               IconButton(
                 key: const ValueKey('details-edit'),
                 tooltip: m('edit'),
-                icon: const Icon(Icons.edit_outlined),
+                icon: const Icon(SuiteIcons.edit),
                 onPressed: () =>
                     _openEditor(context, c, e, duplicate: false),
               ),
               IconButton(
                 key: const ValueKey('details-duplicate'),
                 tooltip: m('duplicateEvent'),
-                icon: const Icon(Icons.copy_outlined),
+                icon: const Icon(SuiteIcons.contentCopy),
                 onPressed: () => _openEditor(context, c, e, duplicate: true),
               ),
               IconButton(
                 key: const ValueKey('details-delete'),
                 tooltip: e.custom ? m('deleteEvent') : (e.hiddenFromGoogle ? m('showButton') : m('hideButton')),
-                icon: Icon(e.custom ? Icons.delete_outline : (e.hiddenFromGoogle ? Icons.visibility_outlined : Icons.visibility_off_outlined)),
+                icon: Icon(e.custom ? SuiteIcons.delete : (e.hiddenFromGoogle ? SuiteIcons.visibility : SuiteIcons.visibilityOff)),
                 onPressed: () async {
                   // EVT-07.k: Delete asks msg:deleteEventAsk and hide asks msg:hideEventAsk (UIC-06).
                   if (e.custom) {
@@ -183,9 +184,17 @@ class _EventDetailsHostState extends State<EventDetailsHost> {
           builder: (context, _) {
             final e = c.selectedEvent;
             if (e == null) {
-              // The event was deleted, or Close was pressed: close the popup.
+              // The editor can open another route while it closes. Dismiss
+              // this details route even when another popup is on top of it.
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (dialogContext.mounted && Navigator.of(dialogContext).canPop()) Navigator.of(dialogContext).pop();
+                if (!dialogContext.mounted) return;
+                final route = ModalRoute.of(dialogContext);
+                if (route == null || !route.isActive) return;
+                if (route.isCurrent) {
+                  route.navigator?.pop();
+                } else {
+                  route.navigator?.removeRoute(route);
+                }
               });
               return const SizedBox.shrink();
             }

@@ -20,7 +20,7 @@ Terms: **one-way** moves events in one direction only (a source brings them in, 
 | CON-02.e | backlog | A connection is shown as a module: its header, Expand and Close follow UIC-29, and its look follows THM-08. | — |
 | CON-02.f | backlog | A connection's name is cut to the length in DEF-01 after repeated whitespace is collapsed, and its note to the length in DEF-01. | — |
 | CON-02.g | backlog | Saving a name or color records History msg:sourceSaved ({source} is the connection, {name} its name, {color} #rrggbb or msg:defaultColor2), can be undone and rebuilds the connection's calendar content (CON-07). | — |
-| CON-02.h | backlog | A color is #rrggbb in any letter case, stored in lower case; anything else is refused with msg:chooseTheColorWithThe. Choosing the default color deletes the saved one; a connection with no color shows the theme's accent color and its published events carry none. | — |
+| CON-02.h | backlog | A color is #rrggbb in any letter case, stored in lower case. Other values are refused with msg:chooseTheColorWithThe. Choosing the default color deletes the saved one. A connection without an explicit color uses the active theme for display and publishes its events without a color. | — |
 | CON-03 | backlog | Each source shows its status and can be synced or turned off. | — |
 | CON-03.a | backlog | Sync Now updates a source in the background: it reports Syncing during work and Healthy on success, and keeps unrelated unsaved source edits. Sync Now answers after the time in DEF-01 and, if the run is still going, the page follows its status until it is done. | — |
 | CON-03.b | backlog | A source reports when it last synced (a download or an upload) or that a read, check or download failed. | — |

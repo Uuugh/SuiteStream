@@ -1397,3 +1397,27 @@ Columns: `batch` (R1, R2, ... in order), `date`, `old ID`, `new ID(s)` (several 
 | R39 | 2026-11-19 | SET-03.e | SET-06.e | the logo is a Site Admin setting, kept in the database |
 | R39 | 2026-11-19 | SET-03.h | SET-06.f | the favicon is a Site Admin setting |
 | R39 | 2026-11-19 | SET-03.f | SET-06.g | |
+| R40 | 2026-11-22 | THM-02.a | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-02.b | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-02.c | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-02.d | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-02.e | retired | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-02.l | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-02.m | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-04.f | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-05.b | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-10.a | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | THM-10.b | THM-02 | prior app color prescription superseded by Material theming |
+| R40 | 2026-11-22 | CGOW-10.b | CGOW-10.a | prescribed RGB distance formula retired; provider color fallback retained |
+
+| R41 | 2026-11-22 | CAL-04.a | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | CAL-04.e | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | CAL-04.f | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | CAL-04.h | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | CAL-04.i | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | CAL-04.k | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | CAL-04.l | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | FLT-01.c | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | UIC-05.b | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | UIC-05.c | retired | sections moved to Settings (SET-01.b) |
+| R41 | 2026-11-22 | UIC-05.d | retired | sections moved to Settings (SET-01.b) |

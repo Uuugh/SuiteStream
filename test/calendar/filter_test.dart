@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/event_filter.dart';
@@ -12,7 +13,7 @@ import 'package:suitestream/src/time/zones.dart';
 import 'test_support.dart';
 
 Future<void> openFilter(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.filter_list));
+  await tester.tap(find.byIcon(SuiteIcons.filterList));
   await tester.pumpAndSettle();
 }
 
@@ -29,7 +30,7 @@ void main() {
     useWindow(tester);
     final c = makeController(events: [work, home]);
     await tester.pumpWidget(appFor(CalendarPage(controller: c)));
-    expect(find.byIcon(Icons.filter_list), findsOneWidget);
+    expect(find.byIcon(SuiteIcons.filterList), findsOneWidget);
     await openFilter(tester);
     for (final id in ['cal:work', 'cal:home', 'state:edited', 'state:changedBySource', 'state:hiddenFromGoogle', 'state:deleted']) {
       expect(find.byKey(ValueKey('dropdown-item-$id')), findsOneWidget, reason: id);
@@ -94,7 +95,7 @@ void main() {
     final c = makeController(events: [work, home]);
     await tester.pumpWidget(appFor(CalendarPage(controller: c)));
     final accent = SuiteTokens.light.accent;
-    Color? iconColor() => tester.widget<Icon>(find.byIcon(Icons.filter_list)).color;
+    Color? iconColor() => tester.widget<Icon>(find.byIcon(SuiteIcons.filterList)).color;
     expect(iconColor(), isNull);
     c.filter.toggleCalendar('home');
     await tester.pump();

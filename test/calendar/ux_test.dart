@@ -1,9 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/month_view.dart';
@@ -288,7 +288,7 @@ void main() {
       await tester.pumpWidget(
         appFor(CalendarPage(controller: c), size: const Size(1000, 900)),
       );
-    await tester.tap(find.byIcon(Icons.filter_list));
+    await tester.tap(find.byIcon(SuiteIcons.filterList));
     await tester.pumpAndSettle();
     Size menu() => tester.getSize(find.byType(IntrinsicWidth).last);
     final before = menu();

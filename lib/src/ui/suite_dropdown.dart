@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/suite_icons.dart';
+import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 
 /// The trigger is an icon button: a 48 px target with a 24 px icon centered in it.
@@ -135,18 +137,21 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
                   color: t.card,
                   elevation: 4,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(suitePanelRadius),
                     side: BorderSide(color: t.line),
                   ),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minWidth: 140, maxWidth: _maxMenuWidth),
-                    child: IntrinsicWidth(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (final a in widget.actions) _actionRow(context, a),
-                          for (var i = 0; i < widget.items.length; i++) _row(context, i),
-                        ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: suiteDialogPadding),
+                      child: IntrinsicWidth(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (final a in widget.actions) _actionRow(context, a),
+                            for (var i = 0; i < widget.items.length; i++) _row(context, i),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -186,7 +191,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
             else if (item.icon != null) ...[Icon(item.icon, size: triggerIconSize), const SizedBox(width: 12)],
             Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis))),
             // The check's place is always reserved, so choosing or clearing an item never resizes the menu.
-            SizedBox(width: 18, child: selected ? Icon(Icons.check, size: 18, color: t.accent, semanticLabel: 'selected') : null),
+            SizedBox(width: 18, child: selected ? Icon(SuiteIcons.check, size: 18, color: t.accent, semanticLabel: 'selected') : null),
           ],
         ),
       ),

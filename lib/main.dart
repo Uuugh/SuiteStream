@@ -7,8 +7,10 @@ import 'src/calendar/calendar_controller.dart';
 import 'src/calendar/calendar_page.dart';
 import 'src/calendar/event_filter.dart';
 import 'src/calendar/event_store.dart';
+import 'src/calendar/local_calendar_store.dart';
 import 'src/calendar/settings_dialog.dart';
 import 'src/l10n/messages.dart';
+import 'src/theme/suite_icons.dart';
 import 'src/theme/suite_theme.dart';
 import 'src/theme/tokens.dart';
 import 'src/time/local_zone.dart';
@@ -48,21 +50,43 @@ Future<void> main() async {
       ).withState(edited: edited, hiddenFromGoogle: hiddenFromGoogle);
 
   final store = PrefsEventStore(prefs);
+  final savedEvents = store.load();
+  final localCalendarStore = LocalCalendarStore(prefs);
+  const localId = 'local';
+  final initialCalendars = [
+    SuiteCalendar(id: localId, name: messages('local'), color: null),
+    if (savedEvents.any((event) => event.calendarId == 'work'))
+      const SuiteCalendar(id: 'work', name: 'Work', color: null),
+    if (savedEvents.any((event) => event.calendarId == 'home'))
+      const SuiteCalendar(id: 'home', name: 'Home', color: null),
+  ];
+  final savedCalendars = localCalendarStore.load();
+  final savedDefault = savedCalendars?.defaultId;
+  final defaultId = savedCalendars != null && savedCalendars.calendars.any((calendar) => calendar.id == savedDefault)
+      ? savedDefault!
+      : savedCalendars?.calendars.firstOrNull?.id ?? localId;
+  if (savedEvents.any((event) => event.custom && event.calendarId == null)) {
+    await store.save([
+      for (final event in savedEvents)
+        if (event.custom && event.calendarId == null) event.copyWith(calendarId: defaultId) else event,
+    ]);
+  }
+  const samplesShownKey = 'demo.samplesShown';
+  final showSamples = prefs.getBool(samplesShownKey) != true && savedEvents.isEmpty;
+  if (prefs.getBool(samplesShownKey) != true) await prefs.setBool(samplesShownKey, true);
   final controller = CalendarController(
     store: store,
     prefs: prefs,
     localZone: LocalZone.system(zone),
     timeFormat: defaultTimeFormat(zone),
     filter: EventFilter(prefs: prefs),
-    calendars: const [
-      SuiteCalendar(id: 'work', name: 'Work', color: 0xFF5B6F9A),
-      SuiteCalendar(id: 'home', name: 'Home', color: 0xFF2A9D8F),
-    ],
+    localCalendarStore: localCalendarStore,
+    calendars: initialCalendars,
     // The first start shows a few sample events; later starts show what the user kept.
-    events: store.load().isNotEmpty ? const [] : [
-      sample('demo-1', 'Sample event', 10, calendarId: 'work'),
-      sample('demo-2', 'Lunch', 12, calendarId: 'home', edited: true),
-      sample('demo-3', 'Hidden from Google', 15, calendarId: 'work', hiddenFromGoogle: true),
+    events: !showSamples ? const [] : [
+      sample('demo-1', 'Sample event', 10, calendarId: localId),
+      sample('demo-2', 'Lunch', 12, calendarId: localId, edited: true),
+      sample('demo-3', 'Hidden from Google', 15, calendarId: localId, hiddenFromGoogle: true),
     ],
   );
   runApp(SuiteStreamApp(controller: controller, messages: messages));
@@ -82,26 +106,40 @@ class SuiteStreamApp extends StatelessWidget {
       theme: buildSuiteTheme(Brightness.light),
       darkTheme: buildSuiteTheme(Brightness.dark),
       builder: (context, child) => MessagesScope(messages: messages, child: child!),
-      home: Builder(
-        builder: (context) {
+      home: ListenableBuilder(
+        listenable: controller,
+        child: CalendarPage(controller: controller),
+        builder: (context, calendar) {
           final t = context.tokens;
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: t.card,
+              backgroundColor: t.scheme.primaryContainer,
+              foregroundColor: t.scheme.onPrimaryContainer,
               actions: [
                 IconButton(
                   key: const ValueKey('settings-button'),
                   tooltip: context.msg('settings'),
-                  icon: const Icon(Icons.settings_outlined),
+                  style: suiteIconButtonStyle(),
+                  icon: const Icon(SuiteIcons.settings),
                   onPressed: () => openSettingsDialog(context, controller),
                 ),
               ],
-              title: Text.rich(TextSpan(children: [
-                TextSpan(text: 'Suite', style: TextStyle(color: t.titleCalendar, fontWeight: FontWeight.w700)),
-                TextSpan(text: 'Stream', style: TextStyle(color: t.titleStream, fontWeight: FontWeight.w700)),
-              ])),
+              title: Row(
+                children: [
+                  Image.asset(
+                    t.scheme.brightness == Brightness.dark
+                        ? 'assets/images/logo/mark-dark-72.png'
+                        : 'assets/images/logo/mark-light-72.png',
+                    width: 30,
+                    height: 30,
+                    excludeFromSemantics: true,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text('SuiteStream'),
+                ],
+              ),
             ),
-            body: CalendarPage(controller: controller),
+            body: calendar,
           );
         },
       ),

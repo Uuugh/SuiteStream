@@ -1,5 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
+import '../theme/suite_icons.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/suite_event.dart';
@@ -17,7 +20,6 @@ const int defaultScrollStartHour = 7;
 
 /// DEF-01: the hour height is 2 event lines by default.
 const double eventLineHeight = 20;
-const int defaultHourLines = 2;
 const double hourHeight = eventLineHeight * defaultHourLines;
 
 /// CAL-01.h: the hour the grid scrolls to: the hour of the first timed event in
@@ -72,7 +74,9 @@ class _HourlyViewState extends State<HourlyView> {
 
   String _signature() => _days.map((d) => d.toIso8601String()).join(",");
 
-  double _offset() => scrollStartHour(widget.controller, _days) * hourHeight;
+  double get _hourHeight => widget.controller.hourLines * eventLineHeight;
+
+  double _offset() => scrollStartHour(widget.controller, _days) * _hourHeight;
 
   @override
   void didUpdateWidget(HourlyView old) {
@@ -93,19 +97,91 @@ class _HourlyViewState extends State<HourlyView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(builder: _buildGrid);
+
+  Widget _buildGrid(BuildContext context, BoxConstraints constraints) {
     final t = context.tokens;
     final c = widget.controller;
     final days = _days;
+    final hourHeight = _hourHeight;
     const gutter = 68.0;
     final allDay = [for (final d in days) c.eventsOn(d).where((e) => e.allDay).toList()];
-    final maxAllDay = allDay.fold<int>(0, (m, l) => l.length > m ? l.length : m);
+    const minTimedGridHeight = 200.0;
+    const weekdayHeaderSpace = 36.0;
+    final maxAllDayHeight = math.max(
+      24.0,
+      constraints.maxHeight - weekdayHeaderSpace - minTimedGridHeight,
+    );
+    final allDayRow = Container(
+      key: const ValueKey('all-day-row'),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: t.line))),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: gutter, child: Text(context.msg('allDay'), textAlign: TextAlign.center, style: SuiteText.note(t))),
+          for (var i = 0; i < days.length; i++)
+            Expanded(
+              child: GestureDetector(
+                key: ValueKey('allday-slot-${days[i].year}-${days[i].month}-${days[i].day}'),
+                behavior: HitTestBehavior.opaque,
+                onTap: () => openEventDialog(context, c, day: days[i], allDay: true),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 24),
+                  child: Column(
+                    children: [
+                      for (final e in allDay[i])
+                        GestureDetector(
+                          key: ValueKey('event-${e.id}'),
+                          onTap: () => c.selectEvent(e.id),
+                          child: Container(
+                            margin: const EdgeInsets.all(1),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            width: double.infinity,
+                            color: t.runBg,
+                            child: Text(e.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: SuiteText.note(t).copyWith(color: t.run)),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
 
     return Column(
       children: [
         Row(
           children: [
-            const SizedBox(width: gutter),
+            SizedBox(
+              width: gutter,
+              child: PopupMenuButton<int>(
+                key: const ValueKey('hour-density'),
+                tooltip: context.msg('calendarHourHeight'),
+                initialValue: c.hourLines,
+                onSelected: (lines) {
+                  final previousHeight = _hourHeight;
+                  final offset = _scroll.hasClients ? _scroll.offset : _offset();
+                  c.hourLines = lines;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted && _scroll.hasClients) {
+                      final newOffset = offset * _hourHeight / previousHeight;
+                      _scroll.jumpTo(newOffset.clamp(0, _scroll.position.maxScrollExtent));
+                    }
+                  });
+                },
+                itemBuilder: (context) => [
+                  for (var lines = minHourLines; lines <= maxHourLines; lines++)
+                    CheckedPopupMenuItem(
+                      value: lines,
+                      checked: lines == c.hourLines,
+                      child: Text('$lines'),
+                    ),
+                ],
+                child: const Center(child: Icon(SuiteIcons.height, size: 18)),
+              ),
+            ),
             for (final d in days)
               Expanded(
                 child: Container(
@@ -127,44 +203,13 @@ class _HourlyViewState extends State<HourlyView> {
           ],
         ),
         // The all-day row is always there: clicking an empty cell adds an all-day event.
-        if (maxAllDay >= 0)
-          Container(
-            key: const ValueKey('all-day-row'),
-            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: t.line))),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: gutter, child: Text(context.msg('allDay'), textAlign: TextAlign.center, style: SuiteText.note(t))),
-                for (var i = 0; i < days.length; i++)
-                  Expanded(
-                    child: GestureDetector(
-                      key: ValueKey('allday-slot-${days[i].year}-${days[i].month}-${days[i].day}'),
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => openEventDialog(context, c, day: days[i], allDay: true),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 24),
-                        child: Column(
-                      children: [
-                        for (final e in allDay[i])
-                          GestureDetector(
-                            key: ValueKey('event-${e.id}'),
-                            onTap: () => c.selectEvent(e.id), // EVT-07
-                            child: Container(
-                              margin: const EdgeInsets.all(1),
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              width: double.infinity,
-                              color: t.runBg,
-                              child: Text(e.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: SuiteText.note(t).copyWith(color: t.run)),
-                            ),
-                          ),
-                      ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxAllDayHeight),
+          child: SingleChildScrollView(
+            primary: false,
+            child: allDayRow,
           ),
+        ),
         Expanded(
           child: SingleChildScrollView(
             key: const ValueKey('hour-grid'),
@@ -214,6 +259,7 @@ class _DayColumn extends StatelessWidget {
     final t = context.tokens;
     final c = controller;
     final timed = c.eventsOn(day).where((e) => !e.allDay).toList();
+    final hourHeight = c.hourLines * eventLineHeight;
     final placed = layoutOverlaps<SuiteEvent>(timed, (e) => _minutesOn(e, c, day));
     return LayoutBuilder(
       builder: (context, box) {

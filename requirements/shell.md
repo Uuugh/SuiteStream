@@ -1,14 +1,14 @@
 # Requirements: shell and shared UI
 
-The frame (top bar, modules, navigation), theme and branding, shared widgets.
+The main page shows the calendar and the Settings entry. Settings contains Sources, Feeds, All Rules, Event Templates and History (SET-01.b).
 
 | ID | status | statement | test |
 |---|---|---|---|
 | SHL-01 | backlog | The page identifies SuiteStream in its title bar, footer and favicon. | — |
 | SHL-01.a | backlog | The footer shows the running version, linked to its release (including the full beta identifier), the copyright, and a link to README License & Attribution (DOC-01). | — |
-| SHL-01.b | backlog | The favicon is the light SuiteStream icon with its white background cropped to a circle and the rest transparent. | — |
+| SHL-01.b | backlog | The favicon is the light SuiteStream icon cropped to a circle on a transparent canvas. | — |
 | SHL-01.c | backlog | The SuiteStream logo files have no compression or visual artifacts. | — |
-| SHL-01.d | backlog | The title bar shows the logo's mark (no words; the Light mark on light pages, the Dark mark on dark ones) left of the title, and the title in the logo colors (THM-02.m). One transparent favicon serves light and dark. | — |
+| SHL-01.d | backlog | The title bar shows the logo mark to the left of the title, using the version appropriate to the active brightness. One transparent favicon serves light and dark. | — |
 | SHL-01.e | backlog | A browser tab is titled SuiteStream on the main page and "<page name> · SuiteStream" on the sign-in page (msg:signInAction) and the initial-setup page (msg:welcome). | — |
 | SHL-01.f | backlog | The sign-in and initial-setup pages show the running version as vX.Y.Z beside the name SuiteStream; the main page shows it in the footer only (SHL-01.a). | — |
 | SHL-01.g | backlog | The default icons are a favicon, an app icon and an Apple touch icon at the sizes in DEF-01, each with the version in its address; a custom favicon (SET-06.f) replaces all three. | — |

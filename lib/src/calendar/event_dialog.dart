@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../theme/suite_icons.dart';
 import '../l10n/messages.dart';
-import '../theme/event_palette.dart';
+import '../theme/event_colors.dart';
 import '../theme/suite_theme.dart';
 import '../theme/tokens.dart';
 import '../time/suite_event.dart';
@@ -15,6 +16,7 @@ import '../ui/cancel_save_pair.dart';
 import '../ui/confirm.dart';
 import '../ui/error_note.dart';
 import '../ui/popup_size_lock.dart';
+import '../ui/suite_dialog.dart';
 import '../ui/stepper_arrows.dart';
 import '../ui/zone_picker.dart';
 import 'calendar_controller.dart';
@@ -98,12 +100,12 @@ Future<void> openEventDialog(
 }) {
   final msgs = context.msg;
   final phone = MediaQuery.sizeOf(context).width <= phoneMaxWidth;
-  return showDialog<void>(
+  return showSuiteDialog<void>(
     context: context,
-    builder: (_) => MessagesScope(
+    builder: (dialogContext) => MessagesScope(
       messages: msgs,
       child: Dialog(
-        backgroundColor: context.tokens.card,
+        backgroundColor: dialogContext.tokens.card,
         insetPadding: phone
             ? EdgeInsets.zero
             : const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
@@ -213,10 +215,11 @@ class _EventDialogState extends State<EventDialog> {
       final s = e.startIn(zoneNamed(_startZone));
       var en = e.endIn(zoneNamed(_endZone));
       _startDate = DateTime(s.year, s.month, s.day);
-      if (_allDay)
+      if (_allDay) {
         en = en.subtract(
           const Duration(days: 1),
         ); // the last day is included (EVT-02.f)
+      }
       _endDate = DateTime(en.year, en.month, en.day);
       _startTime.text = _fmt(s.hour, s.minute);
       final e2 = e.endIn(zoneNamed(_endZone));
@@ -224,12 +227,9 @@ class _EventDialogState extends State<EventDialog> {
       _duration = e.endUtc.difference(e.startUtc);
       _span = _endDate.difference(_startDate).inDays;
     } else {
-      // EVT-01.b: the system zone, or the calendar's zone when one is selected.
-      _calendarId = null;
-      _startZone = zoneForNewEvent(
-        imported: false,
-        systemZone: c.localZone.systemZoneName,
-      );
+      // EVT-01.b: the calendar zone or the saved device zone preference.
+      _calendarId = c.defaultCalendarId;
+      _startZone = _defaultEventZone;
       _endZone = _startZone;
       // EVT-01.m: a new event starts at 9:00 for an hour on the day clicked, or today.
       final d = widget.day ?? c.today;
@@ -297,6 +297,11 @@ class _EventDialogState extends State<EventDialog> {
       if (cal.id == _calendarId) return cal.zone;
     }
     return null;
+  }
+
+  String get _defaultEventZone {
+    final zone = _calendarZone();
+    return zone != null && isKnownZone(zone) ? zone : c.baseZone.name;
   }
 
   // ---- instants -----------------------------------------------------------
@@ -421,23 +426,25 @@ class _EventDialogState extends State<EventDialog> {
     final s = _startInstant;
     final e = _endInstant;
     if (_allDay) {
-      if (_endDate.isBefore(_startDate))
+      if (_endDate.isBefore(_startDate)) {
         errors['end'] = m('theLastDayIsBefore');
+      }
     } else {
       if (s == null) errors['start'] = m('typeATimeLike9');
       if (e == null) errors['end'] = m('typeATimeLike9');
-      if (s != null && e != null && !e.isAfter(s))
+      if (s != null && e != null && !e.isAfter(s)) {
         errors['end'] = m('theEndHasToBe');
+      }
     }
-    if (!isValidMeetingUrl(_meeting.text.trim()))
+    if (!isValidMeetingUrl(_meeting.text.trim())) {
       errors['meeting'] = m('onlineMeetingNeedsLink');
+    }
     // A reminder with a number that is not a whole number up to the longest lead is not valid.
     if (_reminders.any(
       (r) => r.number.text.trim().isNotEmpty && r.minutes == null,
-    ))
+    )) {
       errors['reminders'] = m('reminderRange');
-    if (_color != null && !eventPalette.any((p) => p.value == _color))
-      errors['color'] = m('chooseOneOfTheColors');
+    }
     if (errors.isNotEmpty) {
       setState(() {
         _errors
@@ -456,7 +463,7 @@ class _EventDialogState extends State<EventDialog> {
       startZone: _startZone,
       endZone: endZone,
       allDay: _allDay,
-      calendarId: _calendarId,
+      calendarId: old == null ? _calendarId ?? c.defaultCalendarId : _calendarId,
       edited: old?.edited ?? false,
       changedBySource: old?.changedBySource ?? false,
       hiddenFromGoogle: old?.hiddenFromGoogle ?? false,
@@ -506,14 +513,12 @@ class _EventDialogState extends State<EventDialog> {
 
   // ---- build --------------------------------------------------------------
 
-  final GlobalKey _leftKey = GlobalKey();
-  double? _leftHeight;
-
   /// A field's label sits over it (THM-07.b), with a red asterisk when required.
   Widget _labeled(
     String label,
     Widget field, {
     bool required = false,
+    bool fill = false,
     Widget? trailing,
     bool prioritizeTrailing = false,
     String? error,
@@ -569,7 +574,7 @@ class _EventDialogState extends State<EventDialog> {
             ),
           ),
         ),
-        field,
+        if (fill) Expanded(child: field) else field,
       ],
     );
   }
@@ -667,31 +672,21 @@ class _EventDialogState extends State<EventDialog> {
         : (_editing ? m('editEvent') : m('addEvent'));
     final old = widget.event;
     final phone = MediaQuery.sizeOf(context).width <= phoneMaxWidth;
-    // Notes is as tall as the fields beside it (EVT-01.i); on a phone it is 10 lines.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final h = _leftKey.currentContext?.size?.height;
-      if (!phone && h != null && h != _leftHeight && mounted) {
-        setState(() => _leftHeight = h);
-        relockPopupSize(context);
-      }
-    });
-    final notesHeight = ((_leftHeight ?? 221) - 21).clamp(200.0, 4000.0);
     final notes = _labeled(
       m('notes'),
-      SizedBox(
-        height: phone ? null : notesHeight,
-        child: TextField(
-          key: const ValueKey('event-notes'),
-          controller: _notes,
-          maxLines: phone ? 10 : null,
-          minLines: phone ? 10 : null,
-          expands: !phone,
-          textAlignVertical: TextAlignVertical.top,
-          inputFormatters: [LengthLimitingTextInputFormatter(eventNotesLength)],
-          decoration: _decoration(),
-          onChanged: (_) => setState(() => _errors.remove('notes')),
-        ),
+      TextField(
+        key: const ValueKey('event-notes'),
+        groupId: _notes,
+        controller: _notes,
+        maxLines: phone ? 10 : null,
+        minLines: phone ? 10 : null,
+        expands: !phone,
+        textAlignVertical: TextAlignVertical.top,
+        inputFormatters: [LengthLimitingTextInputFormatter(eventNotesLength)],
+        decoration: _decoration(),
+        onChanged: (_) => setState(() => _errors.remove('notes')),
       ),
+      fill: !phone,
     );
     return Padding(
       key: const ValueKey('event-dialog'),
@@ -718,7 +713,7 @@ class _EventDialogState extends State<EventDialog> {
                   onPressed: () => Navigator.of(context).pop(),
                   child: Tooltip(
                     message: m('cancel'),
-                    child: Icon(Icons.arrow_back, size: 20, color: t.muted),
+                    child: Icon(SuiteIcons.arrowBack, size: 20, color: t.muted),
                   ),
                 ),
               ),
@@ -741,32 +736,41 @@ class _EventDialogState extends State<EventDialog> {
             const SizedBox(height: 10),
             notes,
           ] else
-            // The fields on the left and Notes on the right as tall as them (EVT-01.i).
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: KeyedSubtree(key: _leftKey, child: _leftColumn(m)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(child: notes),
-              ],
+            // The fields set the height during layout, and Notes fills the
+            // space beside them in the same frame (EVT-01.i).
+            LayoutBuilder(
+              builder: (context, constraints) {
+                const gap = 10.0;
+                final columnWidth = (constraints.maxWidth - gap) / 2;
+                return Stack(
+                  children: [
+                    SizedBox(width: columnWidth, child: _leftColumn(m)),
+                    Positioned(
+                      left: columnWidth + gap,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: notes,
+                    ),
+                  ],
+                );
+              },
             ),
           const SizedBox(height: 12),
           Row(
             children: [
               if (old != null)
-                // Delete has a trash icon before the word (THM-04.f: the trash is tinted red);
+                // Delete uses the theme error role and a trash icon.
                 // Hide and Show for an event of a source have an eye.
                 TextButton.icon(
                   key: const ValueKey('event-delete'),
                   onPressed: _delete,
                   icon: Icon(
                     old.custom
-                        ? Icons.delete_outline
+                        ? SuiteIcons.delete
                         : (old.hiddenFromGoogle
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
+                              ? SuiteIcons.visibility
+                              : SuiteIcons.visibilityOff),
                     size: 18,
                     color: old.custom ? t.bad : t.muted,
                   ),
@@ -819,7 +823,7 @@ class _EventDialogState extends State<EventDialog> {
             suffix: IconButton(
               key: const ValueKey('event-map'),
               tooltip: m('openMap'),
-              icon: const Icon(Icons.map_outlined, size: 18),
+              icon: const Icon(SuiteIcons.map, size: 18),
               onPressed: _location.text.trim().isEmpty
                   ? null
                   : () => launchUrl(mapUrl(_location.text.trim())),
@@ -836,7 +840,7 @@ class _EventDialogState extends State<EventDialog> {
             suffix: IconButton(
               key: const ValueKey('event-open-meeting'),
               tooltip: m('openLink'),
-              icon: const Icon(Icons.link, size: 18),
+              icon: const Icon(SuiteIcons.link, size: 18),
               onPressed:
                   (_meeting.text.trim().isEmpty ||
                       !isValidMeetingUrl(_meeting.text.trim()))
@@ -861,10 +865,11 @@ class _EventDialogState extends State<EventDialog> {
                     isExpanded: true,
                     decoration: _decoration(),
                     items: [
-                      DropdownMenuItem<String?>(
-                        value: null,
-                        child: Text(m('local')),
-                      ),
+                      if (c.defaultCalendarId == null)
+                        DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text(m('local')),
+                        ),
                       for (final cal in c.calendars)
                         DropdownMenuItem<String?>(
                           value: cal.id,
@@ -872,14 +877,13 @@ class _EventDialogState extends State<EventDialog> {
                         ),
                     ],
                     onChanged: (v) => setState(() {
+                      final previousDefault = _defaultEventZone;
                       _calendarId = v;
-                      final z = _calendarZone();
                       if (!_editing &&
                           widget.duplicateOf == null &&
-                          z != null &&
-                          isKnownZone(z)) {
-                        _startZone = z;
-                        if (!_differentEnd) _endZone = z;
+                          _startZone == previousDefault) {
+                        _startZone = _defaultEventZone;
+                        if (!_differentEnd) _endZone = _startZone;
                       }
                     }),
                   ),
@@ -919,8 +923,9 @@ class _EventDialogState extends State<EventDialog> {
                   _allDay,
                   (v) => setState(() {
                     _allDay = v;
-                    if (_allDay && _endDate.isBefore(_startDate))
+                    if (_allDay && _endDate.isBefore(_startDate)) {
                       _endDate = _startDate;
+                    }
                     if (_allDay) _span = _endDate.difference(_startDate).inDays;
                   }),
                 ),
@@ -966,9 +971,10 @@ class _EventDialogState extends State<EventDialog> {
                             _differentEnd,
                             (v) => setState(() {
                               _differentEnd = v;
-                              if (!_differentEnd)
+                              if (!_differentEnd) {
                                 _endZone =
                                     _startZone; // unticking sets the end zone back
+                              }
                             }),
                             shortLabel: m('differentEndZoneShort'),
                           ),
@@ -986,7 +992,7 @@ class _EventDialogState extends State<EventDialog> {
                           ZoneField(
                             key: const ValueKey('zone-start'),
                             value: _startZone,
-                            defaultZone: c.localZone.systemZoneName,
+                            defaultZone: _defaultEventZone,
                             onChanged: (z) => setState(() {
                               _startZone = z;
                               if (!_differentEnd) _endZone = z;
@@ -1009,7 +1015,7 @@ class _EventDialogState extends State<EventDialog> {
                             ZoneField(
                               key: const ValueKey('zone-end'),
                               value: _endZone,
-                              defaultZone: c.localZone.systemZoneName,
+                              defaultZone: _defaultEventZone,
                               onChanged: (z) => setState(() {
                                 _endZone = z;
                                 _startChanged();
@@ -1046,7 +1052,7 @@ class _EventDialogState extends State<EventDialog> {
       padding: EdgeInsets.zero,
       visualDensity: VisualDensity.compact,
       constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
-      icon: const Icon(Icons.copy_outlined),
+      icon: const Icon(SuiteIcons.contentCopy),
       onPressed: () {
         final nav = Navigator.of(context);
         nav.pop();
@@ -1084,7 +1090,7 @@ class _EventDialogState extends State<EventDialog> {
         child: Row(
           children: [
             Expanded(child: Text(DateFormat.yMMMd(locale).format(date))),
-            Icon(Icons.calendar_today_outlined, size: 16, color: t.muted),
+            Icon(SuiteIcons.calendarToday, size: 16, color: t.muted),
           ],
         ),
       ),
@@ -1166,31 +1172,28 @@ class _EventDialogState extends State<EventDialog> {
   Widget _colorButton(Messages m) {
     final t = context.tokens;
     final cal = c.calendars.where((x) => x.id == _calendarId).firstOrNull;
-    final shown = _color ?? cal?.color ?? defaultEventColor;
+    final fallback = cal?.color ?? t.scheme.primary.toARGB32();
+    final shown = _color ?? fallback;
     final name = _color == null
         ? m('defaultColor')
-        : eventPalette
-              .firstWhere(
-                (p) => p.value == _color,
-                orElse: () => eventPalette.first,
-              )
-              .name;
+        : '#${(shown & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
     return InkWell(
       key: const ValueKey('event-color-button'),
       borderRadius: BorderRadius.circular(8),
       onTap: () async {
         final msgs = context.msg;
-        final picked = await showDialog<int>(
+        final picked = await showSuiteDialog<int>(
           context: context,
+          animate: false,
           builder: (_) => MessagesScope(
             messages: msgs,
             child: _PaletteDialog(
               current: _color,
-              calendarColor: cal?.color ?? defaultEventColor,
+              calendarColor: fallback,
             ),
           ),
         );
-        if (picked == null) return;
+        if (!mounted || picked == null) return;
         setState(() => _color = picked == _paletteDefault ? null : picked);
       },
       child: InputDecorator(
@@ -1208,7 +1211,7 @@ class _EventDialogState extends State<EventDialog> {
             ),
             const SizedBox(width: 8),
             Expanded(child: Text(name, overflow: TextOverflow.ellipsis)),
-            Icon(Icons.arrow_drop_down, color: t.muted),
+            Icon(SuiteIcons.arrowDropDown, color: t.muted),
           ],
         ),
       ),
@@ -1325,41 +1328,42 @@ class _EventDialogState extends State<EventDialog> {
                     }),
                   ),
                 ),
-                IconButton(
-                  key: ValueKey('reminder-remove-$i'),
-                  tooltip: m('remove'),
-                  icon: Icon(Icons.close, size: 20, color: t.muted),
-                  onPressed: () {
-                    setState(() {
-                      _reminders.removeAt(i).number.dispose();
-                      _errors.remove('reminders');
-                      _leftHeight = null;
-                    });
-                    relockPopupSize(context); // removing one may shrink it
-                  },
+                TextFieldTapRegion(
+                  groupId: _notes,
+                  child: IconButton(
+                    key: ValueKey('reminder-remove-$i'),
+                    tooltip: m('remove'),
+                    icon: Icon(SuiteIcons.close, size: 20, color: t.muted),
+                    onPressed: () {
+                      setState(() {
+                        _reminders.removeAt(i).number.dispose();
+                        _errors.remove('reminders');
+                      });
+                      relockPopupSize(context); // removing one may shrink it
+                    },
+                  ),
                 ),
               ],
             ),
           ),
         Align(
           alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            key: const ValueKey('reminder-add'),
-            // EVT-03.k: once the most reminders are set, the button is disabled.
-            onPressed: full
-                ? null
-                : () {
-                    setState(() {
-                      _reminders.add(_ReminderRow.fromMinutes(10));
-                      _leftHeight =
-                          null; // Notes follows the new height of the fields
-                    });
-                    relockPopupSize(
-                      context,
-                    ); // adding a reminder may grow the popup
-                  },
-            icon: const Icon(Icons.add, size: 18),
-            label: Text(m('addReminder')),
+          child: TextFieldTapRegion(
+            groupId: _notes,
+            child: TextButton.icon(
+              key: const ValueKey('reminder-add'),
+              // EVT-03.k: once the most reminders are set, the button is disabled.
+              onPressed: full
+                  ? null
+                  : () {
+                      setState(() {
+                        _reminders.add(_ReminderRow.fromMinutes(10));
+                      });
+                      relockPopupSize(context); // adding a reminder may grow it
+                    },
+              icon: const Icon(SuiteIcons.add, size: 18),
+              label: Text(m('addReminder')),
+            ),
           ),
         ),
       ],
@@ -1393,8 +1397,7 @@ class _ReminderRow {
 /// The value the palette returns for "calendar default".
 const int _paletteDefault = -1;
 
-/// UIC-10: the shared color palette: the eleven colors, and the editor's
-/// "calendar default". A picked color closes it.
+/// UIC-10: theme-derived event colors and the editor's calendar default.
 class _PaletteDialog extends StatelessWidget {
   const _PaletteDialog({required this.current, required this.calendarColor});
 
@@ -1430,31 +1433,33 @@ class _PaletteDialog extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  for (final p in eventPalette)
+                  for (final p in eventColors(t.scheme).entries)
                     InkWell(
-                      key: ValueKey('color-${p.name}'),
+                      key: ValueKey('color-${p.key}'),
                       customBorder: const CircleBorder(),
-                      onTap: () => Navigator.of(context).pop(p.value),
+                      onTap: () => Navigator.of(context).pop(p.value.toARGB32()),
                       child: Tooltip(
-                        message: p.name,
+                        message: '#${(p.value.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}',
                         child: Container(
                           width: 30,
                           height: 30,
                           decoration: BoxDecoration(
-                            color: p.color,
+                            color: p.value,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: current == p.value
+                              color: current == p.value.toARGB32()
                                   ? t.text
                                   : Colors.transparent,
                               width: 2,
                             ),
                           ),
-                          child: current == p.value
-                              ? const Icon(
-                                  Icons.check,
+                          child: current == p.value.toARGB32()
+                              ? Icon(
+                                  SuiteIcons.check,
                                   size: 18,
-                                  color: Colors.white,
+                                  color: ThemeData.estimateBrightnessForColor(p.value) == Brightness.dark
+                                      ? t.scheme.surfaceBright
+                                      : t.scheme.shadow,
                                 )
                               : null,
                         ),

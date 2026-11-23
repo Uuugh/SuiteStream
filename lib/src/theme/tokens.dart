@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// THM-02: one seed generates the light and dark Material 3 color schemes.
-const Color suiteThemeSeed = Color(0xFF0175C2);
+const Color suiteThemeSeed = Color(0xFF93B4FF);
 
 @immutable
 class SuiteTokens extends ThemeExtension<SuiteTokens> {
@@ -23,8 +23,6 @@ class SuiteTokens extends ThemeExtension<SuiteTokens> {
     required this.warnBg,
     required this.bad,
     required this.badBg,
-    required this.titleCalendar,
-    required this.titleStream,
   });
 
   factory SuiteTokens.fromColorScheme(ColorScheme scheme) => SuiteTokens(
@@ -45,8 +43,6 @@ class SuiteTokens extends ThemeExtension<SuiteTokens> {
     warnBg: scheme.tertiaryContainer,
     bad: scheme.error,
     badBg: scheme.errorContainer,
-    titleCalendar: scheme.primary,
-    titleStream: scheme.secondary,
   );
 
   static final light = SuiteTokens.fromColorScheme(
@@ -80,40 +76,11 @@ class SuiteTokens extends ThemeExtension<SuiteTokens> {
   final Color bad;
   final Color badBg;
 
-  /// THM-02.m: the two colors of the title's words.
-  final Color titleCalendar;
-  final Color titleStream;
-
-  /// THM-02.l: section colors come from the generated color scheme.
-  Color sectionBorder(SuiteSection section) => Color.alphaBlend(
-    section.color(scheme).withValues(alpha: 0.35),
-    line,
-  );
-
   @override
   SuiteTokens copyWith() => this;
 
   @override
   SuiteTokens lerp(ThemeExtension<SuiteTokens>? other, double t) => t < 0.5 ? this : (other as SuiteTokens? ?? this);
-}
-
-/// THM-02.l: section accents use roles from the generated color scheme.
-enum SuiteSection {
-  calendar,
-  calendars,
-  feeds,
-  allRules,
-  eventTemplates,
-  history;
-
-  Color color(ColorScheme scheme) => switch (this) {
-    SuiteSection.calendar => scheme.primary,
-    SuiteSection.calendars => scheme.secondary,
-    SuiteSection.feeds => scheme.tertiary,
-    SuiteSection.allRules => scheme.primaryContainer,
-    SuiteSection.eventTemplates => scheme.secondaryContainer,
-    SuiteSection.history => scheme.tertiaryContainer,
-  };
 }
 
 /// WCAG contrast ratio between two opaque colors.

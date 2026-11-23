@@ -70,8 +70,13 @@ SuiteEvent makeEvent(
       calendarId: calendarId,
     ).withState(edited: edited, changedBySource: changedBySource, hiddenFromGoogle: hiddenFromGoogle, deleted: deleted);
 
-Widget appFor(Widget child, {Size size = const Size(1000, 800), String locale = 'en'}) => MaterialApp(
-      theme: buildSuiteTheme(Brightness.light),
+Widget appFor(
+  Widget child, {
+  Size size = const Size(1000, 800),
+  String locale = 'en',
+  Brightness brightness = Brightness.light,
+}) => MaterialApp(
+      theme: buildSuiteTheme(brightness),
       builder: (context, c) => MessagesScope(messages: messagesFor(locale), child: c!),
       home: Scaffold(body: SizedBox(width: size.width, height: size.height, child: child)),
     );

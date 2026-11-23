@@ -43,6 +43,8 @@ class PrefsEventStore implements EventStore {
 
   @override
   Future<void> save(List<SuiteEvent> events) async {
-    await _prefs.setString(_key, jsonEncode([for (final e in events) e.toJson()]));
+    if (!await _prefs.setString(_key, jsonEncode([for (final e in events) e.toJson()]))) {
+      throw Exception('Could not persist calendar events.');
+    }
   }
 }

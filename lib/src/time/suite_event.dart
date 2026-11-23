@@ -296,7 +296,7 @@ class SuiteCalendar {
   final String name;
 
   /// ARGB color value.
-  final int color;
+  final int? color;
 
   /// The calendar's own time zone, when it has one (EVT-01.b).
   final String? zone;
