@@ -86,3 +86,5 @@ Measured over Sprints 006 and 007 (planning, three waves of four developers, Kob
 5. Take any new reading the Product Owner pastes as the new anchor and note how far the estimate was off.
 
 If `usage-now.json` is null or stale (the VS Code extension does not refresh it), do not ask: estimate as above from the Product Owner's last pasted reading. Ask only if there has never been a reading.
+
+| sprint008-009 | Usage epic slices 1 and 2 (Sprint 009 run by an orchestrator sub-agent) | 2026-11-23 | Sonnet 5.5 | 16–20 (est.) | 0 (after reset) / ? | ? | est. 25 | Sprint 009 agents reported about 590k tokens in total (waves 1 and 2); at 4 points per 100k that is about 24 session points. No real reading taken; the coordinator reported 94% before the 11:50 reset and 0% after. |

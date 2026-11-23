@@ -4,6 +4,7 @@ import 'package:suitestream/src/calendar/event_drag.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/ui/reset_button.dart';
 import 'package:suitestream/src/theme/theme_mode_controller.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/theme/tokens.dart';
@@ -297,10 +298,10 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: OutlinedButton(
+          child: ResetButton(
             key: const ValueKey('setting-theme-reset'),
             onPressed: _reset,
-            child: Text(m('themeSettingsReset')),
+            label: m('themeSettingsReset'),
           ),
         ),
       ],

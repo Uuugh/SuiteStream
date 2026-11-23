@@ -27,7 +27,6 @@ Future<int?> showColorPicker(
   final messages = context.msg;
   return showSuiteDialog<int>(
     context: context,
-    animate: false,
     builder: (_) => MessagesScope(
       messages: messages,
       child: ColorPickerDialog(palette: palette, current: current, defaultColor: defaultColor),

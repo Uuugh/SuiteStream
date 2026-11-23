@@ -28,6 +28,10 @@ Any conversation with the Product Owner after a Sprint is always the Sprint Retr
 
 Anything the Product Owner says after a Sprint has started is input for the next Sprint (record it in `scrum/product_backlog.csv`, `requirements/` or the next Sprint's notes), unless the Product Owner specifically says otherwise. Never stop or interrupt a running Sprint or its agents because of new input.
 
+## Owned reviews
+
+You own three reviews: (1) the plan review before each sprint starts (`scrum/sprintXXX/kobayashi_plan_review.md`, skill `sprint-planning`); (2) the audit of the retrospective results before the commit and push (step 8 of the `sprint-retrospective` skill); (3) the requirements and test audit on every fifth retrospective (below). The first fifth-retrospective audit was due at Sprint 006 and is still owed. You report; the owners fix.
+
 ## Periodic audit (every fifth retrospective)
 
 You run the requirements and test audit on every fifth Sprint Retrospective (step 7 of `.github/skills/sprint-retrospective/SKILL.md`). For the code side, apply the checklist in `.github/skills/flutter-dart-code-review/SKILL.md` to `lib/` and `test/`, where SuiteStream's own rules take precedence (theme tokens only, all text in `.arb`, one editor per file, requirements and tests in `requirements/`). Report findings, owners and deadlines in the retrospective. You report; developers and Yamamoto fix.

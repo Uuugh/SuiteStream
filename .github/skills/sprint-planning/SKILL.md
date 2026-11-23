@@ -17,7 +17,7 @@ Plan the sprint for five days total. (It is a one-week sprint.)
 The developers (Tanaka, Ito, Yamamoto, and Nakamura) are among the world's expert engineers. It is possible to plan on the assumption of exceptionally high productivity.
 However, Yamamoto and Nakamura are contractually unable to participate in sprint planning.
 If there is not enough work for five days, the sprint duration may be shortened.
-Kobayashi will review the plan. If the review identifies issues, the team will revise the plan.
+Kobayashi owns the plan review: Kobayashi reviews every sprint plan before the sprint starts (the review is recorded in `scrum/sprintXXX/kobayashi_plan_review.md`, and the sprint starts only when the findings are addressed or accepted by the Scrum Master). If the review identifies issues, the team will revise the plan.
 
 ## Pre-check
 1. Read `scrum/product_goal.md` and review the current product goal.

@@ -24,9 +24,6 @@ import 'package:suitestream/src/calendar/month_view.dart';
 import 'package:suitestream/src/calendar/swipe_detector.dart';
 import 'package:suitestream/src/calendar/week_view.dart';
 
-/// Room a header keeps for a short title before its zones stack (UIC-14). TODO: token in suite_theme.dart (Tanaka).
-const double _shortTitleWidth = 160;
-
 /// CAL-06.c: the view picker's icons.
 IconData viewIcon(CalendarView v) => switch (v) {
       CalendarView.month => SuiteIcons.calendarMonth,
@@ -80,7 +77,7 @@ class PageHeader extends StatelessWidget {
           Flexible(child: title),
         ],
         right: right,
-        leftMinWidth: suiteControlHeight * 2 + _shortTitleWidth, // back button and a short title
+        leftMinWidth: suiteControlHeight * 2 + suiteHeaderShortTitleWidth, // back button and a short title
         rightMinWidth: suiteControlHeight * right.length,
       );
 }
@@ -254,7 +251,7 @@ class _Header extends StatelessWidget {
         icon: AnchoredBadge(
           badge: Container(
             key: const ValueKey('clock-badge'),
-            padding: const EdgeInsets.symmetric(horizontal: 2),
+            padding: const EdgeInsets.symmetric(horizontal: suiteClockBadgePadding),
             decoration: BoxDecoration(
               color: inverted ? t.onAccent : t.accent,
               border: Border.all(color: t.accent),
@@ -262,7 +259,7 @@ class _Header extends StatelessWidget {
             ),
             child: Text(
               c.timeFormat == TimeFormat.twelveHour ? '12' : '24',
-              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: inverted ? t.accent : t.onAccent),
+              style: TextStyle(fontSize: suiteClockBadgeFontSize, fontWeight: FontWeight.w700, color: inverted ? t.accent : t.onAccent),
             ),
           ),
           child: const Icon(SuiteIcons.schedule, size: 24),
@@ -307,7 +304,7 @@ class _Header extends StatelessWidget {
     return ZonedRow(
       left: left,
       right: right,
-      leftMinWidth: suiteControlHeight * 5 + _shortTitleWidth, // previous, next, Today and a short title (UIC-14)
+      leftMinWidth: suiteControlHeight * 5 + suiteHeaderShortTitleWidth, // previous, next, Today and a short title (UIC-14)
       rightMinWidth: suiteControlHeight * right.length,
     );
   }

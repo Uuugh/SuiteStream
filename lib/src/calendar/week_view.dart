@@ -6,6 +6,7 @@ import 'package:suitestream/src/theme/event_colors.dart';
 import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/ui/popup_motion.dart';
 import 'package:suitestream/src/time/suite_event.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
@@ -168,6 +169,7 @@ class _HourlyViewState extends State<HourlyView> {
                 key: const ValueKey('hour-density'),
                 tooltip: context.msg('calendarHourHeight'),
                 elevation: popupElevationOf(context),
+                popUpAnimationStyle: suitePopupAnimationStyle(context),
                 initialValue: c.hourLines,
                 onSelected: (lines) {
                   final previousHeight = _hourHeight;

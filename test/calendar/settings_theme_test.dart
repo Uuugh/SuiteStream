@@ -9,6 +9,7 @@ import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/time/local_zone.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
+import 'package:suitestream/src/ui/reset_button.dart';
 
 import 'test_support.dart';
 
@@ -79,6 +80,12 @@ void main() {
     expect(_text(tester, 'setting-date-picker'), '100 %');
     expect(_text(tester, 'setting-status-chip'), '2.4 s');
     expect(find.byKey(const ValueKey('setting-theme-reset')), findsOneWidget);
+    // UIC-46: Reset is the shared button in the error role.
+    final reset = find.byKey(const ValueKey('setting-theme-reset'));
+    expect(tester.widget(reset), isA<ResetButton>());
+    final button = tester.widget<TextButton>(find.descendant(of: reset, matching: find.byType(TextButton)));
+    final error = Theme.of(tester.element(reset)).colorScheme.error;
+    expect(button.style!.foregroundColor!.resolve(<WidgetState>{}), error);
     expect(rig.settings.isDefault, isTrue);
   });
 
