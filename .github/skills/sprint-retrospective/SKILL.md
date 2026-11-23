@@ -92,3 +92,7 @@ run `flutter analyze` and the full test suite first (continue only if they pass;
 commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
 "Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
 The next sprint starts on a new branch from the updated `main`.
+
+## Automatic completion inside a usage epic
+
+If this sprint is part of an epic that was split to fit usage (see the Epics section of the `backlog-refinement` skill), the retrospective is recorded and the sprint is completed automatically (commit, push, merge, new branch) without waiting for approval. Tests and analysis must pass. The next sprint of the epic starts at once. The Product Owner reviews after the epic's last sprint.
