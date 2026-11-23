@@ -130,7 +130,7 @@ SuiteStream), **rule** (made by a rule).
 
 | ID | status | statement | test |
 |---|---|---|---|
-| DEF-01 | backlog | Every default and limit is defined once, in the table below, and a feature row refers to it instead of repeating the number. A value that an admin setting exposes is stored in the database and overrides the default (DEP-05); the others stay as the defaults. Not met: the table is the one list of values, but several are also written as constants or literals in code and nothing checks that the two agree; only the six Theme settings' defaults and limits are tested. | test/theme/theme_settings_test.dart (the six Theme settings only) |
+| DEF-01 | backlog | Every default and limit is defined once, in the table below, and a feature row refers to it instead of repeating the number. A value that an admin setting exposes is stored in the database and overrides the default (DEP-05); the others stay as the defaults. A Settings value with an empty Stored cell is a user setting kept in the database like the rest (it follows the user to every device), so the column says nothing for it; only the calendar header controls (view; filter) stay on the device. Not met: the table is the one list of values, but several are also written as constants or literals in code and nothing checks that the two agree; only the six Theme settings' defaults and limits are tested. | test/theme/theme_settings_test.dart (the six Theme settings only) |
 | DEF-02 | backlog | Every list that grows with use (logs, failure records, pending sign-ins) has a stated limit in the table below, and entries no longer needed are forgotten first, so memory cannot fill. A feature row refers to the limit instead of repeating it. | — |
 | DEF-03 | backlog | Wherever a limit or a count is in characters (a password length, a name length, a token length), a character is what the user sees as one character (a Unicode extended grapheme cluster), not a code unit; a special character is any character that is not a letter or a digit. | — |
 
@@ -138,11 +138,11 @@ SuiteStream), **rule** (made by a rule).
 |---|---|---|---|
 | Update check schedule | weekly | hourly, weekly, monthly (30 days), never | database (Site Admin) |
 | Running-update memory | 15 minutes | | default only |
-| Animation intensity (backlog, SET-03.c; not built, the animation time below is the built setting) | 100 % | 0 to 200 % | device |
-| Popup shadow strength | 100 % | 0 to 200 % | device |
-| Resize bar size | 100 % | 50 to 200 % | device |
-| Dropdown text size | 100 % | 75 to 150 % | device |
-| Date picker size | 100 % | 75 to 150 % | device |
+| Animation intensity (backlog, SET-03.c; not built, the animation time below is the built setting) | 100 % | 0 to 200 % | |
+| Popup shadow strength | 100 % | 0 to 200 % | |
+| Resize bar size | 100 % | 50 to 200 % | |
+| Dropdown text size | 100 % | 75 to 150 % | |
+| Date picker size | 100 % | 75 to 150 % | |
 | CCS+ sync interval | 60 minutes | 15 to 1,440 minutes | database |
 | History kept | 100 changes | 1 to 200 | database |
 | Login failures per address | 5 (15-minute lock) | | default only |
@@ -152,10 +152,10 @@ SuiteStream), **rule** (made by a rule).
 | Page refresh after an update restarts | 15 seconds | | default only |
 | Copied shown | 1.8 seconds | | default only |
 | Saved or Cancelled shown | 3 seconds, counted from the press | | default only |
-| Animation time (Cancel \| Save slide, word change, pulse, hover; every popup's open and close, UIC-47) | 0.5 seconds | 0 to 2 seconds (0 = none) | device |
+| Animation time (Cancel \| Save slide, word change, pulse, hover; every popup's open and close, UIC-47) | 0.5 seconds | 0 to 2 seconds (0 = none) | |
 | Save pulse after the first change | five pulses, each two animation times long | | default only |
 | Done, failed or found result held | 2.4 seconds | | default only |
-| Status chip time (SET-03.j): good status word shown before it shrinks | 2.4 seconds | 0.5 to 10 seconds | device |
+| Status chip time (SET-03.j): good status word shown before it shrinks | 2.4 seconds | 0.5 to 10 seconds | |
 | Working status shown at least | 0.7 seconds (Check now), 0.5 seconds per Connect step | | default only |
 | Typing delay before a search or a regex test | 300 milliseconds | | default only |
 | Google retry: first wait | 5 seconds, doubled each attempt | longest wait 15 minutes | default only |
@@ -178,10 +178,10 @@ SuiteStream), **rule** (made by a rule).
 | Password minimum special characters | 1 | 0 or more | database (Site Admin) |
 | Unlock link valid | 24 hours | | default only |
 | Drag step in Week and Day | 15 minutes | | default only |
-| Long-press time | 0.3 seconds | 0.2 to 1.5 seconds | device |
-| Hour height | 2 event lines | 1 to 6 | device |
+| Long-press time | 0.3 seconds | 0.2 to 1.5 seconds | |
+| Hour height | 2 event lines | 1 to 6 | |
 | Hourly grid scroll start | the first event, or 7 am | | default only |
-| Search results per feature | 6 | | device |
+| Search results per feature | 6 | | |
 | Conditions per rule | 12 | 12 | default only |
 | Actions per rule | 6 | 6 | default only |
 | Pattern evaluation budget | 0.05 seconds | | default only |
@@ -335,7 +335,7 @@ SuiteStream), **rule** (made by a rule).
 | Event notes length | | at most 4,000 characters | default only |
 | Event notes field height | 10 lines | | default only |
 | New event start | 9:00 | | default only |
-| Default event length | 1 hour | 5 minutes to 24 hours | device |
+| Default event length | 1 hour | 5 minutes to 24 hours | |
 | Event time list | every 15 minutes (96 entries); entry within 8 minutes of the typed time highlighted; 9:00 when empty | | default only |
 | Reminder units | minutes, hours, days, weeks | | default only |
 | Event templates kept | | at most 30 | default only |
