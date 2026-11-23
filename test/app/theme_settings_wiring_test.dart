@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/main.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/time/local_zone.dart';
+import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/theme/theme_mode_controller.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/time/zones.dart';
@@ -19,7 +22,14 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final settings = ThemeSettings(prefs: prefs);
-    final controller = makeController();
+    final controller = CalendarController(
+      localZone: const LocalZone.system(zone),
+      timeFormat: TimeFormat.twelveHour,
+      events: const [],
+      calendars: calendars,
+      prefs: prefs,
+      clock: () => DateTime.utc(2026, 7, 15, 16),
+    );
     useWindow(tester, const Size(1200, 900));
     await tester.pumpWidget(
       SuiteStreamApp(

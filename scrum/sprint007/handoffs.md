@@ -33,3 +33,18 @@ None required. `ThemeModeIcons` (light_mode, dark_mode, brightness_auto) live in
 - `event_dialog.dart` already reads `CalendarController.defaultLength` (a `Duration`) for a new event and for an empty end time (EVT-02.n). The unit of time is only how Settings shows and edits it: `calendar_defaults.dart` should convert value + unit (minutes, hours) to and from that Duration (setter clamps 5 min to 24 h and stores minutes). Nothing else needed from me; I do not read calendar_defaults.dart.
 - Strings: `scrum/sprint007/strings_ito.md` (palette names and two labels; the picker falls back to English names until merged).
 - Rows in your files for my tests (please set status and cite): UIC-10, UIC-10.a, UIC-20: `test/events/event_dialog_test.dart` (picker, nearest color), `test/events/event_logic_test.dart` (nearest-color mapping, palettes), `test/calendar/local_calendar_test.dart` (calendar picker). THM-04.b, THM-01.e (reminder rows): `test/events/event_dialog_test.dart`.
+
+## Tanaka to Ito / Nakamura (round 2)
+CAL-10.d (opened event in the hourly grid uses the popup shadow). The expanded event is not built yet in `lib/src/calendar/week_view.dart` (events are `Positioned` blocks inside `_DayColumn`, key `event-<id>`). When an event is opened (expanded to full column width and its own height), wrap or build its block with `Material(elevation: popupElevationOf(context), shadowColor: Theme.of(context).colorScheme.shadow, ...)` and give it the Stack's top layer (paint it last). `popupElevationOf` is in `lib/src/theme/suite_theme.dart` (already imported there). Add one line to `test/ui/popup_shadow_test.dart`: the opened event's `Material.elevation == suitePopupElevation`. Also in week_view.dart, the `hour-density` `PopupMenuButton` (about line 159) takes the theme's fixed `suitePopupElevation`, so the Popup shadow setting does not scale it; add `elevation: popupElevationOf(context),` to it.
+
+## Tanaka round 2 done
+- `ThemeModeIcons` glyphs now in `SuiteIcons` (`lightMode`, `darkMode`, `brightnessAuto`); `ThemeModeIcons.light/dark/system/of` still work, so no import changes.
+- `color_picker.dart` private sizes replaced by `suiteSwatchSize`, `suiteSwatchCheckSize`, `suiteSwatchGap` (suite_theme.dart).
+- `calendar_print_dialog.dart` now opens with `showSuiteDialog` (shadow). New test in `test/ui/popup_shadow_test.dart` for the color picker.
+- Open: `test/events/event_dialog_layout_test.dart` has 10 overflow failures (320x700, 400x800 and 967x700 at 2x text); the dialog is Ito's file.
+
+## Ito round 2 (day 3)
+- Tests: `ux_test.dart` and `popup_size_test.dart` updated for the Settings > Calendar and > Theme panes. The `lengthInvalid` text is now "Use a number with a unit (from 5 minutes to 24 hours)." in all six arb files (other five translated by me, Yamamoto please review); tests that assert it updated.
+- EVT-01.m: `openEventDialog(..., prefs:)` and `EventDialog.prefs` (new, optional). A new event with no click spot starts at `CalendarDefaults.load(prefs).startMinutes`; with no prefs given the dialog reads the device preferences after opening and replaces 9:00 only while the form is untouched. Callers need no change.
+- Tokens: `color_picker.dart` uses `suiteSwatchSize`, `suiteSwatchCheckSize`, `suiteSwatchGap`. There is no dot-radius token, so `local_calendars_dialog.dart` sets `_dotRadius = suiteSwatchGap` (same value, 8); the picker's 6 px "calendar default" avatar radius is still a literal. Tanaka may add a token.
+- Rows set to done in my files: EVT-01.m, EVT-02.n, EVT-03.b, EVT-03.d (events.md), THM-09, THM-09.a (theme.md). THM-09.b stays planned: views still fall back to theme roles instead of #1d4ed8. UIC-10, UIC-10.a, UIC-20, THM-04.b, THM-01.e are in Yamamoto/Tanaka's files; tests are cited there.

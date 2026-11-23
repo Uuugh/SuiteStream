@@ -184,7 +184,7 @@ class _EventDialogState extends State<EventDialog> {
   final List<_ReminderRow> _reminders = [];
   late Duration _duration;
   int _span = 0; // days an all-day event spans beyond its first day (EVT-02.g)
-  late final String _initialSig;
+  late String _initialSig;
   final FocusNode _startFocus = FocusNode();
   final FocusNode _endFocus = FocusNode();
   final Map<String, String> _errors = {};
@@ -257,6 +257,30 @@ class _EventDialogState extends State<EventDialog> {
     }
     // A copy is a change in itself (it is saved as a new event); otherwise Save waits for an edit.
     _initialSig = widget.duplicateOf != null ? '0000copy' : _signature();
+    if (widget.event == null && widget.duplicateOf == null && widget.startMinute == null && !widget.allDay && widget.prefs == null) {
+      _loadDeviceStart();
+    }
+  }
+
+  int _defaultStart() => CalendarDefaults.load(widget.prefs).startMinutes;
+
+  /// EVT-01.m: without given preferences the device's own are read; the default start replaces 9:00
+  /// only while the form is untouched (and never if they cannot be read).
+  Future<void> _loadDeviceStart() async {
+    try {
+      final start = CalendarDefaults.load(await SharedPreferences.getInstance()).startMinutes;
+      if (!mounted || start == standardEventStartMinutes || _signature() != _initialSig) return;
+      final endTotal = start + c.defaultLength.inMinutes;
+      final d = _startDate;
+      setState(() {
+        _endDate = DateTime(d.year, d.month, d.day + endTotal ~/ 1440);
+        _startTime.text = _fmt(start ~/ 60, start % 60);
+        _endTime.text = _fmt((endTotal % 1440) ~/ 60, endTotal % 60);
+        _initialSig = _signature();
+      });
+    } on Object {
+      // keep 9:00
+    }
   }
 
   @override
