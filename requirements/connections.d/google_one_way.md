@@ -76,7 +76,7 @@ A Google connection: a Google calendar destination with its own account that Sui
 | CGOW-06.h | backlog | Each account’s recorded health and retry deadline persist across an app restart. | — |
 | CGOW-01.t | backlog | The accounts in use are the first account and the account of each Google connection, without duplicates, the first account first. | — |
 | CGOW-01.u | backlog | Each account keeps its refresh credential, email, time connected, last synchronization and its result, last error and the calendars of its connections. | — |
-| CGOW-03.i | backlog | The nearest supported Google event color is the one with the least squared difference in its RGB components. Ties use the lowest provider color ID. | — |
+| CGOW-03.i | backlog | The nearest of Google's event colors to a color is the one with the least squared difference in red, green and blue; a tie goes to the first in the order of THM-09.a. | — |
 | CGOW-05.g | backlog | Registering a watch uses the notification address (the public address followed by /google/notify), a random channel identifier and a random token of the sizes in DEF-01, and asks for the lifetime in DEF-01. | — |
 | CGOW-05.h | backlog | A stored channel keeps its identifier, Google's resource identifier, its token encrypted (ACC-05), its address, its calendar, its expiry (Google's, else now plus the requested lifetime), the time it was last tried and the last notice received. | — |
 | CGOW-05.i | backlog | The notification address is empty when the public host is localhost, 127.0.0.1 or ends in .local, and no watch is registered. | — |
@@ -121,7 +121,8 @@ A Google connection: a Google calendar destination with its own account that Sui
 | CGOW-09.e | backlog | Revoking posts the refresh credential to Google; a success or an already revoked grant is accepted, and otherwise the note is msg:googleDidnTConfirmRemoving ({code}) or msg:couldnTReachGoogleTo2; a calendar that could not be deleted adds msg:theCalendarWasnTDeleted ({error}). | — |
 | CGOW-09.f | backlog | Disconnect for the first account in Settings stops every channel, offers msg:alsoDeleteThisCalendarIn, forgets each event's per-event state when the calendars are deleted and records its History line. | — |
 | CGOW-10 | backlog | A connection's calendar color reaches Google by the first way Google accepts. | — |
-| CGOW-10.a | backlog | The ways are tried in order: the RGB color with a legible foreground, the nearest of Google's supported calendar colors, and a full replacement of the calendar's list entry. The way accepted last is tried first. | — |
+| CGOW-10.a | backlog | The ways are tried in order: the RGB color (with a white foreground), the nearest of Google's calendar colors (DEF-01, Google calendar colors), and a full replacement of the calendar's list entry; the way accepted last is tried first. | — |
+| CGOW-10.b | backlog | The nearest calendar color is the one with the least squared difference in red, green and blue. | — |
 | CGOW-10.c | backlog | The full replacement starts from Google's copy of the entry without its color identifier, tag and kind, marked selected and not hidden, with RGB colors turned on. | — |
 | CGOW-10.d | backlog | Only a refusal by Google moves to the next way; an unreachable, busy or revoked answer stops at once; the refusals are joined with "; ". | — |
 | CGOW-10.e | backlog | History records msg:googleColorSet ({who} the connection, {how} a space and the way: msg:googleColorWayRgb, msg:googleColorWayNearest ({color} the calendar color used) or msg:googleColorWayFull, followed by msg:googleColorWayKept when the way differs from the one kept before). | — |

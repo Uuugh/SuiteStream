@@ -70,7 +70,7 @@ class EventDetails extends StatelessWidget {
     return Container(
       key: const ValueKey('event-details'),
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(suiteDialogPadding),
       decoration: BoxDecoration(
         color: t.soft,
         border: Border(top: BorderSide(color: t.line)),

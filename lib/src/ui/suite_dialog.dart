@@ -68,3 +68,44 @@ Future<T?> showSuiteDialog<T>({
     },
   );
 }
+
+/// An alert-style dialog with the theme's padding (not Material's 24 px defaults), so
+/// every dialog keeps the same rhythm and its action pair sits at the bottom right.
+class SuiteAlertDialog extends StatelessWidget {
+  const SuiteAlertDialog({super.key, this.title, required this.content, this.actions});
+
+  final Widget? title;
+  final Widget content;
+  final List<Widget>? actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: title,
+      content: content,
+      actions: actions,
+      titlePadding: const EdgeInsets.fromLTRB(
+        suiteDialogPadding,
+        suiteDialogPadding,
+        suiteDialogPadding,
+        suitePartGap,
+      ),
+      contentPadding: title == null
+          ? const EdgeInsets.all(suiteDialogPadding)
+          : const EdgeInsets.fromLTRB(
+              suiteDialogPadding,
+              0,
+              suiteDialogPadding,
+              suiteDialogPadding,
+            ),
+      actionsPadding: const EdgeInsets.fromLTRB(
+        suiteDialogPadding,
+        0,
+        suiteDialogPadding,
+        suiteDialogPadding,
+      ),
+      actionsAlignment: MainAxisAlignment.end,
+      buttonPadding: EdgeInsets.zero,
+    );
+  }
+}

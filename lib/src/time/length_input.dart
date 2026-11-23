@@ -58,6 +58,26 @@ Duration? parsePressDelayInput(String input) {
   return Duration(milliseconds: (seconds * 1000).round());
 }
 
+/// Reads a typed animation time in seconds (`0.5`, `0,5`, `0`) or milliseconds
+/// (`500ms`). 0 means no animation. Gives null outside 0 to 2 seconds.
+Duration? parseAnimationInput(String input) {
+  final s = input.trim().toLowerCase().replaceAll(',', '.');
+  if (s.isEmpty) return null;
+  double? seconds;
+  final ms = RegExp(r'^(\d{1,4})\s*ms$').firstMatch(s);
+  if (ms != null) {
+    seconds = int.parse(ms.group(1)!) / 1000;
+  } else {
+    final sec = RegExp(r'^(\d+(?:\.\d{1,3})?)\s*s?$').firstMatch(s);
+    if (sec != null) seconds = double.parse(sec.group(1)!);
+  }
+  if (seconds == null || seconds > 2) return null;
+  return Duration(milliseconds: (seconds * 1000).round());
+}
+
+/// Keeps an animation time within 0 to 2 seconds.
+Duration clampAnimation(Duration d) => d < Duration.zero ? Duration.zero : (d > const Duration(seconds: 2) ? const Duration(seconds: 2) : d);
+
 /// A press-and-hold delay as the setting shows it, in seconds (`0.3`).
 String formatPressDelay(Duration d) {
   final s = d.inMilliseconds / 1000;

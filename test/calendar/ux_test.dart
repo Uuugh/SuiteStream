@@ -634,6 +634,57 @@ void pressDelayTests() {
     expect(c.defaultLength, const Duration(hours: 1));
     },
   );
+
+  test('SET-10: an animation time is read in seconds or milliseconds, from 0 to 2 seconds', () {
+    expect(parseAnimationInput('0'), Duration.zero);
+    expect(parseAnimationInput('0,5'), const Duration(milliseconds: 500));
+    expect(parseAnimationInput('1.5 s'), const Duration(milliseconds: 1500));
+    expect(parseAnimationInput('250ms'), const Duration(milliseconds: 250));
+    expect(parseAnimationInput('2'), const Duration(seconds: 2));
+    expect(parseAnimationInput('2.1'), isNull);
+    expect(parseAnimationInput('fast'), isNull);
+    expect(parseAnimationInput(''), isNull);
+  });
+
+  testWidgets('SET-10: the animation time is a setting, 0.5 seconds until changed, kept on the device', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    useWindow(tester, tall);
+    final c = CalendarController(
+      localZone: const LocalZone.system(zone),
+      timeFormat: TimeFormat.twelveHour,
+      prefs: prefs,
+    );
+    expect(c.animationDuration, const Duration(milliseconds: 500));
+    await tester.pumpWidget(
+      appFor(
+        Builder(
+          builder: (context) => TextButton(onPressed: () => openSettingsDialog(context, c), child: const Text('open')),
+        ),
+        size: tall,
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(fieldText(tester, 'setting-animation'), '0.5');
+    await tester.enterText(find.byKey(const ValueKey('setting-animation')), '3');
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.pumpAndSettle();
+    expect(find.text('Use a time from 0 to 2 seconds.'), findsOneWidget);
+    expect(c.animationDuration, const Duration(milliseconds: 500));
+    await tester.enterText(find.byKey(const ValueKey('setting-animation')), '0');
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.pumpAndSettle();
+    expect(c.animationDuration, Duration.zero);
+    final again = CalendarController(
+      localZone: const LocalZone.system(zone),
+      timeFormat: TimeFormat.twelveHour,
+      prefs: prefs,
+    );
+    expect(again.animationDuration, Duration.zero);
+  });
 }
 
 void stepperTests() {

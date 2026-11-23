@@ -12,7 +12,7 @@
 | TPL-02.c | backlog | A calendar's saved events do not offer a template picker (only new events do). | — |
 | TPL-01.d | backlog | A duration is also accepted as h:m, 1h, a decimal with a comma (1,5) and 90min, with at most the hour digits in DEF-01; an empty duration means the default in DEF-01. | — |
 | TPL-01.e | backlog | A duration that is not a time is not valid (UIC-19) and shows msg:templateCheckLength ({title} the template's title); an all-day template keeps the default length in DEF-01. | — |
-| TPL-01.f | backlog | When stored templates are read back, the title, location and notes are cut to their lengths in DEF-01 and a length outside its range becomes the default. A valid stored color is preserved (UIC-20). | — |
+| TPL-01.f | backlog | When stored templates are read back, the title, location and notes are cut to their lengths in DEF-01, a length outside its range becomes the default, and a color that is not a palette color (THM-09) is dropped. | — |
 | TPL-01.g | backlog | A template keeps notes; the page does not offer to edit them. | — |
 | TPL-02.d | backlog | The Event Templates header has the + of UIC-24, the counts msg:templateAllDayCount and msg:templateTimedCount ({n}), msg:templateCountOne or msg:templateCount ({n}), and when empty msg:noTemplatesYet. | — |
 | TPL-02.e | backlog | A template row has a Title field (placeholder msg:templateTitlePlaceholder), a choice of msg:timed or msg:allDay, a Length, a Location, a color or msg:templateCalendarColor, a delete button and a + that adds a row. | — |

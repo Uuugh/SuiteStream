@@ -537,9 +537,9 @@ class _EventDialogState extends State<EventDialog> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 3),
+          padding: const EdgeInsets.only(bottom: suiteLabelGap),
           child: SizedBox(
-            height: 20,
+            height: suiteLabelHeight,
             child: Row(
               children: [
                 if (prioritizeTrailing)
@@ -562,12 +562,12 @@ class _EventDialogState extends State<EventDialog> {
                     ),
                   ),
                 if (trailing != null) ...[
-                  const SizedBox(width: 10),
+                  const SizedBox(width: suiteColumnGap),
                   Flexible(child: trailing),
                 ],
                 // The note says what is wrong, on this line, next to the label (UIC-19).
                 if (error != null) ...[
-                  const SizedBox(width: 10),
+                  const SizedBox(width: suiteColumnGap),
                   Expanded(child: ErrorNote(error)),
                 ],
               ],
@@ -579,15 +579,19 @@ class _EventDialogState extends State<EventDialog> {
     );
   }
 
-  InputDecoration _decoration({String? error, Widget? suffix}) {
+  /// Every single-line box (text, time, date, dropdown, color) is exactly
+  /// [suiteControlHeight] tall; only the multi-line Notes box passes [multiline].
+  InputDecoration _decoration({String? error, Widget? suffix, bool dropdown = false, bool multiline = false}) {
     final t = context.tokens;
     return InputDecoration(
       isDense: true,
+      constraints: multiline ? const BoxConstraints() : const BoxConstraints.tightFor(height: suiteControlHeight),
       errorText:
           null, // the note is on the label line (ErrorNote), not below the field
       errorMaxLines: 3,
       suffixIcon: suffix,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      suffixIconConstraints: const BoxConstraints(minWidth: suiteControlHeight, minHeight: suiteControlHeight),
+      contentPadding: EdgeInsets.symmetric(horizontal: suiteDialogPadding, vertical: dropdown ? suiteDropdownVerticalPadding : suiteFieldVerticalPadding),
       filled: true,
       fillColor: t.bg,
       border: OutlineInputBorder(
@@ -621,8 +625,8 @@ class _EventDialogState extends State<EventDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 20,
-            height: 20,
+            width: suiteLabelHeight,
+            height: suiteLabelHeight,
             child: Checkbox(
               key: ValueKey(key),
               value: value,
@@ -683,14 +687,14 @@ class _EventDialogState extends State<EventDialog> {
         expands: !phone,
         textAlignVertical: TextAlignVertical.top,
         inputFormatters: [LengthLimitingTextInputFormatter(eventNotesLength)],
-        decoration: _decoration(),
+        decoration: _decoration(multiline: true),
         onChanged: (_) => setState(() => _errors.remove('notes')),
       ),
       fill: !phone,
     );
     return Padding(
       key: const ValueKey('event-dialog'),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(suiteDialogPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -730,17 +734,17 @@ class _EventDialogState extends State<EventDialog> {
               if (c.calendars.isEmpty) ?_duplicateButton(m),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: suitePartGap),
           if (phone) ...[
             _leftColumn(m),
-            const SizedBox(height: 10),
+            const SizedBox(height: suitePartGap),
             notes,
           ] else
             // The fields set the height during layout, and Notes fills the
             // space beside them in the same frame (EVT-01.i).
             LayoutBuilder(
               builder: (context, constraints) {
-                const gap = 10.0;
+                const gap = suiteColumnGap;
                 final columnWidth = (constraints.maxWidth - gap) / 2;
                 return Stack(
                   children: [
@@ -790,7 +794,6 @@ class _EventDialogState extends State<EventDialog> {
                 saveKey: const ValueKey('event-save'),
                 cancelLabel: m('cancel'),
                 saveLabel: m('save'),
-                useThemedSaveStates: true,
                 onCancel: () => Navigator.of(context).pop(),
                 saveEnabled: _signature() != _initialSig,
                 onSave: _save,
@@ -803,7 +806,7 @@ class _EventDialogState extends State<EventDialog> {
   }
 
   Widget _leftColumn(Messages m) {
-    const gap = SizedBox(height: 10);
+    const gap = SizedBox(height: suitePartGap);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -821,6 +824,7 @@ class _EventDialogState extends State<EventDialog> {
             _location,
             max: eventLocationLength,
             suffix: IconButton(
+              style: suiteIconButtonStyle(compact: true),
               key: const ValueKey('event-map'),
               tooltip: m('openMap'),
               icon: const Icon(SuiteIcons.map, size: 18),
@@ -838,6 +842,7 @@ class _EventDialogState extends State<EventDialog> {
             _meeting,
             max: eventMeetingLength,
             suffix: IconButton(
+              style: suiteIconButtonStyle(compact: true),
               key: const ValueKey('event-open-meeting'),
               tooltip: m('openLink'),
               icon: const Icon(SuiteIcons.link, size: 18),
@@ -863,7 +868,7 @@ class _EventDialogState extends State<EventDialog> {
                     key: const ValueKey('event-calendar'),
                     initialValue: _calendarId,
                     isExpanded: true,
-                    decoration: _decoration(),
+                    decoration: _decoration(dropdown: true),
                     items: [
                       if (c.defaultCalendarId == null)
                         DropdownMenuItem<String?>(
@@ -889,7 +894,7 @@ class _EventDialogState extends State<EventDialog> {
                   ),
                 ),
               ),
-            if (c.calendars.isNotEmpty) const SizedBox(width: 6),
+            if (c.calendars.isNotEmpty) const SizedBox(width: suiteColumnGap),
             Expanded(
               child: _labeled(
                 m('changeColor'),
@@ -910,7 +915,7 @@ class _EventDialogState extends State<EventDialog> {
                 required: true,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: suiteColumnGap),
             Expanded(
               child: _labeled(
                 m('ends'),
@@ -957,7 +962,7 @@ class _EventDialogState extends State<EventDialog> {
                           error: _allDay ? null : _errors['start'],
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: suiteColumnGap),
                       Expanded(
                         child: _labeled(
                           m('time'),
@@ -989,7 +994,7 @@ class _EventDialogState extends State<EventDialog> {
                       Expanded(
                         child: _labeled(
                           _differentEnd ? m('startTimeZone') : m('timeZone'),
-                          ZoneField(
+                          _fixedHeight(ZoneField(
                             key: const ValueKey('zone-start'),
                             value: _startZone,
                             defaultZone: _defaultEventZone,
@@ -998,10 +1003,10 @@ class _EventDialogState extends State<EventDialog> {
                               if (!_differentEnd) _endZone = z;
                               _startChanged();
                             }),
-                          ),
+                          )),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: suiteColumnGap),
                       Expanded(
                         // The end zone's place is always kept; it is only shown when the end is in a
                         // different zone.
@@ -1012,7 +1017,7 @@ class _EventDialogState extends State<EventDialog> {
                           maintainState: true,
                           child: _labeled(
                             m('endTimeZone'),
-                            ZoneField(
+                            _fixedHeight(ZoneField(
                               key: const ValueKey('zone-end'),
                               value: _endZone,
                               defaultZone: _defaultEventZone,
@@ -1020,7 +1025,7 @@ class _EventDialogState extends State<EventDialog> {
                                 _endZone = z;
                                 _startChanged();
                               }),
-                            ),
+                            )),
                           ),
                         ),
                       ),
@@ -1038,6 +1043,9 @@ class _EventDialogState extends State<EventDialog> {
       ],
     );
   }
+
+  /// A field of a shared widget (the zone picker) drawn exactly one control tall (THM-04.b).
+  Widget _fixedHeight(Widget field) => SizedBox(height: suiteControlHeight, child: field);
 
   /// EVT-06.a: Duplicate opens an editor holding a copy of the event (in the same
   /// calendar; the calendar dropdown can change it before saving). It sits next to
@@ -1085,15 +1093,15 @@ class _EventDialogState extends State<EventDialog> {
       key: ValueKey('event-${start ? 'start' : 'end'}-date'),
       borderRadius: BorderRadius.circular(8),
       onTap: start ? _pickStart : _pickEnd,
-      child: InputDecorator(
+      child: SizedBox(height: suiteControlHeight, child: InputDecorator(
         decoration: _decoration(),
         child: Row(
           children: [
-            Expanded(child: Text(DateFormat.yMMMd(locale).format(date))),
+            Expanded(child: Text(DateFormat.yMMMd(locale).format(date), maxLines: 1, overflow: TextOverflow.ellipsis)),
             Icon(SuiteIcons.calendarToday, size: 16, color: t.muted),
           ],
         ),
-      ),
+      )),
     );
   }
 
@@ -1197,7 +1205,7 @@ class _EventDialogState extends State<EventDialog> {
         setState(() => _color = picked == _paletteDefault ? null : picked);
       },
       child: InputDecorator(
-        decoration: _decoration(),
+        decoration: _decoration(dropdown: true),
         child: Row(
           children: [
             Container(
@@ -1239,7 +1247,7 @@ class _EventDialogState extends State<EventDialog> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 3),
+          padding: const EdgeInsets.only(bottom: suiteLabelGap),
           child: Row(
             children: [
               Text(
@@ -1251,7 +1259,7 @@ class _EventDialogState extends State<EventDialog> {
                 ),
               ),
               if (_errors['reminders'] != null) ...[
-                const SizedBox(width: 10),
+                const SizedBox(width: suiteColumnGap),
                 Expanded(child: ErrorNote(_errors['reminders']!)),
               ],
             ],
@@ -1411,7 +1419,7 @@ class _PaletteDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: t.card,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(suiteDialogPadding),
         child: SizedBox(
           width: 260,
           child: Column(
@@ -1428,7 +1436,7 @@ class _PaletteDialog extends StatelessWidget {
                 selected: current == null,
                 onSelected: (_) => Navigator.of(context).pop(_paletteDefault),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: suitePartGap),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,

@@ -62,7 +62,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
     return Dialog(
       backgroundColor: t.card,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(suiteDialogPadding),
         child: SizedBox(
           width: _width,
           child: Column(

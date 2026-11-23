@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../theme/suite_theme.dart' show defaultAnimationDuration;
 import '../time/length_input.dart';
 import '../time/local_zone.dart';
 import '../time/suite_event.dart';
@@ -83,8 +84,6 @@ class CalendarController extends ChangeNotifier {
   late DateTime _focused;
 
   int _hourLines = defaultHourLines;
-  int? _monthHeightLines;
-  int? _hourlyHeightLines;
 
   int get hourLines => _hourLines;
   set hourLines(int value) {
@@ -95,22 +94,6 @@ class CalendarController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Extra whole event lines beyond the view's minimum. Until the user adjusts
-  /// the calendar, it fills the available space.
-  int? get calendarHeightLines =>
-      view == CalendarView.month ? _monthHeightLines : _hourlyHeightLines;
-  set calendarHeightLines(int value) {
-    final lines = value < 0 ? 0 : value;
-    if (lines == calendarHeightLines) return;
-    if (view == CalendarView.month) {
-      _monthHeightLines = lines;
-      _prefs?.setInt(_monthHeightKey, lines);
-    } else {
-      _hourlyHeightLines = lines;
-      _prefs?.setInt(_hourlyHeightKey, lines);
-    }
-    notifyListeners();
-  }
 
   /// TIM-03: the Local zone is the system zone or a fixed zone from Settings;
   /// CAL-02.a: the calendar's own time zone picker shows another zone for now.
@@ -231,13 +214,12 @@ class CalendarController extends ChangeNotifier {
 
   static const _lengthKey = 'event.defaultLength';
   static const _pressKey = 'view.longPressMs';
+  static const _animationKey = 'view.animationMs';
   static const _zoneKey = 'view.zone';
   static const _deviceZoneKey = 'settings.fixedZone';
   static const _viewKey = 'view.mode';
   static const _formatKey = 'view.timeFormat';
   static const _hourLinesKey = 'view.hourLines';
-  static const _monthHeightKey = 'view.monthHeightLines';
-  static const _hourlyHeightKey = 'view.hourlyHeightLines';
 
   /// CAL-06.b: the time zone, the view and the time format are kept on the device.
   void _loadViewSettings(bool loadView) {
@@ -245,14 +227,10 @@ class CalendarController extends ChangeNotifier {
     if (p == null) return;
     _hourLines = (p.getInt(_hourLinesKey) ?? defaultHourLines)
         .clamp(minHourLines, maxHourLines);
-    final monthHeight = p.getInt(_monthHeightKey);
-    if (monthHeight != null && monthHeight >= 0) _monthHeightLines = monthHeight;
-    final hourlyHeight = p.getInt(_hourlyHeightKey);
-    if (hourlyHeight != null && hourlyHeight >= 0) {
-      _hourlyHeightLines = hourlyHeight;
-    }
     final press = p.getInt(_pressKey);
     if (press != null) _longPress = clampLongPress(Duration(milliseconds: press));
+    final anim = p.getInt(_animationKey);
+    if (anim != null) _animation = clampAnimation(Duration(milliseconds: anim));
     final len = p.getInt(_lengthKey);
     if (len != null) _defaultLength = clampEventLength(Duration(minutes: len));
     final z = p.getString(_zoneKey);
@@ -372,6 +350,15 @@ class CalendarController extends ChangeNotifier {
   set longPress(Duration d) {
     _longPress = clampLongPress(d);
     _prefs?.setInt(_pressKey, _longPress.inMilliseconds);
+    notifyListeners();
+  }
+
+  /// SET-10: the one animation time (0 to 2 seconds, DEF-01), kept on the device.
+  Duration _animation = defaultAnimationDuration;
+  Duration get animationDuration => _animation;
+  set animationDuration(Duration d) {
+    _animation = clampAnimation(d);
+    _prefs?.setInt(_animationKey, _animation.inMilliseconds);
     notifyListeners();
   }
 

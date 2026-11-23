@@ -1,4 +1,5 @@
 {
+  "settingsGeneral": "General",
   "settingsConfigure": "Configure",
   "settingsSources": "Sources",
   "settingsFeeds": "Feeds",
@@ -1155,5 +1156,9 @@
   "addReminder": "Add notification",
   "reminderRange": "A notification is a whole number of minutes, hours, days or weeks, up to 1 week before the start.",
   "pressDelay": "Press and hold delay (seconds)",
-  "pressDelayInvalid": "Use a delay from 0.2 to 1.5 seconds."
+  "pressDelayInvalid": "Use a delay from 0.2 to 1.5 seconds.",
+  "pairSaved": "Saved",
+  "pairCancelled": "Cancelled",
+  "animationDuration": "Animations (seconds, 0 = none)",
+  "animationDurationInvalid": "Use a time from 0 to 2 seconds."
 }

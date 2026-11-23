@@ -7,7 +7,7 @@ import '../theme/tokens.dart';
 
 /// The trigger is an icon button: a 48 px target with a 24 px icon centered in it.
 const double triggerIconSize = 24;
-const double triggerIconInset = 12;
+const double triggerIconInset = suiteDialogPadding;
 
 /// One item of a [SuiteDropdown].
 class DropdownItem<T> {
@@ -115,6 +115,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
         controller: _portal,
         overlayChildBuilder: (context) => CompositedTransformFollower(
           link: _link,
+          offset: const Offset(-(triggerIconInset - (suiteControlHeight - triggerIconSize) / 2), 0),
           targetAnchor: Alignment.bottomLeft,
           followerAnchor: Alignment.topLeft,
           child: Align(
@@ -161,6 +162,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
           ),
         ),
         child: IconButton(
+          style: suiteIconButtonStyle(),
           tooltip: widget.tooltip,
           icon: Icon(widget.icon, size: triggerIconSize, color: widget.active ? t.accent : null),
           onPressed: _toggleOpen,
@@ -183,7 +185,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
         // The menu hangs from the trigger's left edge, and the trigger's icon sits
         // [triggerIconInset] inside it, so every item icon (same size) lines up
         // vertically with the trigger icon.
-        padding: const EdgeInsets.only(left: triggerIconInset, right: 12),
+        padding: const EdgeInsets.only(left: triggerIconInset, right: suiteDialogPadding),
         color: selected ? t.soft : null,
         child: Row(
           children: [
@@ -208,7 +210,7 @@ extension on _SuiteDropdownState {
       child: Container(
         height: 40,
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: triggerIconInset, right: 12),
+        padding: const EdgeInsets.only(left: triggerIconInset, right: suiteDialogPadding),
         decoration: BoxDecoration(border: Border(bottom: BorderSide(color: t.line))),
         child: Text(a.label, style: TextStyle(color: t.accent, fontWeight: FontWeight.w600)),
       ),

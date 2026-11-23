@@ -1,4 +1,5 @@
 {
+  "settingsGeneral": "Algemeen",
   "settingsConfigure": "Configureren",
   "settingsSources": "Bronnen",
   "settingsFeeds": "Feeds",
@@ -938,5 +939,9 @@
   "addReminder": "Melding toevoegen",
   "reminderRange": "Een melding is een geheel aantal minuten, uren, dagen of weken, tot 1 week voor het begin.",
   "pressDelay": "Vertraging bij ingedrukt houden (seconden)",
-  "pressDelayInvalid": "Gebruik een vertraging van 0,2 tot 1,5 seconden."
+  "pressDelayInvalid": "Gebruik een vertraging van 0,2 tot 1,5 seconden.",
+  "pairSaved": "Bewaard",
+  "pairCancelled": "Geannuleerd",
+  "animationDuration": "Animaties (seconden, 0 = geen)",
+  "animationDurationInvalid": "Gebruik een tijd van 0 tot 2 seconden."
 }

@@ -1,4 +1,5 @@
 {
+  "settingsGeneral": "Geral",
   "settingsConfigure": "Configurar",
   "settingsSources": "Fontes",
   "settingsFeeds": "Feeds",
@@ -938,5 +939,9 @@
   "addReminder": "Adicionar notificação",
   "reminderRange": "Uma notificação é um número inteiro de minutos, horas, dias ou semanas, até 1 semana antes do início.",
   "pressDelay": "Atraso do toque longo (segundos)",
-  "pressDelayInvalid": "Use um atraso de 0,2 a 1,5 segundos."
+  "pressDelayInvalid": "Use um atraso de 0,2 a 1,5 segundos.",
+  "pairSaved": "Salvo",
+  "pairCancelled": "Cancelado",
+  "animationDuration": "Animações (segundos, 0 = nenhuma)",
+  "animationDurationInvalid": "Use um tempo de 0 a 2 segundos."
 }

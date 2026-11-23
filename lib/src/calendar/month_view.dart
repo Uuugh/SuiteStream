@@ -12,7 +12,7 @@ import 'event_dialog.dart';
 import 'event_drag.dart';
 
 /// Height of one event line in a day cell, and of the date number's row.
-const double monthLineHeight = 16;
+const double monthLineHeight = 20;
 const double monthDateRowHeight = 24;
 const double minMonthGridWidth = 640;
 
@@ -156,9 +156,8 @@ class _DayCell extends StatelessWidget {
                   key: isToday ? const ValueKey('today-marker') : null,
                   height: monthDateRowHeight - 4,
                   padding: const EdgeInsets.symmetric(horizontal: 6),
-                  alignment: Alignment.center,
                   decoration: isToday
-                      ? BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(10))
+                      ? BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(suiteChipRadius))
                       : null,
                   child: Text(
                     '${day.day}',
@@ -198,6 +197,8 @@ class _EventLine extends StatelessWidget {
     final s = event.startIn(c.localZone.location);
     final text = event.allDay ? event.title : '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} ${event.title}';
     final color = c.colorOf(event);
+    final muted = event.deleted || event.hiddenFromGoogle;
+    final base = muted ? t.muted : (color == null ? t.run : Color(color));
     return DragMovable(
       key: ValueKey('event-${event.id}'),
       longPress: c.longPress,
@@ -221,25 +222,28 @@ class _EventLine extends StatelessWidget {
       },
       // EVT-07: clicking an event opens its details in place.
       onTap: () => c.selectEvent(event.id),
+      // A chip in the event's own color (its calendar's, else the theme's default event
+      // color); a deleted or hidden event is muted and struck through.
       child: SizedBox(
-      height: monthLineHeight,
-      child: Row(
-        children: [
-          if (color != null)
-            Container(width: 3, height: 12, margin: const EdgeInsets.only(right: 3), color: Color(color)),
-          Expanded(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: SuiteText.note(t).copyWith(
-                color: t.text,
-                decoration: event.deleted ? TextDecoration.lineThrough : null,
-              ),
+        height: monthLineHeight,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: base.withValues(alpha: 0.18),
+            borderRadius: BorderRadius.circular(suiteChipRadius),
+          ),
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: SuiteText.note(t).copyWith(
+              color: base,
+              decoration: muted ? TextDecoration.lineThrough : null,
             ),
           ),
-        ],
-      ),
+        ),
       ),
     );
   }

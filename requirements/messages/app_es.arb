@@ -1,4 +1,5 @@
 {
+  "settingsGeneral": "General",
   "settingsConfigure": "Configurar",
   "settingsSources": "Fuentes",
   "settingsFeeds": "Canales",
@@ -938,5 +939,9 @@
   "addReminder": "Añadir notificación",
   "reminderRange": "Una notificación es un número entero de minutos, horas, días o semanas, hasta 1 semana antes del inicio.",
   "pressDelay": "Retardo de pulsación prolongada (segundos)",
-  "pressDelayInvalid": "Use un retardo de 0,2 a 1,5 segundos."
+  "pressDelayInvalid": "Use un retardo de 0,2 a 1,5 segundos.",
+  "pairSaved": "Guardado",
+  "pairCancelled": "Cancelado",
+  "animationDuration": "Animaciones (segundos, 0 = ninguna)",
+  "animationDurationInvalid": "Use un tiempo de 0 a 2 segundos."
 }

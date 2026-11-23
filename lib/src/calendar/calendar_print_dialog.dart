@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../l10n/dates.dart';
 import '../l10n/messages.dart';
+import '../theme/suite_theme.dart';
 import '../time/time_format.dart';
+import '../ui/cancel_save_pair.dart';
+import '../ui/suite_dialog.dart';
 import 'calendar_controller.dart';
 import 'calendar_print_platform.dart';
 
@@ -34,7 +37,7 @@ class _PrintPreview extends StatelessWidget {
     final orientation = messages(
       sheet.landscape ? 'calendarPrintLandscape' : 'calendarPrintPortrait',
     );
-    return AlertDialog(
+    return SuiteAlertDialog(
       title: Text(messages('calendarPrintPreview')),
       content: SizedBox(
         width: sheet.landscape ? 780 : 540,
@@ -48,7 +51,7 @@ class _PrintPreview extends StatelessWidget {
                 key: const ValueKey('calendar-print-orientation'),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: suitePartGap),
             Flexible(
               child: SingleChildScrollView(
                 child: DecoratedBox(
@@ -57,7 +60,7 @@ class _PrintPreview extends StatelessWidget {
                     border: Border.all(color: sheet.colors.outlineVariant),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(suiteDialogPadding),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -66,7 +69,7 @@ class _PrintPreview extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Text(sheet.zone),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: suitePartGap),
                         if (sheet.rows.isEmpty) Text(messages('noEvents')),
                         if (sheet.rows.isNotEmpty)
                           Table(
@@ -97,22 +100,19 @@ class _PrintPreview extends StatelessWidget {
             ),
             if (!calendarPrintingAvailable)
               Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: suitePartGap),
                 child: Text(messages('calendarPrintBrowserOnly')),
               ),
           ],
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(messages('cancel')),
-        ),
-        FilledButton(
-          onPressed: calendarPrintingAvailable
-              ? () => printCalendarHtml(sheet.html(messages))
-              : null,
-          child: Text(messages('calendarPrint')),
+        CancelSavePair(
+          cancelLabel: messages('cancel'),
+          saveLabel: messages('calendarPrint'),
+          onCancel: () => Navigator.of(context).pop(),
+          saveEnabled: calendarPrintingAvailable,
+          onSave: () => printCalendarHtml(sheet.html(messages)),
         ),
       ],
     );

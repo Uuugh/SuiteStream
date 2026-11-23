@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
+import 'package:suitestream/src/ui/cancel_save_pair.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
 
@@ -65,6 +66,9 @@ void main() {
       expect(inPreview('11:00 – 12:00 Filtered meeting'), findsNothing);
       expect(inPreview('11:00 – 12:00 Outside print range'), findsNothing);
 
+      // UIC-27: Print uses the shared Cancel | Save pair, with Print as the save word.
+      expect(find.descendant(of: preview, matching: find.byType(CancelSavePair)), findsOneWidget);
+      expect(inPreview('Print'), findsWidgets);
       await tester.tap(inPreview('Cancel'));
       await tester.pumpAndSettle();
       expect(preview, findsNothing);

@@ -1421,3 +1421,55 @@ Columns: `batch` (R1, R2, ... in order), `date`, `old ID`, `new ID(s)` (several 
 | R41 | 2026-11-22 | UIC-05.b | retired | sections moved to Settings (SET-01.b) |
 | R41 | 2026-11-22 | UIC-05.c | retired | sections moved to Settings (SET-01.b) |
 | R41 | 2026-11-22 | UIC-05.d | retired | sections moved to Settings (SET-01.b) |
+| R42 | 2026-11-23 | CAL-04.b | retired | Product Owner removed the calendar resize bar requirement |
+| R42 | 2026-11-23 | CAL-04.c | retired | Product Owner removed the calendar resize bar requirement |
+| R42 | 2026-11-23 | CAL-04.g | retired | Product Owner removed the calendar resize bar requirement |
+| R42 | 2026-11-23 | CAL-04.j | retired | Product Owner removed the calendar resize bar requirement |
+| R43 | 2026-11-23 | THM-07.c | retired | Product Owner deleted the requirement |
+| R43 | 2026-11-23 | THM-07.d | retired | Product Owner deleted the requirement |
+| R43 | 2026-11-23 | THM-07.f | retired | Product Owner deleted the requirement |
+| R44 | 2026-11-23 | DEF-01 Google calendar colors | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | UIC-10 | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | UIC-10.a | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | UIC-20 | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | THM-09 | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | THM-09.a | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | THM-09.b | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | EVT-03.b | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | EVT-03.d | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | EVT-03.i | restored | Product Owner decision 2026-11-23: palette fallback restored; the newer own, rule, calendar order kept, the final fallback is the default event color (THM-09.b), not a theme role |
+| R44 | 2026-11-23 | EVT-01.o | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | RUL-13.a | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | RUL-13.b | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | RUL-06.l | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | TPL-01.f | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | CGOW-03.i | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | CGOW-10.a | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R44 | 2026-11-23 | CGOW-10.b | restored | Product Owner decision 2026-11-23: calendar and event palette stands; row restored to its pre-Sprint-005 wording (THM-02 seed is for the app theme only) |
+| R46 | 2026-11-23 | CAL-05 | PRT-03 | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | CAL-05.a | PRT-03.a | Product Owner direction 2026-11-23: all Print requirements live in print.md; test citation moved with the row |
+| R46 | 2026-11-23 | CAL-05.b | PRT-03.b | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | CAL-05.c | PRT-03.c | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | CAL-05.d | PRT-03.d | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | CAL-05.e | PRT-03.e | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | EVT-06 | EVT-06, PRT-04 | Product Owner direction 2026-11-23: all Print requirements live in print.md; EVT-06 keeps Duplicate and Move |
+| R46 | 2026-11-23 | EVT-06.c | PRT-04.a | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | EVT-06.d | PRT-04.b | Product Owner direction 2026-11-23: all Print requirements live in print.md |
+| R46 | 2026-11-23 | CAL-06.a | CAL-06.a, PRT-05.a | Product Owner direction 2026-11-23: all Print requirements live in print.md; Print placement |
+| R46 | 2026-11-23 | UIC-05.a | UIC-05.a, PRT-05.b | Product Owner direction 2026-11-23: all Print requirements live in print.md; Print placement |
+| R46 | 2026-11-23 | EVT-01.i | EVT-01.i, PRT-05.c | Product Owner direction 2026-11-23: all Print requirements live in print.md; Print placement |
+| R46 | 2026-11-23 | TIM-11.c | TIM-11.c, PRT-06 | Product Owner direction 2026-11-23: all Print requirements live in print.md; Print today |
+| R46 | 2026-11-23 | CAL-10.d | CAL-10.d, UIC-43 | Product Owner direction 2026-11-23: popups open with a shadow is a common UI requirement; CAL-10.d keeps the opened-event size and points to UIC-43 |
+| R46 | 2026-11-23 | SET-10 | SET-03.g | Product Owner direction 2026-11-23: animation time moves from Settings > General to Settings > Theme |
+| R46 | 2026-11-23 | CAL-06.d | UIC-14.a | Product Owner direction 2026-11-23: how zones fit is a common standard; CAL-06.d is now a reference |
+| R46 | 2026-11-23 | CAL-06.c | CAL-06.c, UIC-14.b | Product Owner direction 2026-11-23: the second-line drop of a zone is a common standard |
+| R46 | 2026-11-23 | CAL-07.f | retired | Product Owner direction 2026-11-23 (delete 7f): the + on a Month day cell removed |
+| R46 | 2026-11-23 | CAL-07.h | CAL-07.h | Reworded: no + in a List row (CAL-07.f retired) |
+| R47 | 2026-11-23 | THM-04.f | retired | Product Owner decision 2026-11-23: a delete control uses the Flutter theme error role (ColorScheme.error); no separate row |
+| R47 | 2026-11-23 | THM-05.b | retired | Product Owner decision 2026-11-23: button color roles come from the Flutter theme (reverse-engineered rule) |
+| R47 | 2026-11-23 | THM-10.a | retired | Product Owner decision 2026-11-23: event chip tint derived from the event's own color; no numbers |
+| R47 | 2026-11-23 | THM-10.b | retired | Product Owner decision 2026-11-23: custom event look from Material roles |
+| R47 | 2026-11-23 | THM-05.d, THM-05.e, THM-05.f, THM-05.g | retired | Product Owner decision 2026-11-23: status looks come from theme roles (success, tertiary, error) |
+| R47 | 2026-11-23 | THM-08 | retired | Product Owner decision 2026-11-23: module and section colors come from the theme |
+| R47 | 2026-11-23 | THM-02.e, THM-02.f | THM-02.a | Restored as one row: muted text reaches 4.5:1 (test exists) |
+| R47 | 2026-11-23 | THM-10.c | THM-10.c | Restored in one sentence: hidden or deleted event is muted and struck through |

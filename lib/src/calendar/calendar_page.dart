@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -10,7 +9,6 @@ import '../theme/tokens.dart';
 import '../time/time_format.dart';
 import '../ui/anchored_badge.dart';
 import '../ui/overflow_info.dart';
-import '../ui/resize_bar.dart';
 import '../ui/suite_dropdown.dart';
 import '../ui/zone_picker.dart';
 import '../ui/zoned_row.dart';
@@ -60,7 +58,7 @@ class CalendarPage extends StatelessWidget {
       builder: (context, _) {
         final t = context.tokens;
         return Container(
-          margin: const EdgeInsets.all(12),
+          margin: const EdgeInsets.fromLTRB(suitePagePadding, suitePartGap, suitePagePadding, suitePagePadding),
           decoration: BoxDecoration(
             color: t.card,
             borderRadius: BorderRadius.circular(12),
@@ -89,7 +87,6 @@ class _CalendarBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = controller;
-    final m = context.msg;
     final calendar = SwipeDetector(
       holdTime: c.longPress,
       onNext: c.next,
@@ -100,56 +97,7 @@ class _CalendarBody extends StatelessWidget {
         _ => HourlyView(controller: c),
       },
     );
-    final showResize = c.view != CalendarView.list;
-    final month = c.view == CalendarView.month;
-    final unit = month ? monthLineHeight : eventLineHeight;
-    final minimumHeight = month
-        ? 32.0 + c.monthGridWeeks * (monthDateRowHeight + 2 * monthLineHeight)
-        : 260.0; // 200 px hourly grid plus the date and all-day rows.
-    final barHeight = math.max(48.0, suiteControlHeight);
-    return LayoutBuilder(
-      builder: (context, box) {
-        final usableHeight = box.maxHeight;
-        final fit = math.max(
-          0,
-          ((usableHeight - minimumHeight - barHeight) / unit).floor(),
-        );
-        final chosen = c.calendarHeightLines;
-        final displayed = chosen ?? fit;
-        final height = !showResize
-            ? usableHeight
-            : chosen == null
-                ? math.max(minimumHeight, usableHeight - barHeight)
-                : minimumHeight + chosen * unit;
-        final panel = Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: height, child: calendar),
-            if (showResize)
-              SizedBox(
-                height: barHeight,
-                child: ResizeBar(
-                  key: const ValueKey('calendar-resize'),
-                  value: displayed,
-                  minimum: 0,
-                  unitExtent: unit,
-                  onChanged: (value) => c.calendarHeightLines = value,
-                  expanded: displayed > 0,
-                  onToggle: () => c.calendarHeightLines = displayed > 0 ? 0 : fit,
-                  sliderLabel: m('stretchCalendar'),
-                  collapseLabel: m('collapseCalendar'),
-                  expandLabel: m('expandCalendar'),
-                ),
-              ),
-          ],
-        );
-        return SingleChildScrollView(
-          primary: false,
-          physics: showResize ? null : const NeverScrollableScrollPhysics(),
-          child: panel,
-        );
-      },
-    );
+    return calendar;
   }
 }
 
@@ -206,14 +154,14 @@ class _Header extends StatelessWidget {
         onPressed: c.next,
       ),
       TextButton(key: const ValueKey('today'), onPressed: c.goToToday, child: Text(m('today'))),
-      const SizedBox(width: 8),
+      const SizedBox(width: suitePartGap),
       Flexible(
         child: InkWell(
           key: const ValueKey('title'),
           borderRadius: BorderRadius.circular(6),
           onTap: () => pickDate(context, controller),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: suiteLabelGap),
             child: OverflowInfoText(
               _title(context),
               style: SuiteText.moduleKind(t, windowWidth: MediaQuery.sizeOf(context).width),
@@ -223,11 +171,13 @@ class _Header extends StatelessWidget {
       ),
     ];
     // CAL-06.a: the right zone holds Time Zone, View and the 12/24 clock, in this order.
+    // CAL-06.e: 12-hour is a filled badge; 24-hour inverts it (outlined, accent text).
+    final inverted = c.timeFormat == TimeFormat.twentyFourHour;
     final right = <Widget>[
       CalendarFilterButton(controller: c),
       IconButton(
         key: const ValueKey('zone-button'),
-        style: suiteIconButtonStyle(compact: true),
+        style: suiteIconButtonStyle(),
         tooltip: m('timesIn', {'tz': c.localZone.name}),
         icon: Icon(SuiteIcons.public, color: c.viewZone == null ? null : t.accent),
         onPressed: () async {
@@ -254,16 +204,20 @@ class _Header extends StatelessWidget {
       // 24-hour and never returns to the default.
       IconButton(
         key: const ValueKey('clock-button'),
-        style: suiteIconButtonStyle(compact: true),
+        style: suiteIconButtonStyle(),
         tooltip: '${m('timeFormat')}: ${c.timeFormat == TimeFormat.twelveHour ? m('m12Hour130pm') : m('m24Hour1330')}',
         icon: AnchoredBadge(
           badge: Container(
             key: const ValueKey('clock-badge'),
             padding: const EdgeInsets.symmetric(horizontal: 2),
-            decoration: BoxDecoration(color: t.accent, borderRadius: BorderRadius.circular(6)),
+            decoration: BoxDecoration(
+              color: inverted ? t.onAccent : t.accent,
+              border: Border.all(color: t.accent),
+              borderRadius: BorderRadius.circular(6),
+            ),
             child: Text(
               c.timeFormat == TimeFormat.twelveHour ? '12' : '24',
-              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: t.onAccent),
+              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: inverted ? t.accent : t.onAccent),
             ),
           ),
           child: const Icon(SuiteIcons.schedule, size: 24),
@@ -272,7 +226,7 @@ class _Header extends StatelessWidget {
       ),
       IconButton(
         key: const ValueKey('calendar-print-button'),
-        style: suiteIconButtonStyle(compact: true),
+        style: suiteIconButtonStyle(),
         tooltip: m('calendarPrint'),
         icon: const Icon(SuiteIcons.print),
         onPressed: () => showCalendarPrint(context, c, _title(context)),
@@ -280,7 +234,7 @@ class _Header extends StatelessWidget {
       // CAL-06.a: + comes last: it adds an event on the day the calendar is on.
       IconButton(
         key: const ValueKey('add-event-button'),
-        style: suiteIconButtonStyle(compact: true),
+        style: suiteIconButtonStyle(),
         tooltip: m('addEvent'),
         icon: const Icon(SuiteIcons.add),
         onPressed: () => openEventDialog(context, c, day: c.focused),
@@ -293,7 +247,7 @@ class _Header extends StatelessWidget {
       left: left,
       right: right,
       leftMinWidth: 48 + 48 + 80 + 8 + 160, // previous, next, Today, gap, a short title
-      rightMinWidth: 48.0 * right.length,
+      rightMinWidth: suiteControlHeight * right.length,
     );
   }
 }

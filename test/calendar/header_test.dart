@@ -70,11 +70,14 @@ void main() {
     await tester.pumpWidget(appFor(CalendarPage(controller: c), size: const Size(1000, 900)));
     expect(find.text('01:00 pm Lunch'), findsOneWidget);
     expect(tester.widget<Text>(find.descendant(of: find.byKey(const ValueKey('clock-badge')), matching: find.byType(Text))).data, '12');
+    Color badgeFill() => ((tester.widget<Container>(find.byKey(const ValueKey('clock-badge')))).decoration as BoxDecoration).color!;
+    final filled = badgeFill();
     expect(find.byTooltip('Time format: 12-hour (01:30 pm)'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('clock-button')));
     await tester.pump();
     expect(find.text('13:00 Lunch'), findsOneWidget);
     expect(tester.widget<Text>(find.descendant(of: find.byKey(const ValueKey('clock-badge')), matching: find.byType(Text))).data, '24');
+    expect(badgeFill(), isNot(filled)); // 24-hour inverts the 12-hour badge
     expect(find.byTooltip('Time format: 24-hour (13:30)'), findsOneWidget);
     // The choice is kept: a new controller does not return to the default of TIM-10.
     expect(withPrefs(prefs).timeFormat, TimeFormat.twentyFourHour);

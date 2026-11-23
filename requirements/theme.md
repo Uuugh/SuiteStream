@@ -9,7 +9,8 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-01.b | done | IBM Plex Mono is used only for what is typed or copied exactly: links, IDs, the Username, the client ID and the stream name. | test/theme/theme_test.dart |
 | THM-01.c | done | The module kind is 17 px at weight 700 (15 px in a phone-width window, DEF-01). | test/theme/theme_test.dart |
 | THM-01.d | done | Default text is 14 px, labels are weight 600, and notes are 13 px. | test/theme/theme_test.dart |
-| THM-02 | planned | Light and dark app colors follow Flutter Material 3 theming with `ColorScheme.fromSeed` and seed `#93B4FF`. App-owned colors follow component defaults and semantic roles from the active theme. Explicit colors from saved or imported data are preserved (UIC-20). | test/theme/theme_test.dart |
+| THM-02 | planned | Light and dark app colors follow Flutter Material 3 theming with `ColorScheme.fromSeed` and seed `#93B4FF`. App-owned colors follow component defaults and semantic roles from the active theme. This applies to the app's own chrome and components and does not define event or calendar colors (THM-09 does). | test/theme/theme_test.dart |
+| THM-02.a | done | Muted text reaches a contrast of 4.5:1 against the card, background and soft surfaces in both light and dark. | test/theme/theme_test.dart |
 | THM-03 | backlog | Icons use one family and style. | — |
 | THM-03.a | backlog | The icon family is Material Symbols Rounded at weight 400. | — |
 | THM-03.b | backlog | Icons are 13 to 24 px. Adding an icon does not change an existing one. | — |
@@ -23,14 +24,10 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-05 | backlog | Buttons share one look, and a status has one look per meaning. | — |
 | THM-05.a | backlog | Icon buttons show their hover state. | — |
 | THM-05.c | backlog | A disabled Cancel \| Save pair cannot be activated. A first change triggers the pulse in THM-06.c. | — |
-| THM-05.d | backlog | A successful operation shows its Done or OK state. | — |
-| THM-05.e | backlog | An operation in progress or waiting for user input shows its working state. | — |
-| THM-05.f | backlog | A problem outside SuiteStream or a refused entry shows a warning state. | — |
-| THM-05.g | backlog | A SuiteStream failure shows an error state. | — |
 | THM-06 | backlog | Every change of state moves as the rows below say. When reduced motion is requested nothing slides, grows, fades, spins or pulses: each state replaces the last, with the same words and hold times. | — |
 | THM-06.a | backlog | A pop-up opens with a fade and a scale from 0.96 to 1 in 0.2 s ease-out. Its backdrop fades in and the page blurs by 2 px. | — |
 | THM-06.b | backlog | The color box and the emoji list open at once, with no motion. | — |
-| THM-06.c | backlog | The pressed side of a Cancel \| Save pair grows over the pair and fades its words in 0.3 s ease; Cancel takes 1 s, in and back. Save pulses once a second, five times, in 1 s ease-out. | — |
+| THM-06.c | backlog | One animation time (DEF-01, SET-03.g; zero when reduced motion is requested) sets every Cancel \| Save animation: the pressed side slides over the whole pair, then pulses gently while its word is held; Save pulses while idle; hover fades in. | test/ui/cancel_save_pair_test.dart |
 | THM-06.d | backlog | A good status word shrinks to its ✓ in 0.5 s ease. A ✓ saved in place fades in in 0.45 s ease (messages 0.3 s). | — |
 | THM-06.e | backlog | The triangles of Expand and Close turn in 0.15 s; Close points up. | — |
 | THM-06.f | backlog | A Status/Action button grows from the bottom 22 px to the whole box in 0.25 s ease while its chip fades out in 0.2 s; its working words fade in in 0.25 s ease-out beside an icon that turns once a second, linear. | — |
@@ -40,19 +37,16 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-07 | backlog | Spacing between content parts uses one set of values. Internal control geometry, calendar cells and anchored header layouts use the component sizes (THM-04), not these. | — |
 | THM-07.a | backlog | There are 5 px between parts: sections, modules, the parts of a module or a dialog, and buttons in a row. | — |
 | THM-07.b | backlog | There is 1 px between a label and its field (the label over it); From and To beside their dates have 5 px. | — |
-| THM-07.c | backlog | Inside a module's border there are 9 px at the sides and 5 px at the top and bottom, the 50 px header unchanged; a box inside a module (Include, an instruction tile) is 5 px by 9 px. The bottom padding is the same folded and open: 5 px in a module. | — |
-| THM-07.d | backlog | Inside every dialog there are 12 px, and the panels of anchored menus have 12 px padding and corners. | — |
 | THM-07.e | backlog | A module's Close line has 2 px less above and below it. | — |
-| THM-07.f | backlog | The calendar key starts 5 px below the calendar. The header's date and navigation gaps are 8 px, tool gaps 5 px, and the wrapped second row has a 6 px gap. | — |
 | THM-08 | backlog | Sections, modules and dialogs follow the shared component appearance. | — |
 | THM-08.a | backlog | In a phone-width window a dialog's corners are square and edge to edge (UIC-01). | — |
 | THM-08.b | backlog | The grip of a handle is two columns of three faint dots, centered on the module's 50 px header or on the rule line. | — |
 | THM-08.c | backlog | The (?) icon is 15 px, raised after the word it explains. | — |
-| THM-09 | planned | The shared color picker and the event color fallback follow the active Material theme. | test/events/event_dialog_test.dart |
-| THM-09.a | planned | Choices in the shared color picker (UIC-10) come from the active Material color scheme. | test/events/event_dialog_test.dart |
-| THM-09.b | planned | An event with no explicit, rule or calendar color uses the active Material color scheme. | test/events/event_dialog_test.dart |
+| THM-09 | backlog | The event color palette (UIC-10) is Google Calendar's eleven colors. | — |
+| THM-09.a | backlog | Tomato #d50000, Flamingo #e67c73, Tangerine #f4511e, Banana #f6bf26, Sage #33b679, Basil #0b8043, Peacock #039be5, Blueberry #3f51b5, Lavender #7986cb, Grape #8e24aa, Graphite #616161. | — |
+| THM-09.b | backlog | The default event color is #1d4ed8. | — |
 | THM-10 | backlog | An event on the calendar has the look below. | — |
-| THM-10.c | backlog | A hidden event's line is struck through on the calendar and in print. | — |
+| THM-10.c | backlog | A hidden or deleted event is shown muted and struck through, on the calendar and in print. | — |
 | THM-10.d | backlog | Event text in the hourly grid is 11.5 px, and an opened event has a shadow. | — |
 | THM-10.e | backlog | An event in a lane is narrower than its share of the column by 3 px (the lane gap) and starts 1 px right of its lane's edge (the lane offset). | — |
 | THM-10.f | backlog | A List row's date column is 150 px wide. | — |

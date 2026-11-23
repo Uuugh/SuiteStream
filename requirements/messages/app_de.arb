@@ -1,4 +1,5 @@
 {
+  "settingsGeneral": "Allgemein",
   "settingsConfigure": "Konfigurieren",
   "settingsSources": "Quellen",
   "settingsFeeds": "Feeds",
@@ -938,5 +939,9 @@
   "addReminder": "Benachrichtigung hinzufügen",
   "reminderRange": "Eine Benachrichtigung ist eine ganze Zahl von Minuten, Stunden, Tagen oder Wochen, bis zu 1 Woche vor dem Beginn.",
   "pressDelay": "Verzögerung beim Gedrückthalten (Sekunden)",
-  "pressDelayInvalid": "Geben Sie eine Verzögerung von 0,2 bis 1,5 Sekunden ein."
+  "pressDelayInvalid": "Geben Sie eine Verzögerung von 0,2 bis 1,5 Sekunden ein.",
+  "pairSaved": "Gespeichert",
+  "pairCancelled": "Abgebrochen",
+  "animationDuration": "Animationen (Sekunden, 0 = keine)",
+  "animationDurationInvalid": "Geben Sie eine Zeit von 0 bis 2 Sekunden ein."
 }

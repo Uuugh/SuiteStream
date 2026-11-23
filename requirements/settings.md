@@ -6,7 +6,7 @@
 |---|---|---|---|
 | SET-01 | backlog | Settings holds the user's own view settings and the shared Site Admin settings, in separate parts, each opened in a dialog. | — |
 | SET-01.a | backlog | Settings has two headings. **User** items are stored on the device (view preferences: Theme, Time Zones, time notation, Search) and can differ from device to device. **Site Admin** items are stored once in the database and are the same on every device and browser: Login, Domains, Google API, Updates (whether to check at all, automatic updating, how often), Default time zone, Backup and Restore, Logo and favicon, more as added. Every item opens as a pop-up. | — |
-| SET-01.b | backlog | Settings lists Sources, Feeds, All Rules, Event Templates and History under Configure. Opening a section shows its body directly. Individual modules retain their expand and collapse behavior (UIC-29). | test/calendar/local_calendar_test.dart |
+| SET-01.b | planned | Settings lists Sources, Feeds, All Rules, Event Templates and History under Configure. Opening a section shows its body directly. Individual modules retain their expand and collapse behavior (UIC-29). | test/calendar/local_calendar_test.dart |
 | SET-01.c | backlog | The Settings pop-up follows the shared dialog rules (UIC-01 to UIC-03) and its Cancel \| Save pair uses the shared size and behavior rules (THM-04.c, UIC-27). | — |
 | SET-01.d | backlog | Settings lists its parts in this order: Updates, Login & password, Domains, Theme last, then any others; each part has its own Cancel \| Save. | — |
 | SET-02 | backlog | The user chooses how time zones and search work on their device. | — |
@@ -17,6 +17,13 @@
 | SET-03.b | backlog | Settings > Theme has a Long-press time, a user setting, that sets how long a press must be held before an event can be dragged (CAL-03); its default and range are in DEF-01. | — |
 | SET-03.c | backlog | Animation intensity and animation duration are Theme settings; their defaults and ranges are in DEF-01, and Reset restores the defaults. | — |
 | SET-03.d | backlog | Module grips are on the left by default; the user may move them to the right. | — |
+| SET-03.e | backlog | Settings > Theme has a Popup shadow setting: how strong the shadow of every popup is (UIC-43); its default and range are in DEF-01. | — |
+| SET-03.f | backlog | Settings > Theme has a Resize bar size setting for the shared resize bar (UIC-16); its default and range are in DEF-01. | — |
+| SET-03.g | planned | Settings > Theme has an Animation time setting, from 0 to 2 seconds (0.5 seconds until changed, 0 means none, DEF-01); it is a user setting kept on the device and is the one time for every Cancel \| Save animation (UIC-27, THM-06.c). It sits in Theme, not in General; SET-03.c scales every animation as a percentage. | test/calendar/ux_test.dart |
+| SET-03.h | backlog | Settings > Theme has a Dropdown text size setting for the shared dropdown (UIC-12); its default and range are in DEF-01. | — |
+| SET-03.i | backlog | Settings > Theme has a Date picker size setting for the shared date picker (UIC-09); its default and range are in DEF-01. | — |
+| SET-03.j | backlog | Settings > Theme has a Status chip time setting: how long a good status word is shown before it shrinks (UIC-28.c); its default and range are in DEF-01. | — |
+| SET-03.k | backlog | Every other common UI element (UIC-44) has its own setting in Settings > Theme with its default in DEF-01, added with the element; a setting that has no number states its default in its own row (module grips: SET-03.d). | — |
 | SET-04 | backlog | The installation has a public address, with optional extra addresses, that feed links and Google use. | — |
 | SET-04.a | backlog | A public address given at installation is saved once. After that the saved address is the only one used (DEP-05), so clearing it leaves it cleared. | — |
 | SET-04.b | backlog | Until a public address is set, setup reports Not set yet and points to Public address settings, the subscription page warns that the address is missing and, before the first destination is configured, setup suggests an address taken from the request. Once an address is set, none of these appear; a setup field can be filled from the address used to open the page. | — |

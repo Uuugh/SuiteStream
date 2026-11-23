@@ -42,3 +42,19 @@ together.
 ## Baseline
 
 None yet. The retired CalendarStream repository (https://github.com/Uuugh/CalendarStream, `scrum/usage.md`) holds an earlier usage baseline only: about 1.3 session % per changed file for a code story (plus or minus 30%), later measured at 0.35 per file in one sprint. Different task type and models; use it only until this project has three finished sprints of its own.
+
+## Status values
+
+Statuses used in `product_backlog.csv` and `product_backlog_done.csv`:
+
+| Status | Meaning |
+|---|---|
+| Backlog | Not started and not committed to a sprint. May still need refinement. |
+| Ready | Refined (clear acceptance criteria, estimated, no open blocker) and small enough to be pulled into a sprint. |
+| In Sprint | Committed to the current sprint and being built. |
+| In Review | Built and tested by the team, but not yet accepted: waiting for the Product Owner to verify it (for example in the browser). Counts as completed only after acceptance. |
+| Done | Accepted by the Product Owner and meets the Definition of Done. Moves to `product_backlog_done.csv`. |
+| Superseded | Replaced by another PBI or requirement; kept for history, not to be built. |
+| Blocked | Cannot proceed because of an open impediment (see `impediment_log.csv`) or a missing decision; say what blocks it in the PBI. |
+
+PBI-011, PBI-013, PBI-014 and PBI-018 stay In Review; they are the Sprint 006 stretch PBI-032 (review closure).

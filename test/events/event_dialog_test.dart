@@ -400,7 +400,7 @@ void main() {
     expect(c.events.single.color, SuiteTokens.light.scheme.primary.toARGB32());
     final bar = find.descendant(
       of: find.byKey(ValueKey('event-${c.events.single.id}')),
-      matching: find.byWidgetPredicate((w) => w is Container && w.color == SuiteTokens.light.scheme.primary),
+      matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == SuiteTokens.light.scheme.primary.withValues(alpha: 0.18)),
     );
     expect(bar, findsOneWidget);
     c.selectEvent(c.events.single.id);

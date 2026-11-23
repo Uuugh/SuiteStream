@@ -12,15 +12,51 @@ const String monoFamily = 'IBM Plex Mono';
 /// DEF-01: phone-width window, 700 px wide or narrower.
 const double phoneMaxWidth = 700;
 
+/// THM-06.c, SET-03.c: the one animation time (DEF-01), which the user can change
+/// in Settings. Cancel | Save slide, word change, pulse and hover all use it.
+const Duration defaultAnimationDuration = Duration(milliseconds: 500);
+const Duration maxAnimationDuration = Duration(seconds: 2);
+
+/// Offers the user's animation time to every widget below it. Without one, the
+/// default applies. Reduced motion (MediaQuery.disableAnimations) always wins.
+class SuiteAnimationScope extends InheritedWidget {
+  const SuiteAnimationScope({super.key, required this.duration, required super.child});
+
+  final Duration duration;
+
+  /// The animation time in effect for [context]: zero when reduced motion is requested.
+  static Duration of(BuildContext context) {
+    if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) return Duration.zero;
+    return context.dependOnInheritedWidgetOfExactType<SuiteAnimationScope>()?.duration ?? defaultAnimationDuration;
+  }
+
+  @override
+  bool updateShouldNotify(SuiteAnimationScope old) => duration != old.duration;
+}
+
 const double suiteControlRadius = 8;
 const double suitePanelRadius = 12;
 const double suiteControlHeight = 34;
 const double suiteCompactControlHeight = 28;
 const double suitePartGap = 5;
 const double suiteStackedZoneGap = 6;
+/// Spacing: all layout padding and gaps come from these, so the app keeps one rhythm.
+/// Literal values elsewhere are only for alignment fixes or component geometry.
 const double suiteDialogPadding = 12;
+const double suitePagePadding = suiteDialogPadding;
+const double suiteLabelGap = 3;
+const double suiteChipRadius = 6;
+/// Vertical padding inside a text field, so a field with one line is [suiteControlHeight] tall.
+const double suiteFieldVerticalPadding = 6.5;
+/// Vertical padding of a dropdown field: its 24 px arrow, not the text, sets the content
+/// height, so the field is still [suiteControlHeight] tall.
+const double suiteDropdownVerticalPadding = (suiteControlHeight - 24) / 2;
+/// Height of the label line over a field (12 px bold text and the small checkbox beside it).
+const double suiteLabelHeight = 17;
+/// Gap between two side-by-side fields, and between the two dialog columns.
+const double suiteColumnGap = 10;
 const Alignment suiteBadgeAnchor = Alignment.bottomRight;
-const Offset suiteBadgeOffset = Offset(1 / 3, 1 / 4);
+const Offset suiteBadgeOffset = Offset(1 / 4, 1 / 6);
 
 ButtonStyle suiteIconButtonStyle({bool compact = false}) {
   final size = Size.square(
@@ -106,7 +142,12 @@ ThemeData buildSuiteTheme(Brightness brightness) {
         borderRadius: BorderRadius.all(Radius.circular(suitePanelRadius)),
       ),
     ),
+    // One height for every single-line text box and dropdown on the site. A multi-line
+    // box overrides it with `constraints: const BoxConstraints()`.
     inputDecorationTheme: const InputDecorationThemeData(
+      isDense: true,
+      constraints: BoxConstraints.tightFor(height: suiteControlHeight),
+      contentPadding: EdgeInsets.symmetric(horizontal: suiteDialogPadding, vertical: suiteFieldVerticalPadding),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(suiteControlRadius)),
       ),

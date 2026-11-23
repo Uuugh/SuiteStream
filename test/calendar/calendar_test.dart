@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
-import 'package:suitestream/src/calendar/month_view.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/calendar/week_layout.dart';
 import 'package:suitestream/src/calendar/week_view.dart';
@@ -61,7 +60,7 @@ void main() {
     await initializeDateFormatting();
   });
 
-  testWidgets('CAL-04: calendar height and hourly density persist in whole lines', (tester) async {
+  testWidgets('CAL-04.d: hourly density persists in whole lines', (tester) async {
     tester.view.physicalSize = const Size(1000, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -75,18 +74,6 @@ void main() {
         );
     final c = controller();
     await tester.pumpWidget(_app(CalendarPage(controller: c)));
-    final month = find.byType(MonthView);
-    final original = tester.getSize(month).height;
-    await tester.tap(find.byTooltip('Collapse the calendar to its minimum height'));
-    await tester.pumpAndSettle();
-    final collapsed = tester.getSize(month).height;
-    expect(collapsed, lessThan(original));
-    expect(c.calendarHeightLines, 0);
-    await tester.tap(find.bySemanticsLabel(RegExp('Stretch the calendar')));
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-    await tester.pumpAndSettle();
-    expect(tester.getSize(month).height, collapsed + monthLineHeight);
-    expect(controller().calendarHeightLines, 1);
     c.view = CalendarView.day;
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('hour-density')));

@@ -1,4 +1,5 @@
 {
+  "settingsGeneral": "Général",
   "settingsConfigure": "Configurer",
   "settingsSources": "Sources",
   "settingsFeeds": "Flux",
@@ -938,5 +939,9 @@
   "addReminder": "Ajouter une notification",
   "reminderRange": "Une notification est un nombre entier de minutes, d’heures, de jours ou de semaines, jusqu’à 1 semaine avant le début.",
   "pressDelay": "Délai d’appui long (secondes)",
-  "pressDelayInvalid": "Utilisez un délai de 0,2 à 1,5 seconde."
+  "pressDelayInvalid": "Utilisez un délai de 0,2 à 1,5 seconde.",
+  "pairSaved": "Enregistré",
+  "pairCancelled": "Annulé",
+  "animationDuration": "Animations (secondes, 0 = aucune)",
+  "animationDurationInvalid": "Utilisez une durée de 0 à 2 secondes."
 }

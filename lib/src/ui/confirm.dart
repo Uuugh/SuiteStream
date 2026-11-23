@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
 import 'cancel_save_pair.dart';
 import 'suite_dialog.dart';
 
@@ -13,16 +12,8 @@ Future<bool> confirmYesNo(BuildContext context, String question) async {
     context: context,
     builder: (ctx) => MessagesScope(
       messages: m,
-      child: AlertDialog(
+      child: SuiteAlertDialog(
         content: Text(question),
-        contentPadding: const EdgeInsets.all(suiteDialogPadding),
-        actionsAlignment: MainAxisAlignment.end,
-        actionsPadding: const EdgeInsets.fromLTRB(
-          suiteDialogPadding,
-          0,
-          suiteDialogPadding,
-          suiteDialogPadding,
-        ),
         actions: [
           // UIC-27.d: a question's answers are the same pair, No | Yes.
           CancelSavePair(
