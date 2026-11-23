@@ -1,4 +1,4 @@
-import 'zones.dart';
+import 'package:suitestream/src/time/zones.dart';
 
 /// TIM-03: the Local time zone is the system (device) zone or a fixed zone
 /// chosen in Settings > Time Zones. Changing it changes only how times are shown.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/ui/popup_motion.dart';
 
 /// Displays one line at a readable size, and provides access to clipped text.
 class OverflowInfoText extends StatelessWidget {
@@ -93,7 +94,8 @@ class InfoPopoverButton extends StatelessWidget {
         ),
       ),
       menuChildren: [
-        ConstrainedBox(
+        SuitePopupMotion(
+          child: ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: math.max(0.0, math.min(360.0, viewport.width - 32)),
             maxHeight: math.max(0.0, viewport.height - 32),
@@ -102,6 +104,7 @@ class InfoPopoverButton extends StatelessWidget {
             primary: false,
             padding: const EdgeInsets.all(suiteDialogPadding),
             child: Text(text, softWrap: true),
+          ),
           ),
         ),
       ],

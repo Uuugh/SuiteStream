@@ -48,7 +48,7 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-09.b | planned | The default event color is #1d4ed8. | test/events/event_logic_test.dart, test/events/event_dialog_test.dart |
 | THM-10 | backlog | An event on the calendar has the look below. | — |
 | THM-10.c | backlog | A hidden or deleted event is shown muted and struck through, on the calendar and in print. | — |
-| THM-10.d | planned | An opened event has a shadow, like every popup (UIC-43). Not built yet (CAL-10.d is backlog; Ito is building it in week_view); no test covers it, popup_shadow_test.dart covers the other popups only. | — |
+| THM-10.d | planned | An opened event has a shadow, like every popup (UIC-43). Built in Week and Day (the opened event and the hour-density menu scale with the Popup shadow setting); other views are not covered, and CAL-10.d (opening an event) is still backlog. | test/events/week_event_style_test.dart ("CAL-10.d, THM-10.d", "SET-03.e"); test/ui/popup_shadow_test.dart covers the other popups |
 | THM-10.g | backlog | Event text in the hourly grid is 11.5 px. | — |
 | THM-10.h | planned | Event text reaches a contrast of 4.5:1 against its own chip or bar in light and dark, whatever the event color (a pale color such as yellow gets dark text in light mode); the same rule covers every view and print. | test/events/event_text_contrast_test.dart (palette contrast over 11 event and 24 calendar colors, both brightnesses) |
 | THM-10.e | backlog | An event in a lane is narrower than its share of the column by 3 px (the lane gap) and starts 1 px right of its lane's edge (the lane offset). | — |

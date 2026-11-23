@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../time/suite_event.dart';
+import 'package:suitestream/src/time/suite_event.dart';
 
 class LocalCalendarStore {
   LocalCalendarStore(this.prefs);

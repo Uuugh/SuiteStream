@@ -1,4 +1,4 @@
-import 'zones.dart';
+import 'package:suitestream/src/time/zones.dart';
 
 /// DEF-01: the limits of an event's fields.
 const int eventTitleLength = 200;

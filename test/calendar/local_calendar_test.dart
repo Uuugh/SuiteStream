@@ -148,7 +148,7 @@ void main() {
     final controller = CalendarController(
       localZone: const LocalZone.system(zone),
       timeFormat: TimeFormat.twelveHour,
-      calendars: [SuiteCalendar(id: 'work', name: 'Work', color: 0xFFAB725F)], // not in the palette
+      calendars: [const SuiteCalendar(id: 'work', name: 'Work', color: 0xFFAB725F)], // not in the palette
       localCalendarStore: LocalCalendarStore(prefs),
     );
     useWindow(tester, const Size(420, 780));

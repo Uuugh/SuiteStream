@@ -6,12 +6,13 @@ import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/time/local_zone.dart';
+import 'package:suitestream/src/time/suite_event.dart';
 import 'package:suitestream/src/time/time_format.dart';
 import 'package:suitestream/src/time/zones.dart';
 
 import 'test_support.dart';
 
-CalendarController withPrefs(SharedPreferences prefs, {List events = const []}) => CalendarController(
+CalendarController withPrefs(SharedPreferences prefs, {List<SuiteEvent> events = const []}) => CalendarController(
       localZone: const LocalZone.system(zone),
       timeFormat: TimeFormat.twelveHour,
       calendars: calendars,

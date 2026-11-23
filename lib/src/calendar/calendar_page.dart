@@ -1,28 +1,31 @@
 
 import 'package:flutter/material.dart';
 
-import '../theme/suite_icons.dart';
-import '../l10n/dates.dart';
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
-import '../theme/theme_mode_controller.dart';
-import '../theme/tokens.dart';
-import '../time/time_format.dart';
-import '../ui/anchored_badge.dart';
-import '../ui/overflow_info.dart';
-import '../ui/suite_dropdown.dart';
-import '../ui/zone_picker.dart';
-import '../ui/zoned_row.dart';
-import 'calendar_controller.dart';
-import 'calendar_print_dialog.dart';
-import 'date_picker.dart';
-import 'event_details.dart';
-import 'event_dialog.dart';
-import 'filter_panel.dart' show CalendarFilterButton;
-import 'list_view.dart';
-import 'month_view.dart';
-import 'swipe_detector.dart';
-import 'week_view.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/l10n/dates.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/theme_mode_controller.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/time_format.dart';
+import 'package:suitestream/src/ui/anchored_badge.dart';
+import 'package:suitestream/src/ui/overflow_info.dart';
+import 'package:suitestream/src/ui/suite_dropdown.dart';
+import 'package:suitestream/src/ui/zone_picker.dart';
+import 'package:suitestream/src/ui/zoned_row.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/calendar_print_dialog.dart';
+import 'package:suitestream/src/calendar/date_picker.dart';
+import 'package:suitestream/src/calendar/event_details.dart';
+import 'package:suitestream/src/calendar/event_dialog.dart';
+import 'package:suitestream/src/calendar/filter_panel.dart' show CalendarFilterButton;
+import 'package:suitestream/src/calendar/list_view.dart';
+import 'package:suitestream/src/calendar/month_view.dart';
+import 'package:suitestream/src/calendar/swipe_detector.dart';
+import 'package:suitestream/src/calendar/week_view.dart';
+
+/// Room a header keeps for a short title before its zones stack (UIC-14). TODO: token in suite_theme.dart (Tanaka).
+const double _shortTitleWidth = 160;
 
 /// CAL-06.c: the view picker's icons.
 IconData viewIcon(CalendarView v) => switch (v) {
@@ -77,7 +80,7 @@ class PageHeader extends StatelessWidget {
           Flexible(child: title),
         ],
         right: right,
-        leftMinWidth: 48 + suitePartGap + 160,
+        leftMinWidth: suiteControlHeight * 2 + _shortTitleWidth, // back button and a short title
         rightMinWidth: suiteControlHeight * right.length,
       );
 }
@@ -103,7 +106,7 @@ class CalendarPage extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(suitePagePadding, suitePartGap, suitePagePadding, suitePagePadding),
           decoration: BoxDecoration(
             color: t.card,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(suitePanelRadius),
             border: Border.all(color: t.line),
           ),
           child: Column(
@@ -200,7 +203,7 @@ class _Header extends StatelessWidget {
       Flexible(
         child: InkWell(
           key: const ValueKey('title'),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(suiteChipRadius),
           onTap: () => pickDate(context, controller),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: suiteLabelGap),
@@ -255,7 +258,7 @@ class _Header extends StatelessWidget {
             decoration: BoxDecoration(
               color: inverted ? t.onAccent : t.accent,
               border: Border.all(color: t.accent),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(suiteChipRadius),
             ),
             child: Text(
               c.timeFormat == TimeFormat.twelveHour ? '12' : '24',
@@ -304,7 +307,7 @@ class _Header extends StatelessWidget {
     return ZonedRow(
       left: left,
       right: right,
-      leftMinWidth: 48 + 48 + 80 + 8 + 160, // previous, next, Today, gap, a short title
+      leftMinWidth: suiteControlHeight * 5 + _shortTitleWidth, // previous, next, Today and a short title (UIC-14)
       rightMinWidth: suiteControlHeight * right.length,
     );
   }

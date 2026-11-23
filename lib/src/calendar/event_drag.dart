@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../time/suite_event.dart';
-import '../time/zones.dart';
+import 'package:suitestream/src/time/suite_event.dart';
+import 'package:suitestream/src/time/zones.dart';
 
 /// DEF-01: the drag step in Week and Day is 15 minutes.
 const int dragStepMinutes = 15;

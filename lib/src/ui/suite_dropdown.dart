@@ -5,6 +5,7 @@ import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/ui/popup_motion.dart';
 
 /// The trigger is an icon button: a 48 px target with a 24 px icon centered in it.
 const double triggerIconSize = 24;
@@ -69,6 +70,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
   final OverlayPortalController _portal = OverlayPortalController();
   final LayerLink _link = LayerLink();
   int? _anchor;
+  bool _open = false;
 
   double _maxMenuWidth = 480;
 
@@ -82,7 +84,22 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
         _maxMenuWidth = (MediaQuery.sizeOf(context).width - left - 8).clamp(140.0, 480.0);
       }
     }
-    _portal.toggle();
+    if (_portal.isShowing) {
+      _close();
+    } else {
+      _open = true;
+      _portal.show();
+    }
+  }
+
+  /// UIC-47: closing runs the popup transition back, then removes the menu.
+  void _close() {
+    if (!_portal.isShowing) return;
+    if (suitePopupDuration(context) == Duration.zero) {
+      _portal.hide();
+    } else if (_open) {
+      setState(() => _open = false);
+    }
   }
 
   void _choose(int index) {
@@ -90,7 +107,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
     final keys = HardwareKeyboard.instance;
     if (!widget.multi) {
       widget.onChanged({item.value});
-      _portal.hide(); // a single choice closes the menu
+      _close(); // a single choice closes the menu
       return;
     }
     final next = {...widget.selected};
@@ -122,20 +139,23 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
           child: Align(
             alignment: Alignment.topLeft,
             child: TapRegion(
-              onTapOutside: (_) => _portal.hide(),
+              onTapOutside: (_) => _close(),
               child: Focus(
                 autofocus: true,
                 onFocusChange: (focused) {
-                  if (!focused) _portal.hide();
+                  if (!focused) _close();
                 },
                 onKeyEvent: (node, event) {
                   if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
-                    _portal.hide();
+                    _close();
                     return KeyEventResult.handled;
                   }
                   return KeyEventResult.ignored;
                 },
-                child: Material(
+                child: SuitePopupMotion(
+                  open: _open,
+                  onClosed: _portal.hide,
+                  child: Material(
                   color: t.card,
                   elevation: popupElevationOf(context),
                   shadowColor: Theme.of(context).colorScheme.shadow,
@@ -158,7 +178,8 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
                       ),
                     ),
                   ),
-                ),
+                  ),
+                  ),
               ),
             ),
           ),

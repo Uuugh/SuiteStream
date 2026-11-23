@@ -3,8 +3,11 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 
 import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/ui/popup_motion.dart';
 
-/// Opens a Material dialog with the shared popup motion.
+/// UIC-47: opens a Material dialog with the shared popup transition (fade, scale from 96 %,
+/// backdrop blur) over the one animation time (SET-03.g); no motion with reduced motion or a
+/// zero time. Every dialog in the app opens through this.
 Future<T?> showSuiteDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -12,17 +15,12 @@ Future<T?> showSuiteDialog<T>({
   bool useSafeArea = true,
   bool animate = true,
 }) {
-  final animatePopup = animate && !MediaQuery.disableAnimationsOf(context);
+  final animatePopup = animate && suitePopupDuration(context) > Duration.zero;
   return showDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
     useSafeArea: useSafeArea,
-    animationStyle: animatePopup
-        ? const AnimationStyle(
-            duration: Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          )
-        : AnimationStyle.noAnimation,
+    animationStyle: animatePopup ? suitePopupAnimationStyle(context) : AnimationStyle.noAnimation,
     builder: (context) {
       final width = MediaQuery.sizeOf(context).width;
       // UIC-43: the popup shadow, scaled by the Popup shadow setting.
@@ -47,9 +45,7 @@ Future<T?> showSuiteDialog<T>({
         animation: transition,
         child: child,
         builder: (context, child) {
-          final progress = animatePopup
-              ? Curves.easeOut.transform(transition.value)
-              : 1.0;
+          final progress = animatePopup ? suitePopupCurve.transform(transition.value) : 1.0;
           final sigma = 2 * progress;
           return Stack(
             fit: StackFit.expand,
@@ -63,7 +59,7 @@ Future<T?> showSuiteDialog<T>({
                     ),
                   ),
                 ),
-              Transform.scale(scale: 0.96 + 0.04 * progress, child: child),
+              Transform.scale(scale: suitePopupStartScale + (1 - suitePopupStartScale) * progress, child: child),
             ],
           );
         },

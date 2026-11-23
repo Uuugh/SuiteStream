@@ -3,17 +3,17 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'src/app/bootstrap.dart';
-import 'src/calendar/calendar_controller.dart';
-import 'src/calendar/calendar_page.dart';
-import 'src/calendar/settings_dialog.dart';
-import 'src/l10n/messages.dart';
-import 'src/theme/suite_icons.dart';
-import 'src/theme/suite_theme.dart';
-import 'src/theme/theme_mode_controller.dart';
-import 'src/theme/theme_settings.dart';
-import 'src/theme/tokens.dart';
-import 'src/time/zones.dart';
+import 'package:suitestream/src/app/bootstrap.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/calendar_page.dart';
+import 'package:suitestream/src/calendar/settings_dialog.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/theme_mode_controller.dart';
+import 'package:suitestream/src/theme/theme_settings.dart';
+import 'package:suitestream/src/theme/tokens.dart';
+import 'package:suitestream/src/time/zones.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +24,7 @@ Future<void> main() async {
     try {
       final info = await FlutterTimezone.getLocalTimezone();
       if (isKnownZone(info)) zone = info;
-    } catch (_) {
+    } on Exception catch (_) {
       // Falls back to UTC when the device zone cannot be read.
     }
     final prefs = await SharedPreferences.getInstance();
@@ -45,7 +45,7 @@ Future<void> main() async {
         themeSettings: ThemeSettings(prefs: prefs),
       ),
     );
-  } catch (error, stack) {
+  } on Object catch (error, stack) {
     debugPrint('SuiteStream startup failed: $error\n$stack');
     runApp(StartupErrorApp(error: error));
   }
@@ -68,9 +68,9 @@ class StartupErrorApp extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(suiteDialogPadding * 2),
+              padding: const EdgeInsets.all(suiteStartupPadding),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 640),
+                constraints: const BoxConstraints(maxWidth: suiteStartupMaxWidth),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,12 +82,12 @@ class StartupErrorApp extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    const SizedBox(height: suiteDialogPadding),
+                    const SizedBox(height: suiteStartupGap),
                     SelectableText(
                       '$error',
                       key: const ValueKey('startup-error-text'),
                     ),
-                    const SizedBox(height: suiteDialogPadding),
+                    const SizedBox(height: suiteStartupGap),
                     const Text(
                       'Reload the page. If it persists, clear the site data for this address.',
                     ),

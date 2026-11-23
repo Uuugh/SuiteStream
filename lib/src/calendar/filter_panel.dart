@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../theme/suite_icons.dart';
-import '../l10n/messages.dart';
-import '../ui/suite_dropdown.dart';
-import 'calendar_controller.dart';
-import 'event_filter.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/ui/suite_dropdown.dart';
+import 'package:suitestream/src/calendar/calendar_controller.dart';
+import 'package:suitestream/src/calendar/event_filter.dart';
 
 String _stateLabel(Messages m, EventState s) => switch (s) {
       EventState.edited => m('stateEdited'),

@@ -1,5 +1,5 @@
-import '../theme/event_colors.dart';
-import '../time/suite_event.dart';
+import 'package:suitestream/src/theme/event_colors.dart';
+import 'package:suitestream/src/time/suite_event.dart';
 
 /// PBI-041: the test calendars Settings > Admin adds and removes. Every id is
 /// fixed, so adding twice replaces instead of duplicating, and removing finds
