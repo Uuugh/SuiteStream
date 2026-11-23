@@ -34,3 +34,6 @@ Proposed change: items that need a running environment that the team lacks (Dock
 - Language is a database setting (DEF-01: anything in Settings). Still open: whether the header time zone picker is device-only.
 - Month chips fill with the full event color: yes (Product Owner: every event is its chosen color in every view). The text rule is PBI-069.
 - The header time zone picker is a calendar header control, so it stays on the device (Product Owner: the header icons are stored on the device).
+- Local calendars: managed in Settings, so the DEF-01 rule applies and they are stored in the database (applied from the rule; the Product Owner did not answer separately).
+- Database retry numbers (60 s wait; 2 s): fixed values marked default only in DEF-01 (applied from the existing "Database connection retry" row; not answered separately).
+- Retrospective approval: still pending.
