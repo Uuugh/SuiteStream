@@ -91,7 +91,7 @@ Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill
 run `flutter analyze` and the full test suite first (continue only if they pass; otherwise report the failures and stop);
 commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
 "Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
-The next sprint starts on a new branch from the updated `main`.
+The next sprint's branch is created from the updated `main` and the sprint is planned; it runs only when the Product Owner says "start" (except the next sprint of a usage-split epic).
 
 ## Automatic completion inside a usage epic
 

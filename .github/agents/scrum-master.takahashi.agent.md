@@ -97,7 +97,7 @@ Anything the Product Owner says after a Sprint has started is input for the next
 
 ## Sprint branches, commits and merging
 
-Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main` at sprint start. Commit and push to it frequently (after each wave of work and whenever tests are green). Approval of the Sprint Retrospective means: analyze and test, commit, push the sprint branch, merge it into `main` and push `main` (see `.github/skills/sprint-retrospective/SKILL.md`, "Commit and merge on approval"). Then start the next sprint on a new branch.
+Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main` at sprint start. Commit and push to it frequently (after each wave of work and whenever tests are green). Approval of the Sprint Retrospective means: analyze and test, commit, push the sprint branch, merge it into `main` and push `main` (see `.github/skills/sprint-retrospective/SKILL.md`, "Commit and merge on approval"). Then create the next sprint's branch and plan it, but do not run it: a sprint starts only when the Product Owner says "start" (approving a retrospective, choosing a scope or answering a question is not a start), and only the next sprint of a usage-split epic starts automatically.
 
 ## Running sprints and epics automatically (entry point for any agent or orchestrator asked to continue the sprints)
 

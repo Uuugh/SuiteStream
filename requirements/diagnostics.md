@@ -19,7 +19,7 @@ Dashboard.
 | DIA-02.e | backlog | A prepared report can be sent as a prefilled GitHub issue, copied, or downloaded as a file; copying and downloading need no GitHub account. | — |
 | DIA-03 | backlog | Monitoring programs can read the app's status and health. | — |
 | DIA-03.a | backlog | SuiteStream provides a status monitoring interface (GET /api/status) that identifies every connection and includes its synchronization status; access follows ACC-02. | — |
-| DIA-03.b | backlog | SuiteStream provides a health monitoring interface (GET /healthz) that does not disclose database details; access follows ACC-01. | — |
+| DIA-03.b | backlog | SuiteStream provides a health monitoring interface (GET /healthz) that does not disclose database details; it needs no sign-in (DIA-03.j). | — |
 | DIA-03.c | backlog | The status interface lists for each source its identifier, name, type, status, message, whether it is running, its attempt, success and change times, next check and event count. | — |
 | DIA-04 | backlog | The Product Owner's working files and the Dashboard are served by the app, behind its login. | — |
 | DIA-04.a | backlog | The Developer's private working files and Good \| Bad verdicts are served by the app itself, behind its login, and are never committed to the repository or published on a public page. | — |
@@ -27,7 +27,7 @@ Dashboard.
 | DIA-04.c | backlog | The Dashboard shows testing progress: the current and recent test runs, each shard's state, and pass or fail per requirement. | — |
 | DIA-01.e | backlog | A container log line reads "date time LEVEL source: message"; the app's own lines and the web server's access lines are kept; the level is info, and the per-request lines of the Google web library are left out. | — |
 | DIA-01.f | backlog | The container log needs a signed-in user (ACC-02). | — |
-| DIA-01.g | backlog | The first start without a login logs msg:firstTimeSetupLog ({code} the setup code of ACC-01), and the one-time unlock link is logged too. | — |
+| DIA-01.g | backlog | The first start with no Authentik administrator logs msg:firstTimeSetupLog ({code} the address or code of Authentik's initial setup, ACC-01); Authentik's recovery is explained in the log when a lockout happens (ACC-08). | — |
 | DIA-01.h | backlog | A connection's download details say the final address, the HTTP status, the elapsed time with the decimals in DEF-01, the byte count, the client used with its version (and, for the browser-like client, the browser it imitates), the reply headers of DIA-01.d and, for CCS+, the list of attempts tried. | — |
 | DIA-01.i | backlog | A new download replaces the connection's captured details and file, which are kept in the database across a restart: one pair per connection. | — |
 | DIA-01.j | backlog | The debug view of a capture needs a signed-in user and accepts only the details or the file of a connection by its identifier; any other name is not found. | — |

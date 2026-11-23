@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
-import 'package:suitestream/src/calendar/event_drag.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';

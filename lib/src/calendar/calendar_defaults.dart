@@ -82,3 +82,21 @@ Duration stepLengthIn(Duration d, LengthUnit unit, int dir) =>
 
 /// The same length, shown in the larger unit when it is a whole number of hours.
 LengthUnit unitFor(Duration d) => d.inMinutes % 60 == 0 ? LengthUnit.hours : LengthUnit.minutes;
+
+/// DEF-01 (Long-press time): press-and-hold starts after 0.2 seconds by default,
+/// within 0.2 to 1.5 seconds. A Settings > Theme value (SET-03.b).
+const Duration defaultLongPress = Duration(milliseconds: 200);
+const Duration minLongPress = Duration(milliseconds: 200);
+const Duration maxLongPress = Duration(milliseconds: 1500);
+
+/// CAL-03.d: the long-press time stays within the limits in DEF-01.
+Duration clampLongPress(Duration d) => d < minLongPress ? minLongPress : (d > maxLongPress ? maxLongPress : d);
+
+/// DEF-01 (Saved or Cancelled shown): the pressed word of Cancel | Save shows
+/// for 1 second by default, within 0.5 to 10 seconds. A Settings > Theme value (SET-03.m).
+const Duration defaultStatusWordTime = Duration(seconds: 1);
+const Duration minStatusWordTime = Duration(milliseconds: 500);
+const Duration maxStatusWordTime = Duration(seconds: 10);
+
+Duration clampStatusWordTime(Duration d) =>
+    d < minStatusWordTime ? minStatusWordTime : (d > maxStatusWordTime ? maxStatusWordTime : d);

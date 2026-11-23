@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/theme/suite_theme.dart' show defaultAnimationDuration;
 import 'package:suitestream/src/theme/event_colors.dart' show nextCalendarColor;
 import 'package:suitestream/src/time/length_input.dart';

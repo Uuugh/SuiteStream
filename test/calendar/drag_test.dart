@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/event_drag.dart';
@@ -95,7 +96,7 @@ void main() {
 
   testWidgets('CAL-03.d: the press must be held for the long-press time', (tester) async {
     useWindow(tester);
-    expect(defaultLongPress, const Duration(milliseconds: 300));
+    expect(defaultLongPress, const Duration(milliseconds: 200));
     final c = makeController(events: [makeEvent('a', 20, 9, title: 'Hold')]);
     await tester.pumpWidget(appFor(CalendarPage(controller: c)));
     final cell = tester.getSize(find.byKey(const ValueKey('day-2026-7-20')));

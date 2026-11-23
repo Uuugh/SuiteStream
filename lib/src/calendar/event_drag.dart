@@ -7,14 +7,6 @@ import 'package:suitestream/src/time/zones.dart';
 /// DEF-01: the drag step in Week and Day is 15 minutes.
 const int dragStepMinutes = 15;
 
-/// DEF-01: the long-press time is 0.3 seconds (0.2 to 1.5 seconds, a device setting).
-const Duration defaultLongPress = Duration(milliseconds: 300);
-const Duration minLongPress = Duration(milliseconds: 200);
-const Duration maxLongPress = Duration(milliseconds: 1500);
-
-/// CAL-03.d: the long-press time stays within the limits in DEF-01.
-Duration clampLongPress(Duration d) => d < minLongPress ? minLongPress : (d > maxLongPress ? maxLongPress : d);
-
 /// CAL-03.b: snaps a minute of the day to the drag step in DEF-01.
 int snapToDragStep(num minutes) => ((minutes / dragStepMinutes).round() * dragStepMinutes).toInt();
 
