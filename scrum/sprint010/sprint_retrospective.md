@@ -31,3 +31,4 @@ Proposed change: items that need a running environment that the team lacks (Dock
 
 - Dependencies approved: app `http` 1.6.0; server shelf 1.4.3, shelf_router 1.1.5, shelf_static 1.2.0, postgres 3.7.0, http 1.6.0, crypto 3.0.7; Authentik tag 2025.10.1 (not yet checked against a running stack) and the Flutter, Dart and Watchtower images as written (unpinned).
 - Resize bar size setting removed from Settings > Theme (PBI-070).
+- Language is a database setting (DEF-01: anything in Settings). Still open: whether the header time zone picker is device-only.
