@@ -104,7 +104,7 @@ A PBI too big for one sprint (about 8 points or more, or one that cannot be test
 - Each child is a story: it has its own PBI id, a size, acceptance criteria and a status, and names its parent epic at the start of its description ("Part of PBI-040: ...").
 - A child must be small enough to finish and test within one sprint and cites the requirement rows it will meet.
 - Only stories are committed to a sprint; an epic is done when all its children are done and accepted by the Product Owner.
-- Already used this way: PBI-010 and PBI-019 (children PBI-029 to 031) and PBI-039 (children PBI-042 to 045). The ScrumBoard (SBD-06) draws the same story, epic and sprint blocks.
+- Already used this way: PBI-010 and PBI-019 (children PBI-029 to 031) and PBI-039 (children PBI-042 to 045). The ScrumBoard (SCB-06) draws the same story, epic and sprint blocks.
 
 ### Epics split to fit usage (Product Owner rule, 2026-11-23)
 

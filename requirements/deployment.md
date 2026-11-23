@@ -8,7 +8,7 @@ Test cells that name `server/test/server_test.dart` are covered by the Dart serv
 | DEP-01.b | backlog | The installer supports Linux, macOS (Docker Desktop) and Windows (WSL). | — |
 | DEP-01.c | backlog | Prebuilt app images run on amd64 and arm64 hosts without building the app locally. | — |
 | DEP-01.d | backlog | The configured user and group identity and the restart policy are applied to the stack. | — |
-| DEP-01.e | backlog | When the database is not ready at startup, the app retries the connection at the interval in DEF-01 for up to the wait in DEF-01; if it still cannot connect, startup fails with a message that the database cannot be reached. | — |
+| DEP-01.e | backlog | When the database is not ready at startup, the app retries the connection at the interval in DEF-01 for up to the wait in DEF-01; if it still cannot connect, startup fails with a message that the database cannot be reached. | server/test/server_test.dart |
 | DEP-01.f | backlog | Deleting the Postgres directory resets the app to a fresh install: sources, destinations, edits, rules, templates, settings, logins, the Google connection and feed links. | — |
 | DEP-01.g | backlog | The database (including the Authentik database) and the calendar data are backed up and restored from Settings > Site Admin (SET-06). A restored database needs the deployment secrets (the database password) to read its encrypted credentials. | — |
 | DEP-02 | backlog | An installer sets up the stack and can be run again to keep it current. | — |

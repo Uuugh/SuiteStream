@@ -25,7 +25,7 @@ Terms: the **Local time zone** is defined in TIM-03; an **event line** is one ev
 | CAL-03.c | planned | In Month the event moves to the day it is dropped on and keeps its time. | test/calendar/drag_test.dart |
 | CAL-03.d | planned | The press must be held for the long-press time set in Settings > Theme (SET-03.b, DEF-01), including the first press after the page opens. | test/calendar/drag_test.dart, test/calendar/first_press_test.dart |
 | CAL-12 | planned | The user can change the end time of an event they may edit by dragging its bottom edge in Week, 5-day and Day; moving the whole event is CAL-03. | test/calendar/event_resize_test.dart |
-| CAL-12.a | planned | In Week, 5-day and Day the bottom edge of an event that can be edited (CAP-01) has a resize handle; Month and List have none. | test/calendar/event_resize_test.dart |
+| CAL-12.a | planned | In Week, 5-day and Day the bottom edge of an event that can be edited (CAP-01) has a resize handle of the fixed theme size (UIC-16, no setting); Month and List have none. | test/calendar/event_resize_test.dart |
 | CAL-12.b | planned | Dragging the handle moves the end time, which snaps to the drag step in DEF-01 (CAL-03.b); the event grows or shrinks under the pointer while it is dragged and shows the end time it would have. | test/calendar/event_resize_test.dart |
 | CAL-12.c | planned | Releasing the handle saves the new end time; the start time and every other field stay as they were. | test/calendar/event_resize_test.dart |
 | CAL-12.d | planned | Pressing Escape during the drag cancels it: the event returns to its former length and nothing is saved. | test/calendar/event_resize_test.dart |

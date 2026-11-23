@@ -27,7 +27,7 @@ Printing what the user sees. Print is its own feature, used by every section of 
 | PRT-02.j | backlog | The range reaches at most the number of days in DEF-01 after From. | — |
 | PRT-02.k | backlog | Print type scales with the sheet so the preview and the paper look alike; the heading is the heading size in DEF-01 times the base size. | — |
 | PRT-02.l | backlog | The printed background matches the background shown in the chosen print theme in Print Preview. | — |
-| PRT-02.m | planned | Printed events display their resolved event colors (EVT-03.i), and hidden events are struck through (THM-10.c). | test/events/event_color_views_test.dart |
+| PRT-02.m | planned | Printed events display their resolved event colors (EVT-03.i) with the event text of THM-10.h, and hidden events are struck through (THM-10.c). | test/events/event_color_views_test.dart |
 | PRT-03 | backlog | The user can print the calendar through Print Preview (PRT-01). | — |
 | PRT-03.a | planned | Until the user chooses an orientation it is automatic: landscape for Month, Week and 5-day sheets, portrait for Day and Itinerary sheets (PRT-01.c). | test/calendar/calendar_print_test.dart |
 | PRT-03.b | backlog | The views that can be printed are the calendar's views (CAL-01.b) and Itinerary, which lists events grouped by day. | — |

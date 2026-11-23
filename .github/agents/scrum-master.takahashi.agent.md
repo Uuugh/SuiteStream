@@ -116,6 +116,6 @@ Rules that must survive (each was set by the Product Owner or learned in Sprints
 - Cancel | Save is the one shared pair (`CancelSavePair`, one animation time from Settings). One 34 px height for every single-line text box and dropdown.
 - `scrum/product_backlog.csv` rows have 10 fields; never put commas inside a text field (use semicolons). Epic rules are in the `backlog-refinement` skill.
 - Web check: `flutter build web --release --no-web-resources-cdn`, served from `build/web` on port 8080 (the service worker caches; ask the Product Owner to hard-refresh). New icon glyphs: add them to `lib/src/theme/suite_icons.dart`, then run `tool/update_icon_font.sh` (rebuilds the font subset; Tanaka owns icons and font assets).
-- Sprint 011 is the ScrumBoard (SBD rows in `requirements/scrumboard.md`, code in `scrum/scrumboard`).
+- Sprint 011 is the ScrumBoard (SCB rows in `requirements/scrumboard.md`, code in `scrum/scrumboard`).
 - Keep chat updates short: one message per wave or decision, not per step.
 - A file missing from a sprint's ownership table belongs to the developer who owned it last (see the previous sprint's table and `handoffs.md`): ask that developer through a handoff instead of editing it. A `scrum/velocity.csv` row is added at the end of every sprint, also inside an epic.
