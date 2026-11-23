@@ -37,7 +37,9 @@ class CancelSavePair extends StatefulWidget {
     this.cancelledWord,
   });
 
-  /// Test hook: when set, replaces the DEF-01 hold for every pair.
+  /// Test hook: when set, replaces the DEF-01 hold for every pair. It stays here because the
+  /// pair is built deep inside dialogs that tests cannot pass a hold to; `test/flutter_test_config.dart`
+  /// sets it to zero for the whole test run (a scope or constructor option would need every caller to forward it).
   @visibleForTesting
   static Duration? debugHold;
 

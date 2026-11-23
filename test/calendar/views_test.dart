@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
 import 'package:suitestream/src/calendar/list_view.dart';
@@ -276,7 +277,8 @@ void main() {
     expect(xs, orderedEquals([...xs]..sort()));
     final marked = tester.widget<TextButton>(find.byKey(const ValueKey('month-7')));
     final other = tester.widget<TextButton>(find.byKey(const ValueKey('month-8')));
-    expect(marked.style, isNotNull);
+    final accent = tester.element(find.byKey(const ValueKey('month-7'))).tokens.accent;
+    expect(marked.style!.backgroundColor!.resolve({}), accent);
     expect(other.style, isNull);
     await tester.tap(find.byKey(const ValueKey('month-8'))); // a month goes back down to its days
     await tester.pumpAndSettle();
@@ -372,7 +374,7 @@ void datePickerTests() {
     expect(find.text('Juillet 2026'), findsWidgets);
     final picked = tester.widget<TextButton>(find.byKey(const ValueKey('pick-day-20')));
     final other = tester.widget<TextButton>(find.byKey(const ValueKey('pick-day-21')));
-    expect(picked.style!.backgroundColor!.resolve({}), isNotNull);
+    expect(picked.style!.backgroundColor!.resolve({}), tester.element(find.byKey(const ValueKey('pick-day-20'))).tokens.accent);
     expect(other.style!.backgroundColor?.resolve({}), isNull);
   });
 }

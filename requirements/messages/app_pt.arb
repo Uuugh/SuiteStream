@@ -994,7 +994,6 @@
   "themeSettingResizeBar": "Tamanho da barra de redimensionamento",
   "themeSettingDropdownText": "Tamanho do texto das listas suspensas",
   "themeSettingDatePicker": "Tamanho do seletor de data",
-  "themeSettingStatusChipTime": "Tempo do chip de estado",
   "themeSettingStatusWordTime": "Tempo de Guardado ou Cancelado",
   "themeSettingAnimationTime": "Tempo de animação",
   "themeSettingsReset": "Redefinir",
@@ -1014,5 +1013,13 @@
   "adminRemoveConfirm": "Remover os calendários de teste e os seus eventos? Os seus calendários e eventos não são alterados.",
   "adminAdded": "Calendários de teste adicionados.",
   "adminRemoved": "Dados de teste removidos.",
-  "adminFailed": "Não foi possível guardar. Tente novamente."
+  "adminFailed": "Não foi possível guardar. Tente novamente.",
+  "itemSelected": "selecionado",
+  "syncNotConfigured": "As configurações ficam guardadas neste dispositivo.",
+  "syncSignedOut": "Sessão terminada. As configurações ficam neste dispositivo até você entrar.",
+  "syncSyncing": "Guardando configurações...",
+  "syncOk": "As configurações estão guardadas na sua conta.",
+  "syncOffline": "Não foi possível contactar o servidor. As configurações ficam neste dispositivo e serão enviadas mais tarde.",
+  "syncSignIn": "Entrar",
+  "syncSignedInAs": "Sessão iniciada como {name}"
 }

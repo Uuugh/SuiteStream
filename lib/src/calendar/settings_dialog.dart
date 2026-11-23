@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'package:suitestream/src/app/settings_sync.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
@@ -26,6 +28,7 @@ Future<void> openSettingsDialog(
 }) {
   final msgs = context.msg;
   final saved = prefs;
+  final sync = SettingsSyncScope.maybeOf(context);
   return showSuiteDialog<void>(
     context: context,
     builder: (dialogContext) => MessagesScope(
@@ -35,13 +38,20 @@ Future<void> openSettingsDialog(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 900),
           child: PopupSizeLock(
-            child: SettingsDialog(controller: c, prefs: saved),
+            child: _withSync(sync, SettingsDialog(controller: c, prefs: saved)),
           ),
         ),
       ),
     ),
   );
 }
+
+Widget _withSync(SettingsSync? sync, Widget child) =>
+    sync == null ? child : SettingsSyncScope(sync: sync, child: child);
+
+/// PBI-037 / DEF-01: every pane calls this after it changes a setting; the sync sends the
+/// settings to the database after a short pause (none when no sync is provided).
+void pushSettingsSync(BuildContext context) => SettingsSyncScope.maybeOf(context)?.push();
 
 /// The panes of Settings, in menu order; Admin is last, at the bottom (SET-14).
 enum SettingsSection {
@@ -196,6 +206,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
   void _choose(SettingsSection section) {
     if (section == _section) return;
     _leave.run();
+    pushSettingsSync(context);
     setState(() => _section = section);
   }
 
@@ -305,9 +316,14 @@ class _SettingsDialogState extends State<SettingsDialog> {
     final wide = size.width >= 640;
     final height = (size.height - 96).clamp(360.0, 600.0);
     // UIC-45: closing Settings (close button, back button or barrier) saves the open pane.
+    // The sync sends the settings once more on close (PBI-037).
+    final sync = SettingsSyncScope.maybeOf(context);
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) _leave.run();
+        if (didPop) {
+          _leave.run();
+          sync?.push();
+        }
       },
       child: Padding(
         key: const ValueKey('settings-dialog'),
@@ -396,16 +412,73 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 }
 
-/// Settings > General: nothing is set here at present. The press-and-hold delay (SET-03.b)
-/// moved to Settings > Theme; the page says so instead of staying blank.
+/// Settings > General: nothing is set here at present (the press-and-hold delay, SET-03.b,
+/// moved to Settings > Theme), so the page says so, and shows where the settings are kept
+/// (the sync row, SET-15).
 class _GeneralPane extends StatelessWidget {
   const _GeneralPane();
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Text(
-      context.msg('settingsGeneralEmpty'),
-      style: SuiteText.label(context.tokens),
-    ),
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const SettingsSyncRow(),
+      Expanded(
+        child: Center(
+          child: Text(
+            context.msg('settingsGeneralEmpty'),
+            style: SuiteText.label(context.tokens),
+          ),
+        ),
+      ),
+    ],
   );
+}
+
+/// SET-15: the state of the settings sync as a word, and a Sign in button only when the user
+/// is signed out (it takes the browser to the sign-in page and back, DEP-01). Shows the
+/// device note when no sync is provided.
+class SettingsSyncRow extends StatelessWidget {
+  const SettingsSyncRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final sync = SettingsSyncScope.maybeOf(context);
+    if (sync == null) return _row(context, SyncState.notConfigured, null);
+    return ValueListenableBuilder<SyncState>(
+      valueListenable: sync.state,
+      builder: (context, state, _) => _row(context, state, sync),
+    );
+  }
+
+  Widget _row(BuildContext context, SyncState state, SettingsSync? sync) {
+    final m = context.msg;
+    final t = context.tokens;
+    final user = sync?.userName;
+    final text = switch (state) {
+      SyncState.notConfigured => m('syncNotConfigured'),
+      SyncState.signedOut => m('syncSignedOut'),
+      SyncState.syncing => m('syncSyncing'),
+      SyncState.ok => user == null ? m('syncOk') : '${m('syncSignedInAs', {'name': user})} ${m('syncOk')}',
+      SyncState.offline => m('syncOffline'),
+    };
+    final signIn = sync?.signInUrl;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: suitePartGap),
+      child: Wrap(
+        key: const ValueKey('settings-sync-row'),
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: suitePartGap,
+        children: [
+          Text(text, key: const ValueKey('settings-sync-state'), style: SuiteText.label(t).copyWith(color: t.muted)),
+          if (state == SyncState.signedOut && signIn != null)
+            TextButton(
+              key: const ValueKey('settings-sync-sign-in'),
+              onPressed: () => launchUrl(signIn, webOnlyWindowName: '_self'),
+              child: Text(m('syncSignIn')),
+            ),
+        ],
+      ),
+    );
+  }
 }

@@ -221,7 +221,7 @@ class _CalendarNameDialogState extends State<_CalendarNameDialog> {
               if (mounted && picked != null) setState(() => _color = picked);
             },
             child: InputDecorator(
-              decoration: InputDecoration(labelText: m.has('calendarColor') ? m('calendarColor') : 'Calendar color'),
+              decoration: InputDecoration(labelText: m('calendarColor')),
               child: Row(
                 children: [
                   CircleAvatar(key: const ValueKey('calendar-color-swatch'), radius: _dotRadius, backgroundColor: Color(_color)),

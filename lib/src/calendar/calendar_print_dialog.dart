@@ -113,7 +113,7 @@ class _PrintPreview extends StatelessWidget {
           saveLabel: messages('calendarPrint'),
           onCancel: () => Navigator.of(context).pop(),
           saveEnabled: calendarPrintingAvailable,
-          onSave: () => printCalendarHtml(sheet.html(messages)),
+          onSave: () => printCalendarHtml(sheet.html(messages), messages('calendarPrint')),
         ),
       ],
     );

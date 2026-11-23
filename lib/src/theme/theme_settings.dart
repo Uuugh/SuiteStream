@@ -1,5 +1,20 @@
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/theme_mode_controller.dart';
+
+/// Every SharedPreferences key the theme settings write (PBI-037: the settings sync sends these
+/// to the database). Includes the animation time, which the calendar controller shares.
+const Set<String> themeSettingsPrefsKeys = {
+  ThemeSettings.keyPopupShadow,
+  ThemeSettings.keyResizeBar,
+  ThemeSettings.keyDropdownText,
+  ThemeSettings.keyDatePicker,
+  ThemeSettings.keyStatusChipMs,
+  ThemeSettings.keyAnimationMs,
+  ThemeModeController.prefsKey,
+};
 
 /// UIC-44, SET-03.e to SET-03.k: the user's settings for the common UI elements, kept on
 /// the device. Defaults and ranges are the DEF-01 rows (percent values: 100 = as designed).
@@ -11,10 +26,10 @@ class ThemeSettingsLimits {
   static const double dropdownTextDefault = 100, dropdownTextMin = 75, dropdownTextMax = 150;
   static const double datePickerDefault = 100, datePickerMin = 75, datePickerMax = 150;
   static const Duration statusChipDefault = Duration(milliseconds: 2400);
-  static const Duration statusChipMin = Duration(milliseconds: 500);
-  static const Duration statusChipMax = Duration(seconds: 10);
-  static const Duration animationDefault = Duration(milliseconds: 500);
-  static const Duration animationMax = Duration(seconds: 2);
+  static const Duration statusChipMin = minStatusWordTime;
+  static const Duration statusChipMax = maxStatusWordTime;
+  static const Duration animationDefault = defaultAnimationDuration;
+  static const Duration animationMax = maxAnimationDuration;
 }
 
 /// The settings model. Each setter clamps to its DEF-01 range, saves, and notifies.

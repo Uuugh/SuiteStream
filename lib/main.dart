@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:suitestream/src/app/bootstrap.dart';
+import 'package:suitestream/src/app/settings_sync.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
 import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/calendar_page.dart';
@@ -29,6 +30,15 @@ Future<void> main() async {
       // Falls back to UTC when the device zone cannot be read.
     }
     final prefs = await SharedPreferences.getInstance();
+    // PBI-037: the server copy of the Settings is loaded before any model reads the preferences.
+    final sync = SettingsSync.forPlatform(
+      prefs: prefs,
+      keys: {
+        ...settingsSyncBaseKeys,
+        ...themeSettingsPrefsKeys,
+      },
+    );
+    await sync.pull();
     // SHL-02.a: the page language follows the device language when it is offered, otherwise English.
     final deviceLanguage =
         WidgetsBinding.instance.platformDispatcher.locale.languageCode;
@@ -45,6 +55,7 @@ Future<void> main() async {
         themeMode: ThemeModeController(prefs: prefs),
         themeSettings: ThemeSettings(prefs: prefs),
         timingSettings: TimingSettings(prefs: prefs),
+        settingsSync: sync,
       ),
     );
   } on Object catch (error, stack) {
@@ -72,7 +83,9 @@ class StartupErrorApp extends StatelessWidget {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(suiteStartupPadding),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: suiteStartupMaxWidth),
+                constraints: const BoxConstraints(
+                  maxWidth: suiteStartupMaxWidth,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,6 +125,7 @@ class SuiteStreamApp extends StatefulWidget {
     required this.themeMode,
     this.themeSettings,
     this.timingSettings,
+    this.settingsSync,
   });
 
   final CalendarController controller;
@@ -124,6 +138,9 @@ class SuiteStreamApp extends StatefulWidget {
   /// SET-03.m: the Saved or Cancelled shown time, one instance for the whole app (null = default).
   final TimingSettings? timingSettings;
 
+  /// PBI-037: the Settings copy in the database (null = device only).
+  final SettingsSync? settingsSync;
+
   @override
   State<SuiteStreamApp> createState() => _SuiteStreamAppState();
 }
@@ -131,6 +148,11 @@ class SuiteStreamApp extends StatefulWidget {
 class _SuiteStreamAppState extends State<SuiteStreamApp> {
   late final ThemeSettings settings = widget.themeSettings ?? ThemeSettings();
   late final TimingSettings timing = widget.timingSettings ?? TimingSettings();
+
+  Widget _syncScope(Widget child) {
+    final sync = widget.settingsSync;
+    return sync == null ? child : SettingsSyncScope(sync: sync, child: child);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,24 +167,26 @@ class _SuiteStreamAppState extends State<SuiteStreamApp> {
         theme: buildSuiteTheme(Brightness.light),
         darkTheme: buildSuiteTheme(Brightness.dark),
         themeMode: themeMode.mode,
-        builder: (context, child) => ListenableBuilder(
-          listenable: controller,
-          child: child!,
-          builder: (context, child) => SuiteAnimationScope(
-            duration: controller.animationDuration,
-            child: ThemeModeScope(
-              controller: themeMode,
-              child: ThemeSettingsScope(
-                settings: settings,
-                child: TimingSettingsScope(
-                  settings: timing,
-                  // The status word time reaches every Cancel | Save pair live.
-                  child: ListenableBuilder(
-                    listenable: timing,
-                    child: child!,
-                    builder: (context, child) => SuiteStatusWordScope(
-                      duration: timing.statusWordTime,
-                      child: MessagesScope(messages: messages, child: child!),
+        builder: (context, child) => _syncScope(
+          ListenableBuilder(
+            listenable: controller,
+            child: child!,
+            builder: (context, child) => SuiteAnimationScope(
+              duration: controller.animationDuration,
+              child: ThemeModeScope(
+                controller: themeMode,
+                child: ThemeSettingsScope(
+                  settings: settings,
+                  child: TimingSettingsScope(
+                    settings: timing,
+                    // The status word time reaches every Cancel | Save pair live.
+                    child: ListenableBuilder(
+                      listenable: timing,
+                      child: child!,
+                      builder: (context, child) => SuiteStatusWordScope(
+                        duration: timing.statusWordTime,
+                        child: MessagesScope(messages: messages, child: child!),
+                      ),
                     ),
                   ),
                 ),

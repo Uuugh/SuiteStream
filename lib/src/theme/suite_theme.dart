@@ -75,9 +75,6 @@ const double suiteColorPickerWidth = 7 * suiteSwatchSize + 6 * suiteSwatchGap;
 const double suiteLocalCalendarsDialogWidth = 440;
 const double suiteDefaultAvatarRadius = 6;
 const Size suiteResizeBarSize = Size(29, 8);
-const double suiteListColorBarWidth = 4;
-const double suiteListColorBarHeight = 18;
-const double suiteListColorBarGap = 8;
 /// Header sizes (Nakamura, UIC-14): room a short title keeps before the zones stack, the
 /// clock badge text and padding, the app bar height and the logo.
 const double suiteHeaderShortTitleWidth = 160;

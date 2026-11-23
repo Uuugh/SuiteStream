@@ -57,7 +57,7 @@ Future<_Rig> _open(WidgetTester tester, SharedPreferences prefs, [Size size = _t
 void main() {
   setUpAll(initZones);
 
-  test('SET-03.e to SET-03.j: a typed percent or number of seconds is read within its range', () {
+  test('SET-03.e to SET-03.i, SET-03.m: a typed percent or number of seconds is read within its range', () {
     expect(parsePercentInput('125 %', 0, 200), 125);
     expect(parsePercentInput('87,5', 75, 150), 87.5);
     expect(parsePercentInput('201', 0, 200), isNull);
@@ -79,7 +79,6 @@ void main() {
     expect(_text(tester, 'setting-resize-bar'), '100 %');
     expect(_text(tester, 'setting-dropdown-text'), '100 %');
     expect(_text(tester, 'setting-date-picker'), '100 %');
-    expect(_text(tester, 'setting-status-chip'), '2.4 s');
     expect(find.byKey(const ValueKey('setting-theme-reset')), findsOneWidget);
     // UIC-46, SET-01.g: Reset (in the dialog footer, with an icon) is in the error role.
     final reset = find.byKey(const ValueKey('setting-theme-reset'));
@@ -109,7 +108,7 @@ void main() {
     expect(rig.controller.animationDuration, const Duration(milliseconds: 100));
   });
 
-  testWidgets('SET-03.e, SET-03.f, SET-03.h, SET-03.i, SET-03.j: each setting changes its element setting, within its range', (tester) async {
+  testWidgets('SET-03.e, SET-03.f, SET-03.h, SET-03.i: each setting changes its element setting, within its range', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final rig = await _open(tester, prefs);
@@ -117,13 +116,11 @@ void main() {
     await tester.enterText(find.byKey(const ValueKey('setting-resize-bar')), '60 %');
     await tester.enterText(find.byKey(const ValueKey('setting-dropdown-text')), '120');
     await tester.enterText(find.byKey(const ValueKey('setting-date-picker')), '80');
-    await tester.enterText(find.byKey(const ValueKey('setting-status-chip')), '5');
     await tester.pump();
     expect(rig.settings.popupShadow, 150);
     expect(rig.settings.resizeBar, 60);
     expect(rig.settings.dropdownText, 120);
     expect(rig.settings.datePicker, 80);
-    expect(rig.settings.statusChipTime, const Duration(seconds: 5));
     // A value outside the range shows it and changes nothing.
     await tester.enterText(find.byKey(const ValueKey('setting-popup-shadow')), '500');
     await tester.pump();
@@ -148,7 +145,6 @@ void main() {
     final rig = await _open(tester, prefs);
     await tester.enterText(find.byKey(const ValueKey('setting-popup-shadow')), '150');
     await tester.enterText(find.byKey(const ValueKey('setting-animation')), '1.5');
-    await tester.enterText(find.byKey(const ValueKey('setting-status-chip')), '7');
     await tester.enterText(find.byKey(const ValueKey('setting-press-delay')), '1.2');
     await tester.pump();
     expect(rig.settings.isDefault, isFalse);
@@ -160,7 +156,6 @@ void main() {
     expect(_text(tester, 'setting-press-delay'), '0.2 s');
     expect(_text(tester, 'setting-popup-shadow'), '100 %');
     expect(_text(tester, 'setting-animation'), '0.5 s');
-    expect(_text(tester, 'setting-status-chip'), '2.4 s');
     expect(ThemeSettings(prefs: prefs).isDefault, isTrue);
   });
 

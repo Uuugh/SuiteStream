@@ -994,7 +994,6 @@
   "themeSettingResizeBar": "Grootte van de formaatbalk",
   "themeSettingDropdownText": "Tekstgrootte van keuzelijsten",
   "themeSettingDatePicker": "Grootte van de datumkiezer",
-  "themeSettingStatusChipTime": "Duur van de statuschip",
   "themeSettingStatusWordTime": "Duur van Opgeslagen of Geannuleerd",
   "themeSettingAnimationTime": "Animatietijd",
   "themeSettingsReset": "Opnieuw instellen",
@@ -1014,5 +1013,13 @@
   "adminRemoveConfirm": "De testagenda's en hun afspraken verwijderen? Uw eigen agenda's en afspraken blijven ongewijzigd.",
   "adminAdded": "Testagenda's toegevoegd.",
   "adminRemoved": "Testgegevens verwijderd.",
-  "adminFailed": "Opslaan mislukt. Probeer het opnieuw."
+  "adminFailed": "Opslaan mislukt. Probeer het opnieuw.",
+  "itemSelected": "geselecteerd",
+  "syncNotConfigured": "De instellingen worden op dit apparaat bewaard.",
+  "syncSignedOut": "Afgemeld. De instellingen blijven op dit apparaat tot je inlogt.",
+  "syncSyncing": "Instellingen opslaan...",
+  "syncOk": "De instellingen zijn in je account opgeslagen.",
+  "syncOffline": "De server is niet bereikbaar. De instellingen blijven op dit apparaat en worden later opnieuw verzonden.",
+  "syncSignIn": "Inloggen",
+  "syncSignedInAs": "Ingelogd als {name}"
 }

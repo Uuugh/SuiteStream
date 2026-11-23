@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/theme/suite_icons.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
@@ -194,6 +195,12 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
     );
   }
 
+  /// Screen-reader label of the check mark (arb key `itemSelected`); none until the key exists.
+  static String? _selectedLabel(BuildContext context) {
+    final m = context.dependOnInheritedWidgetOfExactType<MessagesScope>()?.messages;
+    return m != null && m.has('itemSelected') ? m('itemSelected') : null;
+  }
+
   Widget _actionRow(BuildContext context, DropdownAction a) => _actionRowImpl(context, a);
 
   Widget _row(BuildContext context, int i) {
@@ -216,7 +223,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
             else if (item.icon != null) ...[Icon(item.icon, size: triggerIconSize), const SizedBox(width: 12)],
             Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: SuiteText.bodySize * ThemeSettingsScope.of(context).dropdownText / 100)))),
             // The check's place is always reserved, so choosing or clearing an item never resizes the menu.
-            SizedBox(width: 18, child: selected ? Icon(SuiteIcons.check, size: 18, color: t.accent, semanticLabel: 'selected') : null),
+            SizedBox(width: 18, child: selected ? Icon(SuiteIcons.check, size: 18, color: t.accent, semanticLabel: _selectedLabel(context)) : null),
           ],
         ),
       ),

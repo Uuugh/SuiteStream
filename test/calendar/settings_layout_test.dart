@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 import 'package:suitestream/src/time/zones.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
 import 'package:suitestream/src/ui/resize_bar.dart';
@@ -45,7 +46,7 @@ void main() {
       }
       final order = [..._top, ..._bottom].map((k) => pos(tester.getRect(find.byKey(ValueKey(k))))).toList();
       expect(order, [...order]..sort());
-      expect(tester.widget<Divider>(find.byKey(const ValueKey('settings-menu-rule'))).color, isNotNull);
+      expect(tester.widget<Divider>(find.byKey(const ValueKey('settings-menu-rule'))).color, tester.element(find.byKey(const ValueKey('settings-menu-rule'))).tokens.line);
       if (wide) {
         // The three bottom pages sit at the bottom of the menu, below the long gap.
         final menuBottom = tester.getRect(find.byKey(const ValueKey('settings-admin'))).bottom;

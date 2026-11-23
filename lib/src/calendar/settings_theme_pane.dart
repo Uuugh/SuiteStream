@@ -138,7 +138,6 @@ final List<_Setting> _settings = [
   _seconds('press-delay', 'themeSettingPressDelay', minLongPress, maxLongPress, (s, c) => c.controller.longPress, (s, c, v) => c.controller.longPress = v),
   // SET-03.m: how long the word of a pressed Cancel | Save pair stays shown (DEF-01).
   _seconds('status-word', 'themeSettingStatusWordTime', minStatusWordTime, maxStatusWordTime, (s, c) => c.timing.statusWordTime, (s, c, v) => c.timing.statusWordTime = v),
-  _seconds('status-chip', 'themeSettingStatusChipTime', ThemeSettingsLimits.statusChipMin, ThemeSettingsLimits.statusChipMax, (s, c) => s.statusChipTime, (s, c, v) => s.statusChipTime = v),
   _percent('popup-shadow', 'themeSettingPopupShadow', ThemeSettingsLimits.popupShadowMin, ThemeSettingsLimits.popupShadowMax, (s) => s.popupShadow, (s, v) => s.popupShadow = v),
   _percent('resize-bar', 'themeSettingResizeBar', ThemeSettingsLimits.resizeBarMin, ThemeSettingsLimits.resizeBarMax, (s) => s.resizeBar, (s, v) => s.resizeBar = v),
   _percent('dropdown-text', 'themeSettingDropdownText', ThemeSettingsLimits.dropdownTextMin, ThemeSettingsLimits.dropdownTextMax, (s) => s.dropdownText, (s, v) => s.dropdownText = v),
@@ -212,6 +211,7 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
     final m = context.msg;
     final ok = s.apply(_theme, _env, _fields[s.id]!.text);
     setState(() => _errors[s.id] = ok ? null : m('rangeInvalid', {'min': s.rangeMin, 'max': s.rangeMax}));
+    if (ok) pushSettingsSync(context);
   }
 
   void _step(_Setting s, int dir) {
@@ -225,6 +225,7 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
     widget.controller.animationDuration = ThemeSettingsLimits.animationDefault;
     widget.controller.longPress = defaultLongPress;
     _timing.reset();
+    pushSettingsSync(context);
     if (!mounted) return;
     setState(() {
       for (final s in _settings) {
@@ -266,7 +267,10 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
               avatar: Icon(ThemeModeIcons.of(value), size: 18),
               label: Text(m(label)),
               selected: mode.mode == value,
-              onSelected: (_) => mode.mode = value,
+              onSelected: (_) {
+                mode.mode = value;
+                pushSettingsSync(context);
+              },
             ),
         ],
       ),

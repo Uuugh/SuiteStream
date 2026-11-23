@@ -85,21 +85,12 @@ class _DragMovableState extends State<DragMovable> {
           child: IgnorePointer(
             child: Material(
               key: const ValueKey('drag-ghost'),
-              type: MaterialType.transparency,
-              child: Opacity(
-                opacity: 0.9,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 8,
-                        color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.4),
-                      ),
-                    ],
-                  ),
-                  child: widget.child,
-                ),
-              ),
+              // A token elevation: no blur shadow and no Opacity layer, so the first lift
+              // compiles no extra shader (PBI-058).
+              color: Colors.transparent,
+              elevation: suitePopupElevation,
+              shadowColor: Theme.of(context).colorScheme.shadow,
+              child: widget.child,
             ),
           ),
         ),

@@ -34,7 +34,7 @@ class AgendaView extends StatelessWidget {
         onTap: () => openEventDialog(context, c, day: day),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+          padding: const EdgeInsets.fromLTRB(suitePagePadding, 10, suitePagePadding, 4),
           child: Text(
             dayTitle(locale, day),
             style: SuiteText.label(t).copyWith(color: isToday ? t.accent : t.text),
@@ -56,8 +56,8 @@ class AgendaView extends StatelessWidget {
           onTap: () => c.selectEvent(e.id), // EVT-07
           // EVT-03.b: the row fills with the event's own color; text readable on it (THM-10.h).
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            margin: const EdgeInsets.symmetric(horizontal: suitePagePadding, vertical: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: suiteLabelGap),
             color: fill,
             child: Row(
               children: [

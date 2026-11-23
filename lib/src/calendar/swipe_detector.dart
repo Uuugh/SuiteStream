@@ -17,7 +17,7 @@ class SwipeDetector extends StatefulWidget {
     required this.onNext,
     required this.onPrevious,
     required this.child,
-    this.holdTime = const Duration(milliseconds: 500),
+    required this.holdTime,
   });
 
   /// A press held still this long before it moves is a long-press drag (CAL-03.a),

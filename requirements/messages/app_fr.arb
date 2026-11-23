@@ -994,7 +994,6 @@
   "themeSettingResizeBar": "Taille de la barre de redimensionnement",
   "themeSettingDropdownText": "Taille du texte des listes déroulantes",
   "themeSettingDatePicker": "Taille du sélecteur de date",
-  "themeSettingStatusChipTime": "Durée de la pastille d'état",
   "themeSettingStatusWordTime": "Durée d'affichage de Enregistré ou Annulé",
   "themeSettingAnimationTime": "Durée d'animation",
   "themeSettingsReset": "Réinitialiser",
@@ -1014,5 +1013,13 @@
   "adminRemoveConfirm": "Supprimer les calendriers de test et leurs événements ? Vos calendriers et événements ne changent pas.",
   "adminAdded": "Calendriers de test ajoutés.",
   "adminRemoved": "Données de test supprimées.",
-  "adminFailed": "Enregistrement impossible. Réessayez."
+  "adminFailed": "Enregistrement impossible. Réessayez.",
+  "itemSelected": "sélectionné",
+  "syncNotConfigured": "Les réglages sont conservés sur cet appareil.",
+  "syncSignedOut": "Déconnecté. Les réglages restent sur cet appareil jusqu'à votre connexion.",
+  "syncSyncing": "Enregistrement des réglages...",
+  "syncOk": "Les réglages sont enregistrés dans votre compte.",
+  "syncOffline": "Le serveur est inaccessible. Les réglages restent sur cet appareil et seront renvoyés plus tard.",
+  "syncSignIn": "Se connecter",
+  "syncSignedInAs": "Connecté en tant que {name}"
 }

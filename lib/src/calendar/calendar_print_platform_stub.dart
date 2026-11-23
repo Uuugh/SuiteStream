@@ -1,3 +1,3 @@
 const calendarPrintingAvailable = false;
 
-void printCalendarHtml(String html) {}
+void printCalendarHtml(String html, String title) {}

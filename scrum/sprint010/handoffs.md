@@ -67,3 +67,64 @@ Postgres store (no Postgres here), Dockerfile, compose, Authentik setup, Watchto
 
 ### CAL-09.c (print)
 `calendar_print_dialog.dart` now prints the start time only for a single-day event (`multiDayLabel` otherwise); `calendar_print_test.dart` updated. Ito: cite it in CAL-09.c if wanted.
+
+## From Yamamoto to Tanaka (single source for limits, DEF-01 rows, status chip)
+- `lib/src/theme/theme_settings.dart` `ThemeSettingsLimits`: replace `statusChipMin` / `statusChipMax` with `minStatusWordTime` / `maxStatusWordTime` from `calendar_defaults.dart` (import it), or delete the status chip field of `ThemeSettings` (`statusChipTime`, `keyStatusChipMs`, `statusChipDefault`) and its tests in `test/theme/theme_settings_test.dart`: nothing reads it any more. The Settings > Theme pane no longer shows the Status chip time row (and `themeSettingStatusChipTime` is out of all six arb files); SET-03.j is now `backlog` until the UIC-28 chip exists. Also in `common.md`: the DEF-01 row "Status chip time (SET-03.j)" can become `backlog`-noted or be removed with the field.
+- Animation time: `ThemeSettingsLimits.animationDefault` / `animationMax` and `suite_theme.dart:19-20` are two copies of one DEF-01 value; keep it in `suite_theme.dart` and make `ThemeSettingsLimits` point to it (the pane uses `ThemeSettingsLimits.animationDefault` and `.animationMax`; tell me if the names move).
+- DEF-01 (`common.md`): settings.md SET-08 / SET-08.b / SET-08.c now say "the value in DEF-01" and cite the existing rows "Default event length" (1 hour, 5 minutes to 24 hours) and "New event start" (9:00). No new row needed, except optionally: "Arrow step, length" 15 minutes and "Arrow step, press-and-hold" 0.1 seconds (UIC-41 states them in prose, in your file).
+
+## From Tanaka to Nakamura (PBI-037 key set), Yamamoto (limits done), all (wave 3)
+- Nakamura: `const Set<String> themeSettingsPrefsKeys` in `lib/src/theme/theme_settings.dart` holds every theme key: `theme.popupShadow`, `theme.resizeBar`, `theme.dropdownText`, `theme.datePicker`, `theme.statusChipMs`, `view.animationMs` (shared with the calendar controller) and `theme.mode`. Pass it in `main.dart`. `test/theme/theme_prefs_keys_test.dart` writes every setter once and requires the written keys to equal the set. Not in the set: `timing.statusWordMs` (calendar_defaults.dart) and the calendar keys; add those yourself.
+- Yamamoto: `ThemeSettingsLimits` now points at `minStatusWordTime`/`maxStatusWordTime` (calendar_defaults.dart) and `defaultAnimationDuration`/`maxAnimationDuration` (suite_theme.dart); names unchanged. I kept the status chip field (SET-03.j is backlog); its DEF-01 row is marked. Added DEF-01 rows "Arrow step, length" (15 minutes) and "Arrow step, press-and-hold" (0.1 seconds); UIC-41 now cites them. SET-08 needs no new row (rows exist).
+- common.md: the 26 short rows have ` — |`; CAP-02 is now `backlog` (no test). DEF-01 names only the header controls (view, filter, header time zone, hour height) as exceptions and says settings are cached on the device until PBI-037.
+- Removed `suiteListColorBar*` tokens. `semanticLabel` in `suite_dropdown.dart` reads arb key `itemSelected` (see `scrum/sprint010/strings_tanaka.md`; null until Yamamoto adds it).
+- `CancelSavePair.debugHold` stays (comment says why: tests cannot pass a hold into dialogs built deep inside; `test/flutter_test_config.dart` zeroes it).
+- `test/theme/material_button_gallery_test.dart` kept: it uses `matchesGoldenFile` against `goldens/cancel-save-material3.png`, so it fails when the picture changes.
+
+## From Ito to Nakamura, Tanaka, Takahashi (print IDs, tokens, PBI-058 finding)
+- Nakamura: `test/calendar/calendar_print_test.dart:19` still cites CAL-05 and CAL-05.a (moved; print rows are PRT, see `oldkey.md`): change the IDs in the test name to the PRT ones. Also still open from before: single-day events print "start – end", CAL-09.c says start only.
+- Tanaka (token requests, Sprint 011, no existing token fits): `list_view.dart` day title padding top 10 and bottom 4, row horizontal 8, row vertical margin 1, time column width 120; `month_view.dart` week row vertical 6, cell padding 2, date row horizontal 6, chip margin vertical 1, chip horizontal 4, cell border 0.5 and 2 (focus/drop). Suggest `suiteListRowGap`, `suiteListTimeWidth`, `suiteMonthCellPadding`, `suiteChipPadding`, `suiteHairline`, `suiteFocusBorder`. Done now with existing tokens: list 12 -> `suitePagePadding`, 3 -> `suiteLabelGap`.
+- `event_colors.dart`: English names removed (`PaletteColor` has no `name` field; names come from `messageKey` via `paletteColorName`; a `name` getter returns the key for test diagnostics, used by `local_calendar_test.dart:169`). CAL-03.d now cites `first_press_test.dart`.
+- PBI-058 (for Takahashi): in my files and `swipe_detector.dart` there is no `delay`, `Future.delayed`, `kLongPressTimeout`, `kPressTimeout` or double-tap recognizer; `DragMovable` uses `LongPressGestureRecognizer(duration: widget.longPress)` (honored, fresh recognizer on a changed duration) plus a plain `TapGestureRecognizer` (no 300 ms wait). `SwipeDetector` has only a `Timer(holdTime)` (Nakamura; it is always passed `c.longPress`). So no code adds delay before the press starts. The one suspect left is first-use jank of the ghost: I replaced its `Opacity` layer and blur `BoxShadow` with `Material(elevation: suitePopupElevation)` (no saveLayer, no blur shader). The ghost is now fully opaque (was 0.9); the original is still dimmed to 0.35 (CAL-03.a). Needs a browser check on the first press.
+- Tests tightened: `views_test.dart` marked month and picked day now compare the accent token; `event_dialog_test.dart` button checks use `isA<void Function()>()` (enabled vs null already asserted both ways).
+
+## From Yamamoto to Nakamura, Tanaka, Takahashi (PBI-037 UI hooks, arb keys, l10n owner)
+- Done with `SettingsSyncScope.maybeOf(context)?.push()` (helper `pushSettingsSync(context)` in `settings_dialog.dart`): Theme pane after each valid typed or stepped value, theme choice and Reset; Calendar pane after its save; the dialog on leaving a page and on close. `openSettingsDialog` re-wraps the scope it finds above its context into the dialog route. Admin pane is Nakamura's: call `pushSettingsSync(context)` (import `settings_dialog.dart`) or the scope directly after its changes. Header keys are not touched.
+- Settings > General shows `SettingsSyncRow` (state word per `SyncState`, name via `sync.userName`, a Sign in button only when signedOut, opening `sync.signInUrl` with `launchUrl(..., webOnlyWindowName: '_self')`). Rows SET-15, SET-15.a; test `test/calendar/settings_sync_ui_test.dart` (subclass fake of `SettingsSync`). Nakamura: PBI-037 rows should say they depend on SET-15; I did not edit `deployment.md`.
+- New arb keys in all six files: `itemSelected` (Tanaka's), `syncNotConfigured`, `syncSignedOut`, `syncSyncing`, `syncOk`, `syncOffline`, `syncSignIn`, `syncSignedInAs`. No strings_nakamura.md existed when I merged; the iframe title key is not added: put it in `strings_nakamura.md` and tell me.
+- `lib/src/l10n/*` is mine from now on (Kobayashi assignment); Takahashi to confirm.
+
+## From Nakamura to Yamamoto, Tanaka, Takahashi (PBI-037 settings sync, wave 3)
+
+### New dependencies
+App `pubspec.yaml`: `http: 1.6.0` (pinned, same as `server/`). Product Owner approval still needed (DoD).
+
+### What exists
+`lib/src/app/settings_sync.dart`: `SettingsSync` (`pull()`, `push()`, `state` as `ValueListenable<SyncState>` with notConfigured / signedOut / syncing / ok / offline, `userName`, `signInUrl`, `pending`), `settingsSyncBaseKeys`, `SettingsSyncScope.maybeOf(context)`. `main.dart` builds it (`SettingsSync.forPlatform`: same origin on the web, notConfigured elsewhere and in tests), calls `pull()` after `SharedPreferences.getInstance()` and before any model or the controller is built, and provides the scope. Server wins on pull, except when unsent device changes exist (pending flag, kept in prefs key `sync.pending`) or the server object is empty: then the device copy is sent. 401, 5xx, network failure and a 5 s timeout leave prefs untouched, set the state and keep the pending flag; the next `push()` or `pull()` retries. Test: `test/app/settings_sync_test.dart` (6 tests).
+
+### Yamamoto (settings_dialog.dart and panes)
+- After each settings change and on close call `SettingsSyncScope.maybeOf(context)?.push();` (debounced 0.8 s, one PUT of every allowlisted key; null-safe).
+- General pane row: listen to `sync.state` (`ValueListenableBuilder`), show the state text, `sync.userName` when ok, and when `signedOut` a sign-in button that navigates to `sync.signInUrl` (`launchUrl(url, webOnlyWindowName: '_self')`). Hide the row when `maybeOf` is null or the state is `notConfigured`.
+- Keys to add (strings_nakamura.md): settingsSyncOk "Saved to your account", settingsSyncSyncing "Saving", settingsSyncOffline "Saved on this device; will retry", settingsSyncSignedOut "Saved on this device; sign in to keep it on every device", settingsSyncSignIn "Sign in", settingsSyncSignedInAs "Signed in as {name}" (name placeholder). Also `calendarPrint` is reused for the print iframe title (key exists).
+- Requirement row text (settings.md, yours): "SET-xx | planned | Settings are stored in the database through the API (DEF-01). When the API cannot be reached or the user is signed out, a settings change is kept on the device and sent on the next change or at the next start. The header controls (view, filter, header time zone, hour height) are never sent. | test/app/settings_sync_test.dart". Tests are named "PBI-037 ..."; rename to the SET id once chosen.
+
+### Tanaka
+`main.dart` passes `ThemeSettings.keyPopupShadow, keyResizeBar, keyDropdownText, keyDatePicker, keyStatusChipMs` (the public constants today). When `themeSettingsPrefsKeys` exists, tell me and I replace those five lines with it; any new theme key must be in that set or it is not synced. `view.animationMs` is already in the base set.
+
+### Allowlist audit (every SharedPreferences key in lib/)
+| Key | Owner file | Class |
+|---|---|---|
+| timing.statusWordMs | calendar_defaults.dart | setting |
+| event.defaultLength, event.defaultLengthUnit, event.defaultStartMinutes | calendar_controller / calendar_defaults | setting |
+| view.longPressMs, view.animationMs | calendar_controller | setting |
+| view.timeFormat (TIM-10), settings.fixedZone (SET-02 Local zone) | calendar_controller | setting |
+| theme.mode | theme_mode_controller | setting |
+| theme.popupShadow, theme.resizeBar, theme.dropdownText, theme.datePicker, theme.statusChipMs | theme_settings | setting (passed from main) |
+| view.mode, view.zone, view.hourLines | calendar_controller | header-device (never sent) |
+| filter.hiddenCalendars, filter.hiddenStates | event_filter | header-device (never sent) |
+| events.v1, localCalendars.v1 | event_store, local_calendar_store | data, not a Setting: not synced here (events and calendars in the database is a later PBI; Takahashi to decide whether Settings > Calendars content counts as a Setting under DEF-01) |
+| sync.pending | settings_sync | internal, never sent |
+Language is not stored in prefs (follows the device, SHL-02.a). Known limit: a double that the server returns as an int is applied as a double only when the device already holds a double (JSON on the web does not tell 1.0 from 1). `flutter run` has no `/api`: sync stays notConfigured off the web build; a base-URL setting for dev is not built.
+
+### Audit cheap fixes done (Nakamura)
+local_calendars_dialog.dart: English fallback removed (`m('calendarColor')`). Print iframe title: `printCalendarHtml(html, title)` (web and stub), the dialog passes `messages('calendarPrint')`. `SwipeDetector.holdTime` default removed (now required; the only caller passes `c.longPress`). `calendar_controller.dart:1` ignore kept with its reason (the constructor takes public named parameters for private fields, so initializing formals cannot be used; removing it gave 3 analyze infos).
