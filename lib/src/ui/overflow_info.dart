@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 
 /// Displays one line at a readable size, and provides access to clipped text.
 class OverflowInfoText extends StatelessWidget {

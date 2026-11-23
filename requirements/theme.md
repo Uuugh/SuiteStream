@@ -50,6 +50,6 @@ How the app looks: colors, fonts, icons, corners and sizes, in a light and a dar
 | THM-10.c | backlog | A hidden or deleted event is shown muted and struck through, on the calendar and in print. | — |
 | THM-10.d | planned | An opened event has a shadow, like every popup (UIC-43). Not built yet (CAL-10.d is backlog; Ito is building it in week_view); no test covers it, popup_shadow_test.dart covers the other popups only. | — |
 | THM-10.g | backlog | Event text in the hourly grid is 11.5 px. | — |
-| THM-10.h | backlog | Event text reaches a contrast of 4.5:1 against its own chip or bar in light and dark, whatever the event color (a pale color such as yellow gets dark text in light mode); the same rule covers every view and print. | — |
+| THM-10.h | planned | Event text reaches a contrast of 4.5:1 against its own chip or bar in light and dark, whatever the event color (a pale color such as yellow gets dark text in light mode); the same rule covers every view and print. | test/events/event_text_contrast_test.dart (palette contrast over 11 event and 24 calendar colors, both brightnesses) |
 | THM-10.e | backlog | An event in a lane is narrower than its share of the column by 3 px (the lane gap) and starts 1 px right of its lane's edge (the lane offset). | — |
 | THM-10.f | backlog | A List row's date column is 150 px wide. | — |

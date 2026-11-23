@@ -86,8 +86,6 @@ void main() {
         'soon',
       );
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
       expect(
         find.text('Use a number with a unit (from 5 minutes to 24 hours).'),
         findsOneWidget,
@@ -98,7 +96,7 @@ void main() {
         '1.5',
       );
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
     expect(c.defaultLength, const Duration(minutes: 90));
     expect(find.byKey(const ValueKey('settings-dialog')), findsNothing);
@@ -108,17 +106,17 @@ void main() {
         prefs: prefs,
       );
     expect(again.defaultLength, const Duration(minutes: 90));
-    // Cancel leaves it.
+    // An invalid length is not saved on leaving.
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('settings-calendar')));
     await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const ValueKey('setting-default-length')),
-        '3',
+        'soon',
       );
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-cancel')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
     expect(c.defaultLength, const Duration(minutes: 90));
     },
@@ -616,8 +614,6 @@ void pressDelayTests() {
         '2',
       );
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
     expect(find.text('Use a delay from 0.2 to 1.5 seconds.'), findsOneWidget);
     expect(c.longPress, const Duration(milliseconds: 300));
       await tester.enterText(
@@ -625,7 +621,7 @@ void pressDelayTests() {
         '0.8',
       );
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
     expect(c.longPress, const Duration(milliseconds: 800));
       final again = CalendarController(

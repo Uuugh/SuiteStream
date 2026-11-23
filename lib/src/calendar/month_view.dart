@@ -200,6 +200,7 @@ class _EventLine extends StatelessWidget {
     final color = c.colorOf(event);
     final muted = event.deleted || event.hiddenFromGoogle;
     final base = muted ? t.muted : Color(color ?? defaultEventColor);
+    final chipFill = Color.alphaBlend(base.withValues(alpha: 0.18), t.scheme.surface);
     return DragMovable(
       key: ValueKey('event-${event.id}'),
       longPress: c.longPress,
@@ -232,7 +233,7 @@ class _EventLine extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: base.withValues(alpha: 0.18),
+            color: chipFill,
             borderRadius: BorderRadius.circular(suiteChipRadius),
           ),
           child: Text(
@@ -240,7 +241,7 @@ class _EventLine extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: SuiteText.note(t).copyWith(
-              color: base,
+              color: eventTextColorOn(chipFill, Theme.of(context).brightness),
               decoration: muted ? TextDecoration.lineThrough : null,
             ),
           ),

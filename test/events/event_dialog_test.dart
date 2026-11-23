@@ -414,9 +414,12 @@ void main() {
     await tester.pumpAndSettle();
     await save(tester);
     expect(c.events.single.color, 0xFF8E24AA);
+    final chip = find.byKey(ValueKey('event-${c.events.single.id}'));
+    final surface = Theme.of(tester.element(chip)).colorScheme.surface;
+    final tint = Color.alphaBlend(const Color(0xFF8E24AA).withValues(alpha: 0.18), surface);
     final bar = find.descendant(
-      of: find.byKey(ValueKey('event-${c.events.single.id}')),
-      matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == const Color(0xFF8E24AA).withValues(alpha: 0.18)),
+      of: chip,
+      matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == tint),
     );
     expect(bar, findsOneWidget);
     c.selectEvent(c.events.single.id);

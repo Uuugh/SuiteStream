@@ -144,9 +144,7 @@ class _HourlyViewState extends State<HourlyView> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: SuiteText.note(t).copyWith(
-                                color: ThemeData.estimateBrightnessForColor(Color(c.colorOf(e) ?? defaultEventColor)) == Brightness.dark
-                                    ? t.scheme.surfaceBright
-                                    : t.scheme.shadow,
+                                color: eventTextColorOn(Color(c.colorOf(e) ?? defaultEventColor), Theme.of(context).brightness),
                               ),
                             ),
                           ),

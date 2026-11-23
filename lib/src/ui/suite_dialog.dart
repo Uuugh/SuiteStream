@@ -2,7 +2,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
-import '../theme/suite_theme.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 
 /// Opens a Material dialog with the shared popup motion.
 Future<T?> showSuiteDialog<T>({

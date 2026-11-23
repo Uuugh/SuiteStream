@@ -44,7 +44,7 @@ Per `scrum/definition_of_done.md`:
 1. Kobayashi's plan review is applied here; the Product Owner's instruction is to follow the epic rules, so developers start without a further approval step.
 2. **One editor per file** (table below). A developer needing a change in another owner's file asks the owner through Takahashi. No agent restores a file from HEAD while another owns it.
 3. All work on `sprint008`; commit and push after each task when tests are green; the sprint completes automatically (see the epic rules).
-4. Velocity row only at the end of the epic.
+4. Velocity row at the end of each sprint (also inside the epic).
 5. Product Owner input during the epic is next-epic backlog, not built.
 6. **Order:** (a) Nakamura's header hook for the back button (1 h, day 1) before Yamamoto's back button. (b) Ito's `eventTextColorOn(fill, brightness)` in `event_colors.dart` by day 1 hour 4 before Tanaka's `event_details.dart` use. (c) PBI-052 before PBI-054 (Sprint 009) because both edit `month_view`, `week_view` and `list_view`.
 

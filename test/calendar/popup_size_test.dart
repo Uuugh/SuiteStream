@@ -216,8 +216,6 @@ void main() {
       'soon',
     );
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
     expect(
       find.text('Use a number with a unit (from 5 minutes to 24 hours).'),
       findsOneWidget,

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../l10n/messages.dart';
-import '../theme/suite_theme.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 
 /// THM-04.c: Cancel | Save buttons are 130 × 34 px (the pair together).
 const double pairWidth = 130;

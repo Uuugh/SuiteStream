@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/messages.dart';
-import 'cancel_save_pair.dart';
-import 'suite_dialog.dart';
+import 'package:suitestream/src/l10n/messages.dart';
+import 'package:suitestream/src/ui/cancel_save_pair.dart';
+import 'package:suitestream/src/ui/suite_dialog.dart';
 
 /// UIC-06: an action that hides or deletes something asks first with a No | Yes
 /// pair; cancelling changes nothing. Returns true only for Yes.

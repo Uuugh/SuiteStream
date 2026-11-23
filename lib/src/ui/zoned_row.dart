@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/suite_theme.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 
 /// UIC-14: every row of controls (a section's header, for one) has a left, a
 /// center and a right zone. Their contents are aligned left, centered and right by

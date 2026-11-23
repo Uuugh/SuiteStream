@@ -94,15 +94,13 @@ void main() {
     expect(find.byKey(const ValueKey('setting-press-delay')), findsOneWidget);
   });
 
-  testWidgets('SET-08.b: the default length is saved in the chosen unit, kept on the device, and Cancel leaves it', (tester) async {
+  testWidgets('SET-08.b: the default length is saved in the chosen unit and kept on the device; an invalid length is not saved', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final c = await _open(tester, prefs, section: 'settings-calendar');
     expect(c.defaultLength, const Duration(hours: 1));
     await tester.enterText(find.byKey(const ValueKey('setting-default-length')), 'soon');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
     expect(find.text('Use a number with a unit (from 5 minutes to 24 hours).'), findsOneWidget);
     expect(c.defaultLength, const Duration(hours: 1));
     // Changing the unit keeps the length and shows it in the new unit.
@@ -113,20 +111,20 @@ void main() {
     expect(_text(tester, 'setting-default-length'), '60');
     await tester.enterText(find.byKey(const ValueKey('setting-default-length')), '90');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
     expect(c.defaultLength, const Duration(minutes: 90));
     expect(find.byKey(const ValueKey('settings-dialog')), findsNothing);
     expect(CalendarDefaults.load(prefs).unit, LengthUnit.minutes);
-    // Reopened: shown in minutes. Cancel leaves it.
+    // Reopened: shown in minutes; an invalid length is not saved.
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('settings-calendar')));
     await tester.pumpAndSettle();
     expect(_text(tester, 'setting-default-length'), '90');
-    await tester.enterText(find.byKey(const ValueKey('setting-default-length')), '180');
+    await tester.enterText(find.byKey(const ValueKey('setting-default-length')), 'soon');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-cancel')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
     expect(c.defaultLength, const Duration(minutes: 90));
   });
@@ -143,26 +141,25 @@ void main() {
     expect(_text(tester, 'setting-default-length'), '1.25');
     await tester.enterText(find.byKey(const ValueKey('setting-default-time')), '25:00');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
-    await tester.pumpAndSettle();
     expect(find.text('Use a time like 9:00 or 9:00 am.'), findsOneWidget);
     expect(CalendarDefaults.load(prefs).startMinutes, 9 * 60);
     await tester.enterText(find.byKey(const ValueKey('setting-default-time')), '2:30 pm');
     await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
     expect(CalendarDefaults.load(prefs).startMinutes, 14 * 60 + 30);
   });
 
-  testWidgets('SET-08.d: the default time zone is the system zone until a fixed zone is chosen; Save is off until something changes', (tester) async {
+  testWidgets('SET-08.d: the default time zone is the system zone until a fixed zone is chosen; leaving with nothing changed stores nothing', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final c = await _open(tester, prefs, section: 'settings-calendar');
     expect(c.baseZone.fixedZoneName, isNull);
     expect(tester.widget<ChoiceChip>(find.byKey(const ValueKey('setting-zone-system'))).selected, isTrue);
-    await tester.tap(find.byKey(const ValueKey('settings-save')));
+    await tester.tap(find.byKey(const ValueKey('settings-close')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('settings-dialog')), findsOneWidget); // nothing changed: Save is off
+    expect(find.byKey(const ValueKey('settings-dialog')), findsNothing);
+    expect(prefs.getKeys(), isEmpty);
   });
 
   testWidgets('SET-14: Admin is the last entry of the Settings menu', (tester) async {

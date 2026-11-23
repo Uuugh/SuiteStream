@@ -41,6 +41,47 @@ String viewMessageKey(CalendarView v) => switch (v) {
       CalendarView.list => 'viewList',
     };
 
+/// UIC-45 / UIC-14: the back button in the left zone of a page header (Settings).
+/// It leaves the page; the caller saves before it pops.
+class HeaderBackButton extends StatelessWidget {
+  const HeaderBackButton({super.key, required this.onPressed, required this.tooltip});
+
+  final VoidCallback onPressed;
+  final String tooltip;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+        key: const ValueKey('header-back'),
+        tooltip: tooltip,
+        style: suiteIconButtonStyle(),
+        icon: const Icon(SuiteIcons.arrowBack),
+        onPressed: onPressed,
+      );
+}
+
+/// A page header with the back button first in the left zone, then the title; the right
+/// zone is optional. Same zones and padding as the calendar header (UIC-14).
+class PageHeader extends StatelessWidget {
+  const PageHeader({super.key, required this.title, required this.onBack, required this.backTooltip, this.right = const []});
+
+  final Widget title;
+  final VoidCallback onBack;
+  final String backTooltip;
+  final List<Widget> right;
+
+  @override
+  Widget build(BuildContext context) => ZonedRow(
+        left: [
+          HeaderBackButton(onPressed: onBack, tooltip: backTooltip),
+          const SizedBox(width: suitePartGap),
+          Flexible(child: title),
+        ],
+        right: right,
+        leftMinWidth: 48 + suitePartGap + 160,
+        rightMinWidth: suiteControlHeight * right.length,
+      );
+}
+
 /// The calendar section: header, the chosen view and the filter legend.
 class CalendarPage extends StatelessWidget {
   const CalendarPage({super.key, required this.controller});

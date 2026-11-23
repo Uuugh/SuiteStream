@@ -146,4 +146,19 @@ void main() {
     expect(c.calendars.map((x) => x.id), [localCalendarId]);
     expect(c.events.map((e) => e.id), ['mine']);
   });
+
+  testWidgets('UIC-45: leaving the Admin pane changes nothing (it holds no value to save)', (tester) async {
+    final c = await start(mine: [own('mine')]);
+    useWindow(tester);
+    await tester.pumpWidget(appFor(SettingsAdminPane(controller: c)));
+    final calendars = c.calendars.map((x) => x.id).toList();
+    final events = c.events.map((e) => e.id).toList();
+    expect(find.byType(TextField), findsNothing);
+    // Leaving = the pane is disposed (page change, close or back button).
+    await tester.pumpWidget(appFor(const SizedBox()));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(c.calendars.map((x) => x.id).toList(), calendars);
+    expect(c.events.map((e) => e.id).toList(), events);
+  });
 }

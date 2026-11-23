@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/suite_icons.dart';
-import '../theme/tokens.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 
 /// Every time or number text field offers up and down arrows that step its value:
 /// two small arrows stacked at the field's right end ([StepperArrows], used as the

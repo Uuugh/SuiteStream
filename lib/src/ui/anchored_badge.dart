@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/suite_theme.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
 
 /// Places a decorative badge over an aligned point of a control.
 ///

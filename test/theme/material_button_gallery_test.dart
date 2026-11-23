@@ -29,15 +29,15 @@ class _ButtonGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Material(
-        color: const Color(0xFFE9EDF2),
+        color: Color(0xFFE9EDF2),
         child: RepaintBoundary(
-          key: const ValueKey('button-gallery'),
+          key: ValueKey('button-gallery'),
           child: Row(
             children: [
               Expanded(child: _ThemePanel(brightness: Brightness.light)),
-              const SizedBox(width: 24),
+              SizedBox(width: 24),
               Expanded(child: _ThemePanel(brightness: Brightness.dark)),
             ],
           ),
@@ -117,7 +117,7 @@ class _ThemePanel extends StatelessWidget {
         description: 'Text action',
         colors: [
           _ColorUse('text: primary', scheme.primary),
-          _ColorUse('fill: transparent', null),
+          const _ColorUse('fill: transparent', null),
         ],
         save: () => TextButton(
           onPressed: () {},
@@ -130,7 +130,7 @@ class _ThemePanel extends StatelessWidget {
         colors: [
           _ColorUse('text: primary', scheme.primary),
           _ColorUse('outline: outline', scheme.outline),
-          _ColorUse('fill: transparent', null),
+          const _ColorUse('fill: transparent', null),
         ],
         save: () => OutlinedButton(
           onPressed: () {},

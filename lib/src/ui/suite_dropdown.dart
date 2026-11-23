@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/suite_icons.dart';
-import '../theme/suite_theme.dart';
-import '../theme/theme_settings.dart';
-import '../theme/tokens.dart';
+import 'package:suitestream/src/theme/suite_icons.dart';
+import 'package:suitestream/src/theme/suite_theme.dart';
+import 'package:suitestream/src/theme/theme_settings.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 
 /// The trigger is an icon button: a 48 px target with a 24 px icon centered in it.
 const double triggerIconSize = 24;
@@ -203,7 +203,7 @@ class _SuiteDropdownState<T> extends State<SuiteDropdown<T>> {
   }
 }
 
-extension on _SuiteDropdownState {
+extension on _SuiteDropdownState<dynamic> {
   Widget _actionRowImpl(BuildContext context, DropdownAction a) {
     final t = context.tokens;
     return InkWell(

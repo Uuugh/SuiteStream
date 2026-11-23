@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/tokens.dart';
+import 'package:suitestream/src/theme/tokens.dart';
 
 /// UIC-19: the note that says what is wrong with an entry. It sits on the field's
 /// label line, next to the label, on one line and never wrapped. A note that is too

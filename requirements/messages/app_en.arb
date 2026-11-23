@@ -1164,6 +1164,7 @@
   "settingsCalendar": "Calendar",
   "settingsTheme": "Theme",
   "settingsAdmin": "Admin",
+  "settingsBack": "Back",
   "lengthUnit": "Unit of time",
   "defaultEventTime": "Default time",
   "defaultTimeInvalid": "Use a time like 9:00 or 9:00 am.",
