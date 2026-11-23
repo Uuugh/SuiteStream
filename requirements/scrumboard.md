@@ -76,14 +76,15 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-11.h | backlog | An issue belongs to its feature (SCB-05.b) or, when it has none, to the feature of the requirement it names (SCB-05.c); an issue with neither is a top-level row under no feature and always stays visible. | — |
 | SCB-11.i | backlog | The Issues column has the switch of SCB-11.c on its filter row, collapsing or expanding the issues of every feature, and opens collapsed (SCB-11.d). | — |
 | SCB-15 | backlog | The page fits the window and every part of it scrolls on its own. | — |
-| SCB-15.a | backlog | The page itself does not scroll: the board takes the share of the window's height in DEF-01 and the columns below it take the rest. | — |
+| SCB-15.a | backlog | The page itself does not scroll. It has three rows: the board along the top (SCB-06), a middle row with the usage chart and the running agents (SCB-12, SCB-14), and a bottom row of three columns: Features (the Requirements column, SCB-03), Issues (SCB-05) and Questions (SCB-17); the rows take the shares of the window's height in DEF-01. | — |
 | SCB-15.b | backlog | Each column, and each block's contents, has its own vertical scrollbar when its content is longer than its area. | — |
 | SCB-15.c | backlog | Nothing is clipped or overflows at the window sizes in DEF-01. | — |
-| SCB-12 | backlog | The Agent progress column (heading msg:scbAgentProgress) shows the usage chart (SCB-14) and then one bar for each progress file the server reads. | — |
-| SCB-12.a | backlog | A bar shows the file's name as the label, the fraction `done/total` as the bar and the text `done/total`. | — |
-| SCB-12.b | backlog | With no progress folder, or none with a progress file, the column is empty and says so (msg:scbNoProgress). | — |
+| SCB-12 | backlog | The middle row has two parts side by side: the usage chart (SCB-14) and the running agents (heading msg:scbAgentProgress), each agent with its name and a completion bar next to it. | — |
+| SCB-12.a | backlog | An agent's bar shows jobs done over total jobs, the jobs being that agent's tasks in the sprint backlog (the Done column, SCB-12.e), and the text `done/total`; the points of the stories done over the points of all stories of the sprint are shown in the same way on the sprint's own bar. | — |
+| SCB-12.b | backlog | With no sprint backlog, or no task in it, the agents part is empty and says so (msg:scbNoProgress). | — |
 | SCB-12.c | backlog | The bars are read again at the interval in DEF-01 and on Reload (SCB-01.c). | — |
-| SCB-12.d | backlog | A progress file whose content is not `done/total` shows no bar. | — |
+| SCB-12.d | backlog | A sprint backlog without a Done column shows no bars. | — |
+| SCB-12.e | backlog | The sprint backlog table (`sprint_backlog.md`) has a Done column; the task owner marks a task done there when it is finished, and the server counts the done tasks of each owner (SCB-12.a). | — |
 | SCB-13 | backlog | One command starts the server, which serves the web app and gives it the data over HTTP; the progress folder is given with `--progress <dir>`. | — |
 | SCB-13.a | backlog | The server listens on the local machine only, on the port given with `--port` (it starts as the port in DEF-01), and answers only a request whose Host is that address or `localhost` and whose Origin, when present, matches it. | — |
 | SCB-13.b | backlog | The server answers only these requests: read and write the sprint file, list the requirements, set a requirement's status, list the issues, create an issue, set an issue's status, create a requirement, list the progress, read the usage file; any other request is answered not found. | — |
@@ -93,7 +94,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-13.f | backlog | The server runs the issue tracker's commands with each argument passed separately and never through a shell, and holds no token or secret. | — |
 | SCB-13.g | backlog | When the issue tracker's command fails, the server answers with its reason and its other answers keep working. | — |
 | SCB-13.h | backlog | When the web app cannot reach the server it says so (msg:scbServerUnreachable, with the reason as {reason}). | — |
-| SCB-14 | backlog | At the top of the Agent progress column a usage chart (heading msg:scbUsageChart) shows the readings of the 5-hour session and of the 7-day week against the estimates, read from `SCRUM.d/usage.md`. | — |
+| SCB-14 | backlog | In the middle row, beside the running agents, a usage chart (heading msg:scbUsageChart) shows the readings of the 5-hour session and of the 7-day week against the estimates, read from `SCRUM.d/usage.md`. | — |
 | SCB-14.a | backlog | The usage file has a Usage table whose rows are: block ID, estimate session %, estimate weekly %, before session %, before weekly %, after session % and after weekly %; a cell that is not known is a dash. | — |
 | SCB-14.b | backlog | The chart has two meters, one for the session (msg:scbMeterSession) and one for the week (msg:scbMeterWeek), each on a scale from 0 to 100. | — |
 | SCB-14.c | backlog | For each row with a before and an after reading, a meter draws a bar from the before reading to the after reading in the data color of the theme, and names the block. | — |
@@ -114,9 +115,9 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-16.i | backlog | A new ID is refused with its reason when it exists already, when its prefix is not the feature's, or when its parent does not exist. | — |
 | SCB-16.j | backlog | Saving a new issue creates it as SCB-09.d says, with the feature and the requirement of the chosen place. | — |
 | SCB-13.j | backlog | The server also answers the request to create a requirement: it checks SCB-16.i, adds the row as SCB-16.h says, changes nothing else in the file, and replaces the file as a whole or not at all. | — |
-| SCB-17 | backlog | A Questions column, full height on the right side of the page and 25 % of the page width, lists what the agents are asking the Product Owner, so a question is never lost in a long conversation. | — |
-| SCB-17.a | backlog | The questions are read from `scrum/questions.md`, one per heading with its asker (the agent and the sprint), the question, the answer choices when there are some, and a status of open or answered; the file is added to what the ScrumBoard may change (SCB-01.a). | — |
-| SCB-17.b | backlog | Each open question shows its asker, text and choices; the Product Owner chooses a choice or types an answer, and saving writes the answer under the question and sets it to answered. | — |
-| SCB-17.c | backlog | Open questions come first, newest first; answered ones follow in a collapsed list; with no question the column says so (msg:scbNoQuestions). | — |
-| SCB-17.d | backlog | The column has its own vertical scrollbar (SCB-15.b); in a window narrower than the width in DEF-01 it becomes a button that opens the questions over the page. | — |
+| SCB-17 | backlog | The third column of the bottom row is Questions (heading msg:scbQuestions): what the agents are asking the Executive, each with a space for the answer after it, so a question is never lost in a long conversation. | — |
+| SCB-17.a | backlog | The questions are read from `scrum/questions.md`, one per heading with its asker (the agent and the sprint), the question, the answer choices when there are some, the answer and a status of open or answered; the file is added to what the ScrumBoard may change (SCB-01.a). | — |
+| SCB-17.b | backlog | Under each open question there is a space for the answer (a choice or typed text) and an Answered button (msg:scbAnswered); pressing it saves the answer under the question and sets its status to answered. | — |
+| SCB-17.c | backlog | An answered pair is the agents' queue: before making any change an agent reads `scrum/questions.md`; for each answered pair it records the decision where it belongs and then deletes the pair from the file, so it leaves the board. Open questions come first, newest first; with no question the column says so (msg:scbNoQuestions). | — |
+| SCB-17.d | backlog | The column has its own vertical scrollbar (SCB-15.b). | — |
 | SCB-17.e | backlog | A new open question shows a count badge on the column's heading and is marked new until the Product Owner has seen it. | — |

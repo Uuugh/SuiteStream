@@ -14,6 +14,10 @@ Never start or run a sprint (launching agents that build, editing code for a spr
 
 When the Executive talks after a sprint, record each point as a backlog item (`scrum/product_backlog.csv`: 10 fields, no commas in text) or a requirement change; do not change code. Build only on an explicit "start" or an explicit request for a quick fix.
 
+## Read the questions before changing anything
+
+Before making any change, read `scrum/questions.md`. For each answered pair: record the decision where it belongs (retrospective, backlog or requirement), then delete the pair. Write your own questions to the Executive there too, one per heading.
+
 ## Also
 
 - Work only in this repository.
