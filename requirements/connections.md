@@ -48,7 +48,7 @@ Terms: **one-way** moves events in one direction only (a source brings them in, 
 | CON-04.h | backlog | Removing a source stops its checks, removes it from every feed and deletes all its stored settings, and records History msg:calendarSourceRemoved, msg:calendarSourceRemovedMerged or msg:calendarSourceRemovedMergedRules; the removal can be undone. | — |
 | CON-04.i | backlog | Before a source is removed the user is offered a copy of its calendar to download. | — |
 | CON-05 | backlog | A source is downloaded automatically on a schedule, and the user can change the schedule. | — |
-| CON-05.a | backlog | The automatic-download interval is an admin setting kept in the database; the installation's value is only its starting value (DEP-05, DEF-01). | — |
+| CON-05.a | backlog | The automatic-download interval is an admin setting (DEF-01, DEP-05). | — |
 | CON-05.b | backlog | The download interval stays within the limits in DEF-01; a value outside them, or not a number, is not valid (UIC-19). | — |
 | CON-05.c | backlog | The next download is scheduled from the last attempt plus the configured interval; if that time has passed, changing the interval schedules an immediate download. | — |
 | CON-05.d | backlog | Changes to download settings or source credentials follow the shared form-security rules (ACC-09). | — |

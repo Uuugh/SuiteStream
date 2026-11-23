@@ -9,6 +9,7 @@ The main page shows the calendar and the Settings entry. Settings contains Sourc
 | SHL-01.b | backlog | The favicon is the light SuiteStream icon cropped to a circle on a transparent canvas. | — |
 | SHL-01.c | backlog | The SuiteStream logo files have no compression or visual artifacts. | — |
 | SHL-01.d | backlog | The title bar shows the logo mark to the left of the title, using the version appropriate to the active brightness. One transparent favicon serves light and dark. | — |
+| SHL-01.h | planned | The title bar (the strip at the top of the page with the SuiteStream name and the Settings icon) has no background color of its own: it shows the surface color of the page, in light and in dark. | test/ui/title_bar_test.dart |
 | SHL-01.e | backlog | A browser tab is titled SuiteStream on the main page and "<page name> · SuiteStream" on the sign-in page (msg:signInAction) and the initial-setup page (msg:welcome). | — |
 | SHL-01.f | backlog | The sign-in and initial-setup pages show the running version as vX.Y.Z beside the name SuiteStream; the main page shows it in the footer only (SHL-01.a). | — |
 | SHL-01.g | backlog | The default icons are a favicon, an app icon and an Apple touch icon at the sizes in DEF-01, each with the version in its address; a custom favicon (SET-06.f) replaces all three. | — |
@@ -16,7 +17,7 @@ The main page shows the calendar and the Settings entry. Settings contains Sourc
 | SHL-02.a | backlog | The initial page language is English; Automatic follows supported browser language preferences, including French, German and Belgian Dutch, while an unknown browser language falls back to English. Choosing Automatic clears the explicit language override. | — |
 | SHL-02.b | backlog | The selected language applies to every screen, setup guide, error message (including validation guidance), month name and day name; user-supplied text follows SHL-02. Languages offered include Spanish, French, German, Portuguese and Dutch (SHL-02 adds Brazilian Portuguese). | — |
 | SHL-02.c | backlog | Brazilian Portuguese is offered as a page language. | — |
-| SHL-02.d | backlog | The selected page language is a view setting kept on the device for later visits (SET-01). | — |
+| SHL-02.d | backlog | The selected page language is a setting like the others (SET-01, DEF-01) and applies on later visits. | — |
 | SHL-02.e | backlog | Translation supports composed and nested messages, including sync-change summaries and download-failure explanations, without translating user event titles. Unknown messages retain their original English wording. | — |
 | SHL-02.f | done | Values inserted into translated messages are escaped rather than interpreted as markup. | test/l10n/messages_test.dart |
 | SHL-02.g | backlog | The subscription page and Google setup-error guide follow the visitor’s supported browser language. | — |

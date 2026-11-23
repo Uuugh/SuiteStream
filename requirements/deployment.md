@@ -25,9 +25,9 @@
 | DEP-03 | backlog | The stack works behind a proxy and with Google's notifications. | — |
 | DEP-03.a | backlog | FORWARDED_ALLOW_IPS lists the proxies trusted to report the visitor's address and HTTPS use (see ACC-07). | — |
 | DEP-03.b | backlog | Google notifications need valid TLS and proxy access to the unauthenticated notification endpoint; without it the daily check still runs (see CGOW-05). | — |
-| DEP-04 | backlog | An updater, when installed, acts only when the app asks it and is not reachable from outside. | — |
-| DEP-04.a | backlog | The app asks the updater to update when the user presses Update now, or when automatic updating is on and a check finds a newer version (SET-05). The updater never updates the database and removes old images after an update. | — |
-| DEP-04.b | backlog | The updater is not reachable from outside the Docker network, needs a generated secret token and uses the Docker socket; the installer can remove it without losing other data (see SET-05). | — |
+| DEP-04 | backlog | Watchtower, the update mechanism of the stack (DEP-06.a), updates only the app container, only when asked or on its schedule, and is not reachable from outside. | — |
+| DEP-04.a | backlog | Watchtower updates the app container when the user presses Update now, or when automatic updating is on and a check finds a newer version (SET-05). It never updates the database container and removes old images after an update. | — |
+| DEP-04.b | backlog | Watchtower is not reachable from outside the Docker network, needs a generated secret token for the requests the app makes and uses the Docker socket; the installer can remove it without losing other data (see SET-05). | — |
 | DEP-05 | backlog | Settings can start in the environment and move to the database, and a Python installation can be migrated. | — |
 | DEP-05.a | backlog | Environment (.env) values are only starting values: a value saved in the database always overrides the matching environment setting (time zone, sync interval, CCS+ client, calendar name, default event hours, 24-hour rule). The only settings that stay environment-only are the ones the app needs before it can read the database: the stack name and folders, the image tag, the updater profile, the user, group and restart policy, the trusted proxy addresses and the database password. | — |
 | DEP-05.b | backlog | The installer sets the installation's time zone (the server's TZ setting). It is the default zone for an imported event that carries no zone and for server work without a device (scheduled downloads), until the user defines otherwise: a default zone saved in Settings > Site Admin (SET-06) overrides the installer's. | — |
@@ -41,7 +41,7 @@
 | DEP-02.s | backlog | The installer writes its answers to .env (the image tag, stack prefix, data folder, stack number, port and profiles), replacing an existing or commented line and keeping the others. | — |
 | DEP-02.t | backlog | The installer creates the updater token file, owner-readable, even when the updater is declined, with the length in DEF-01. | — |
 | DEP-06 | backlog | The stack's parts are fixed. | — |
-| DEP-06.a | backlog | The stack is the app, a Postgres database and an optional updater started by a profile. | — |
+| DEP-06.a | backlog | The stack is one Docker stack of three containers: the app in its own lightweight image (a small image that serves the Flutter web build and the API), a Postgres database, and Watchtower as the update mechanism. | — |
 | DEP-06.b | backlog | The database reports ready by the check in DEF-01 (Database health check). | — |
 | DEP-06.c | backlog | The container reports health by calling the health interface (DIA-03) at the interval in DEF-01 (Container health check). | — |
 | DEP-06.d | backlog | The database name and user take effect when the database is first created. | — |
