@@ -15,7 +15,7 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 | Level | Reading | Action |
 |---|---|---|
 | Caution | 70% | Notify the Product Owner before starting a job projected to end at or above it, and continue; tell running agents to commit |
-| Warning | 85% | Ask the Product Owner's permission, and wait, before starting a job projected to end at or above it; stop a running agent when a reading reaches it without permission |
+| Warning | 85% | Do not start a job projected to end at or above it. When running an epic automatically, decide without asking (split smaller, or wait for the reset time if nothing fits); otherwise ask the Product Owner's permission and wait; stop a running agent when a reading reaches it without permission |
 
 | Sprint | Story or round | Date | Model | Estimate session % | Before s / w | After s / w | Actual session % | Notes |
 |---|---|---|---|---|---|---|---|---|
@@ -84,3 +84,5 @@ Measured over Sprints 006 and 007 (planning, three waves of four developers, Kob
 3. If it does not fit, split the story (Epics in the `backlog-refinement` skill) and start the largest slice that fits now; the other slices are the epic's next sprints and start as soon as they fit. Complete each sprint automatically (see Takahashi's role, "Running sprints and epics automatically").
 4. Only when not even the smallest useful slice fits below 85%, wait for the reset time in the reading, then continue. Never stop a running agent for usage unless a real reading reaches 85%.
 5. Take any new reading the Product Owner pastes as the new anchor and note how far the estimate was off.
+
+If `usage-now.json` is null or stale (the VS Code extension does not refresh it), do not ask: estimate as above from the Product Owner's last pasted reading. Ask only if there has never been a reading.
