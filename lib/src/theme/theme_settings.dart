@@ -39,7 +39,7 @@ class ThemeSettings extends ChangeNotifier {
   static const keyDatePicker = 'theme.datePicker';
   static const keyStatusChipMs = 'theme.statusChipMs';
 
-  /// The same key the calendar controller uses for the animation time (SET-10), so the
+  /// The same key the calendar controller uses for the animation time (SET-03.g), so the
   /// two never disagree.
   static const keyAnimationMs = 'view.animationMs';
 

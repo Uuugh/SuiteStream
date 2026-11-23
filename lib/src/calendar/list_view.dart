@@ -55,7 +55,7 @@ class AgendaView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
           child: Row(
             children: [
-              Container(width: 4, height: 18, margin: const EdgeInsets.only(right: 8), color: Color(color ?? defaultEventColor)),
+              Container(width: suiteListColorBarWidth, height: suiteListColorBarHeight, margin: const EdgeInsets.only(right: suiteListColorBarGap), color: Color(color ?? defaultEventColor)),
               SizedBox(width: 120, child: Text(when, style: SuiteText.note(t))),
               Expanded(
                 child: Text(

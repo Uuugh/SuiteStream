@@ -404,7 +404,7 @@ class CalendarController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// SET-10: the one animation time (0 to 2 seconds, DEF-01), kept on the device.
+  /// SET-03.g: the one animation time (0 to 2 seconds, DEF-01), kept on the device.
   Duration _animation = defaultAnimationDuration;
   Duration get animationDuration => _animation;
   set animationDuration(Duration d) {

@@ -65,6 +65,19 @@ const double suiteSwatchSize = 30;
 const double suiteSwatchCheckSize = 18;
 const double suiteSwatchGap = 8;
 
+/// Sizes that were literals (Kobayashi findings 6 and 7).
+const double suiteColorPickerWidth = 7 * suiteSwatchSize + 6 * suiteSwatchGap;
+const double suiteLocalCalendarsDialogWidth = 440;
+const double suiteDefaultAvatarRadius = 6;
+const Size suiteResizeBarSize = Size(29, 8);
+const double suiteListColorBarWidth = 4;
+const double suiteListColorBarHeight = 18;
+const double suiteListColorBarGap = 8;
+const double suiteStartupMaxWidth = 640;
+const double suiteStartupPadding = 24;
+const double suiteStartupGap = 12;
+const double suiteStartupTitleSize = 20;
+
 /// The popup shadow depth for [context]: [suitePopupElevation] scaled by the user's Popup
 /// shadow setting (0 means no shadow).
 double popupElevationOf(BuildContext context) =>

@@ -13,6 +13,7 @@ import 'calendar_controller.dart';
 /// Dot radius: no token exists, so it is the swatch gap (8), the same value.
 const double _dotRadius = suiteSwatchGap;
 
+
 Future<void> openLocalCalendars(BuildContext context, CalendarController controller) {
   final messages = context.msg;
   return showSuiteDialog<void>(
@@ -162,7 +163,7 @@ class _LocalCalendarsDialog extends StatelessWidget {
     final m = context.msg;
     return SuiteAlertDialog(
       title: Text(m('manageLocalCalendars')),
-      content: SizedBox(width: 440, child: LocalCalendarsPanel(controller: controller)),
+      content: SizedBox(width: suiteLocalCalendarsDialogWidth, child: LocalCalendarsPanel(controller: controller)),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(m('closeButton'))),
       ],
@@ -214,7 +215,7 @@ class _CalendarNameDialogState extends State<_CalendarNameDialog> {
           // UIC-10: the shared picker, here with the 24 calendar colors.
           InkWell(
             key: const ValueKey('calendar-color-button'),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(suiteControlRadius),
             onTap: () async {
               final picked = await showColorPicker(context, palette: calendarPalette, current: _color);
               if (mounted && picked != null) setState(() => _color = picked);

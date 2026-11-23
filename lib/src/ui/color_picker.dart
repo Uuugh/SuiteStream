@@ -11,8 +11,8 @@ import 'suite_dialog.dart';
 const int colorPickerDefault = -1;
 
 
-/// The name of [color]: its arb message when merged, else its English name.
-String paletteColorName(Messages m, PaletteColor color) => m.has(color.messageKey) ? m(color.messageKey) : color.name;
+/// The name of [color]: its arb message.
+String paletteColorName(Messages m, PaletteColor color) => m(color.messageKey);
 
 /// UIC-10, UIC-20: the one shared color picker. Shows [palette] (the eleven event
 /// colors or the twenty-four calendar colors), marks [current] (mapped to its nearest
@@ -54,7 +54,7 @@ class ColorPickerDialog extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(suiteDialogPadding),
         child: SizedBox(
-          width: 260,
+          width: suiteColorPickerWidth,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +63,7 @@ class ColorPickerDialog extends StatelessWidget {
                 ChoiceChip(
                   key: const ValueKey('color-default'),
                   label: Text(m('calendarDefault')),
-                  avatar: CircleAvatar(backgroundColor: Color(defaultColor!), radius: 6),
+                  avatar: CircleAvatar(backgroundColor: Color(defaultColor!), radius: suiteDefaultAvatarRadius),
                   selected: current == null,
                   onSelected: (_) => Navigator.of(context).pop(colorPickerDefault),
                 ),

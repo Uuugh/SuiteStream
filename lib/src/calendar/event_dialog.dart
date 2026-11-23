@@ -563,7 +563,7 @@ class _EventDialogState extends State<EventDialog> {
       style: TextStyle(
         color: t.muted,
         fontWeight: FontWeight.w700,
-        fontSize: 12,
+        fontSize: SuiteText.noteSize - 1,
       ),
     );
     return Column(
@@ -591,7 +591,7 @@ class _EventDialogState extends State<EventDialog> {
                     style: TextStyle(
                       color: t.bad,
                       fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                      fontSize: SuiteText.noteSize - 1,
                     ),
                   ),
                 if (trailing != null) ...[
@@ -628,16 +628,16 @@ class _EventDialogState extends State<EventDialog> {
       filled: true,
       fillColor: t.bg,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(suiteControlRadius),
         borderSide: BorderSide(color: error != null ? t.bad : t.line),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(suiteControlRadius),
         borderSide: BorderSide(color: error != null ? t.bad : t.line),
       ),
       focusedBorder: error != null
           ? OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(suiteControlRadius),
               borderSide: BorderSide(color: t.bad),
             )
           : null,
@@ -668,14 +668,14 @@ class _EventDialogState extends State<EventDialog> {
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: suiteStackedZoneGap),
           Flexible(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final style = DefaultTextStyle.of(context).style.copyWith(
                   color: t.muted,
                   fontWeight: FontWeight.w700,
-                  fontSize: 12,
+                  fontSize: SuiteText.noteSize - 1,
                 );
                 final painter = TextPainter(
                   text: TextSpan(text: label, style: style),
@@ -744,7 +744,7 @@ class _EventDialogState extends State<EventDialog> {
                     padding: EdgeInsets.zero,
                     side: BorderSide(color: t.line),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(suiteControlRadius),
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(),
@@ -754,7 +754,7 @@ class _EventDialogState extends State<EventDialog> {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: suiteSwatchGap),
               Expanded(
                 child: Text(
                   heading,
@@ -793,7 +793,7 @@ class _EventDialogState extends State<EventDialog> {
                 );
               },
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: suiteDialogPadding),
           Row(
             children: [
               if (old != null)
@@ -1124,7 +1124,7 @@ class _EventDialogState extends State<EventDialog> {
     final date = start ? _startDate : _endDate;
     return InkWell(
       key: ValueKey('event-${start ? 'start' : 'end'}-date'),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(suiteControlRadius),
       onTap: start ? _pickStart : _pickEnd,
       child: SizedBox(height: suiteControlHeight, child: InputDecorator(
         decoration: _decoration(),
@@ -1219,7 +1219,7 @@ class _EventDialogState extends State<EventDialog> {
     final name = _color == null ? m('defaultColor') : paletteColorName(m, nearestPaletteColor(_color!, eventPalette));
     return InkWell(
       key: const ValueKey('event-color-button'),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(suiteControlRadius),
       onTap: () async {
         final picked = await showColorPicker(
           context,
@@ -1240,10 +1240,10 @@ class _EventDialogState extends State<EventDialog> {
               height: 16,
               decoration: BoxDecoration(
                 color: Color(shown),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(suiteChipRadius),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: suiteSwatchGap),
             Expanded(child: Text(name, overflow: TextOverflow.ellipsis)),
             Icon(SuiteIcons.arrowDropDown, color: t.muted),
           ],
@@ -1281,7 +1281,7 @@ class _EventDialogState extends State<EventDialog> {
                 style: TextStyle(
                   color: t.muted,
                   fontWeight: FontWeight.w700,
-                  fontSize: 12,
+                  fontSize: SuiteText.noteSize - 1,
                 ),
               ),
               if (_errors['reminders'] != null) ...[
@@ -1314,7 +1314,7 @@ class _EventDialogState extends State<EventDialog> {
                     onChanged: (_) {},
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: suiteStackedZoneGap),
                 SizedBox(
                   width: 84,
                   child: ArrowKeyStepper(
@@ -1341,7 +1341,7 @@ class _EventDialogState extends State<EventDialog> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: suiteStackedZoneGap),
                 Expanded(
                   flex: 3,
                   child: DropdownButtonFormField<ReminderUnit>(

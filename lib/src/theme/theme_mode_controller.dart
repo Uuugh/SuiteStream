@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../l10n/messages.dart';
 import 'suite_icons.dart';
 
 /// SHL-03: the page theme is Light, Dark or Match system (the default); the
@@ -64,14 +63,3 @@ String themeModeMessageKey(ThemeMode mode) => switch (mode) {
   ThemeMode.dark => 'themeDark',
   ThemeMode.system => 'themeSystem',
 };
-
-/// TODO(arb): remove after Yamamoto merges `scrum/sprint007/strings_nakamura.md`
-/// into the arb files; until then a key with no message shows its English text.
-extension MessageFallback on Messages {
-  String orElse(String key, String english, [Map<String, Object?> args = const {}]) {
-    if (has(key)) return call(key, args);
-    var s = english;
-    args.forEach((name, value) => s = s.replaceAll('{$name}', '$value'));
-    return s;
-  }
-}

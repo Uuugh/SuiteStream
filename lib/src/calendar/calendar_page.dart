@@ -228,14 +228,14 @@ class _Header extends StatelessWidget {
       // SHL-03.b: Light / Dark / Match system is one icon, a menu like the view picker.
       if (ThemeModeScope.maybeOf(context) case final themeController?)
         Semantics(
-          label: m.orElse('themeName', 'Theme'),
+          label: m('themeName'),
           child: SuiteDropdown<ThemeMode>(
             key: const ValueKey('theme-menu'),
             icon: ThemeModeIcons.of(themeController.mode),
-            tooltip: m.orElse('themeTooltip', 'Theme: {name}', {'name': m.orElse(themeModeMessageKey(themeController.mode), _themeFallback(themeController.mode))}),
+            tooltip: m('themeTooltip', {'name': m(themeModeMessageKey(themeController.mode))}),
             items: [
               for (final mode in ThemeMode.values)
-                DropdownItem(value: mode, label: m.orElse(themeModeMessageKey(mode), _themeFallback(mode)), icon: ThemeModeIcons.of(mode)),
+                DropdownItem(value: mode, label: m(themeModeMessageKey(mode)), icon: ThemeModeIcons.of(mode)),
             ],
             selected: {themeController.mode},
             onChanged: (s) => themeController.mode = s.first,
@@ -268,10 +268,3 @@ class _Header extends StatelessWidget {
     );
   }
 }
-
-// TODO(arb): English fallbacks until the theme menu keys are merged into the arb files.
-String _themeFallback(ThemeMode mode) => switch (mode) {
-      ThemeMode.light => 'Light',
-      ThemeMode.dark => 'Dark',
-      ThemeMode.system => 'Match system',
-    };

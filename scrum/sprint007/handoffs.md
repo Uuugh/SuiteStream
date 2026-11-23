@@ -48,3 +48,34 @@ CAL-10.d (opened event in the hourly grid uses the popup shadow). The expanded e
 - EVT-01.m: `openEventDialog(..., prefs:)` and `EventDialog.prefs` (new, optional). A new event with no click spot starts at `CalendarDefaults.load(prefs).startMinutes`; with no prefs given the dialog reads the device preferences after opening and replaces 9:00 only while the form is untouched. Callers need no change.
 - Tokens: `color_picker.dart` uses `suiteSwatchSize`, `suiteSwatchCheckSize`, `suiteSwatchGap`. There is no dot-radius token, so `local_calendars_dialog.dart` sets `_dotRadius = suiteSwatchGap` (same value, 8); the picker's 6 px "calendar default" avatar radius is still a literal. Tanaka may add a token.
 - Rows set to done in my files: EVT-01.m, EVT-02.n, EVT-03.b, EVT-03.d (events.md), THM-09, THM-09.a (theme.md). THM-09.b stays planned: views still fall back to theme roles instead of #1d4ed8. UIC-10, UIC-10.a, UIC-20, THM-04.b, THM-01.e are in Yamamoto/Tanaka's files; tests are cited there.
+
+## Tanaka round 3 (Kobayashi findings 6 and 7): new tokens in `lib/src/theme/suite_theme.dart`
+Use these instead of literals (all values equal the old literals, so nothing moves):
+- `suiteLocalCalendarsDialogWidth` (440): `local_calendars_dialog.dart:165` (Ito). For `BorderRadius.circular(8)` at line 217 use `suiteControlRadius`.
+- `suiteListColorBarWidth` (4), `suiteListColorBarHeight` (18), `suiteListColorBarGap` (8): `list_view.dart:58` color bar and its right margin.
+- Startup screen, `main.dart` `StartupErrorApp` (Nakamura): `suiteStartupMaxWidth` (640), `suiteStartupPadding` (24), `suiteStartupGap` (12), `suiteStartupTitleSize` (20).
+- Done by me, no action: `suiteColorPickerWidth` (260), `suiteDefaultAvatarRadius` (6) in `color_picker.dart`; `suiteResizeBarSize` (`Size(29, 8)`) in `resize_bar.dart`.
+- `Text('SuiteStream')` (`main.dart:185`) needs an arb key (Nakamura); `event_dialog.dart` literals: use existing `suite*` tokens (Ito).
+
+## Tanaka round 3: test for THM-10.d
+`week_view.dart` has no opened-event elevation yet, so I left THM-10.d `planned` with a note and wrote no test. Ito: when it lands, tell me and I add the `popupElevationOf` assertion for key `event-<id>` to `test/ui/popup_shadow_test.dart`.
+
+## Tanaka round 3 (Kobayashi findings 6 and 7): new tokens in `lib/src/theme/suite_theme.dart`
+Use these instead of literals (values equal the old literals, so nothing moves):
+- `suiteLocalCalendarsDialogWidth` (440): `local_calendars_dialog.dart:165` (Ito). For `BorderRadius.circular(8)` at line 217 use `suiteControlRadius`.
+- `suiteListColorBarWidth` (4), `suiteListColorBarHeight` (18), `suiteListColorBarGap` (8): `list_view.dart:58` color bar and its right margin.
+- Startup screen, `main.dart` `StartupErrorApp` (Nakamura): `suiteStartupMaxWidth` (640), `suiteStartupPadding` (24), `suiteStartupGap` (12), `suiteStartupTitleSize` (20).
+- Done by me, no action: `suiteColorPickerWidth` (260), `suiteDefaultAvatarRadius` (6) in `color_picker.dart`; `suiteResizeBarSize` (`Size(29, 8)`) in `resize_bar.dart`.
+- `Text('SuiteStream')` (`main.dart:185`) needs an arb key (Nakamura); `event_dialog.dart` literals: use the existing `suite*` tokens (Ito).
+
+## Tanaka round 3: test for THM-10.d
+`week_view.dart` has no opened-event elevation yet, so THM-10.d stays `planned` with a note and no test. Ito: when it lands, tell me and I add the `popupElevationOf` assertion for key `event-<id>` to `test/ui/popup_shadow_test.dart`.
+
+
+## Nakamura round 3 (Kobayashi 1, 5, 6)
+- All `orElse` uses, the shim and `TODO(arb)` are gone; new `test/app/message_keys_test.dart` scans `lib/` for `m('key')`/`msg('key')` calls and checks all six arb files.
+- Startup error screen (`main.dart`) has no new token from Tanaka yet, so derived: padding `suiteDialogPadding * 2`, gaps `suiteDialogPadding`, title `textTheme.titleLarge`. Tanaka may add a startup token. Still literal (pre-Sprint 007): `maxWidth: 640`, logo 26, clock badge/icon sizes in `calendar_page.dart`.
+- SET-10 left in Ito's `test/calendar/ux_test.dart:642,653` and Tanaka's `lib/src/theme/theme_settings.dart:42` (not my files); mine (`calendar_controller.dart`) is SET-03.g.
+
+## Ito to Tanaka (round 3)
+Opened event landed: `week_view.dart` builds the opened block as `Material(key: ValueKey('opened-event'), elevation: popupElevationOf(context))` on the top layer; hour-density menu has `elevation: popupElevationOf(context)`. My test: `test/events/week_event_style_test.dart` (also covers Week all-day chip color, THM-09.b). You may add the THM-10.d assertion and update the row; I left all rows `planned`.

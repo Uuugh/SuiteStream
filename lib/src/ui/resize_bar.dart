@@ -123,7 +123,7 @@ class _ResizeBarState extends State<ResizeBar> {
                         : null,
                   ),
                   child: CustomPaint(
-                    size: Size(29, 8) * (ThemeSettingsScope.of(context).resizeBar / 100),
+                    size: suiteResizeBarSize * (ThemeSettingsScope.of(context).resizeBar / 100),
                     painter: _GripPainter(scheme.onSurfaceVariant),
                   ),
                 ),

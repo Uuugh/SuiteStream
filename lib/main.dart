@@ -68,27 +68,26 @@ class StartupErrorApp extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(suiteDialogPadding * 2),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 640),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'SuiteStream could not start',
-                      key: ValueKey('startup-error-title'),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                    Builder(
+                      builder: (context) => Text(
+                        'SuiteStream could not start',
+                        key: const ValueKey('startup-error-title'),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: suiteDialogPadding),
                     SelectableText(
                       '$error',
                       key: const ValueKey('startup-error-text'),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: suiteDialogPadding),
                     const Text(
                       'Reload the page. If it persists, clear the site data for this address.',
                     ),

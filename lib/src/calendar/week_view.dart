@@ -138,8 +138,17 @@ class _HourlyViewState extends State<HourlyView> {
                             margin: const EdgeInsets.all(1),
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             width: double.infinity,
-                            color: t.runBg,
-                            child: Text(e.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: SuiteText.note(t).copyWith(color: t.run)),
+                            color: Color(c.colorOf(e) ?? defaultEventColor),
+                            child: Text(
+                              e.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: SuiteText.note(t).copyWith(
+                                color: ThemeData.estimateBrightnessForColor(Color(c.colorOf(e) ?? defaultEventColor)) == Brightness.dark
+                                    ? t.scheme.surfaceBright
+                                    : t.scheme.shadow,
+                              ),
+                            ),
                           ),
                         ),
                     ],
@@ -160,6 +169,7 @@ class _HourlyViewState extends State<HourlyView> {
               child: PopupMenuButton<int>(
                 key: const ValueKey('hour-density'),
                 tooltip: context.msg('calendarHourHeight'),
+                elevation: popupElevationOf(context),
                 initialValue: c.hourLines,
                 onSelected: (lines) {
                   final previousHeight = _hourHeight;
@@ -306,13 +316,14 @@ class _DayColumn extends StatelessWidget {
                     ),
                   ),
                 ),
-              for (final p in placed)
+              // The opened event is painted last, on the top layer (CAL-10.d).
+              for (final p in [...placed.where((p) => p.event.id != c.selectedEvent?.id), ...placed.where((p) => p.event.id == c.selectedEvent?.id)])
                 Positioned(
                   key: ValueKey('event-${p.event.id}'),
                   top: p.startMinute / 60 * hourHeight,
                   height: ((p.endMinute - p.startMinute) / 60 * hourHeight).clamp(16, double.infinity),
-                  left: box.maxWidth * p.column / p.columns,
-                  width: box.maxWidth / p.columns - 1,
+                  left: p.event.id == c.selectedEvent?.id ? 0 : box.maxWidth * p.column / p.columns,
+                  width: p.event.id == c.selectedEvent?.id ? box.maxWidth - 1 : box.maxWidth / p.columns - 1,
                   child: DragMovable(
                     longPress: c.longPress,
                     enabled: canMove(p.event),
@@ -338,10 +349,14 @@ class _DayColumn extends StatelessWidget {
                       c.move(p.event.id, day: DateTime(day.year, day.month, day.day + dayShift), minuteOfDay: minute);
                     },
                     onTap: () => c.selectEvent(p.event.id), // EVT-07
+                    child: Material(
+                    key: p.event.id == c.selectedEvent?.id ? const ValueKey('opened-event') : null,
+                    elevation: p.event.id == c.selectedEvent?.id ? popupElevationOf(context) : 0,
+                    shadowColor: t.scheme.shadow,
+                    color: t.runBg,
                     child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                     decoration: BoxDecoration(
-                      color: t.runBg,
                       border: Border(left: BorderSide(color: Color(c.colorOf(p.event) ?? defaultEventColor), width: 3)),
                     ),
                     child: Text(
@@ -350,6 +365,7 @@ class _DayColumn extends StatelessWidget {
                       maxLines: 2,
                       style: SuiteText.note(t).copyWith(color: t.text),
                     ),
+                  ),
                   ),
                   ),
                 ),

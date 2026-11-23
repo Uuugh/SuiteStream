@@ -639,7 +639,7 @@ void pressDelayTests() {
     },
   );
 
-  test('SET-10: an animation time is read in seconds or milliseconds, from 0 to 2 seconds', () {
+  test('SET-03.g: an animation time is read in seconds or milliseconds, from 0 to 2 seconds', () {
     expect(parseAnimationInput('0'), Duration.zero);
     expect(parseAnimationInput('0,5'), const Duration(milliseconds: 500));
     expect(parseAnimationInput('1.5 s'), const Duration(milliseconds: 1500));
@@ -650,7 +650,7 @@ void pressDelayTests() {
     expect(parseAnimationInput(''), isNull);
   });
 
-  testWidgets('SET-10: the animation time is a setting, 0.5 seconds until changed, kept on the device', (tester) async {
+  testWidgets('SET-03.g: the animation time is a setting, 0.5 seconds until changed, kept on the device', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     useWindow(tester, tall);
