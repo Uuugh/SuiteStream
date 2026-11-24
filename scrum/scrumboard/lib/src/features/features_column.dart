@@ -120,6 +120,7 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
         // SCB-04 and SCB-11.f: the shared filter bar; at the right end the switch.
         ScbFilterBar(
           items: _all,
+          fields: requirementFilterFields,
           hidden: _hidden,
           onChanged: (h) => setState(() => _hidden = h),
           trailing: Row(

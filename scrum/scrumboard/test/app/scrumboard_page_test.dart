@@ -59,7 +59,7 @@ void main() {
 
   testWidgets('SCB-15.a three rows share the height 40/20/40 and the page does not scroll', (t) async {
     await size(t, _sizes[1]);
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'))));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'), questions: const _Tall('q'))));
     final top = t.getSize(find.byKey(const ValueKey('scbRowTop')));
     final mid = t.getSize(find.byKey(const ValueKey('scbRowMiddle')));
     final bottom = t.getSize(find.byKey(const ValueKey('scbRowBottom')));
@@ -70,22 +70,25 @@ void main() {
     final q = t.getSize(find.byKey(const ValueKey('scbColumnQuestions')));
     expect(f.width, closeTo(i.width, 0.01));
     expect(q.width, closeTo(i.width, 0.01));
+    // SCB-17: the questions slot is shown in the third column.
+    expect(find.descendant(of: find.byKey(const ValueKey('scbColumnQuestions')), matching: find.byKey(const ValueKey('listq'))), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsNothing);
   });
 
   testWidgets('SCB-15.b each part scrolls on its own', (t) async {
     await size(t, _sizes[1]);
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'))));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'), questions: const _Tall('q'))));
     await t.drag(find.byKey(const ValueKey('listf')), const Offset(0, -300));
     await t.pump();
     expect(t.state<ScrollableState>(find.descendant(of: find.byKey(const ValueKey('listf')), matching: find.byType(Scrollable))).position.pixels, greaterThan(0));
     expect(t.state<ScrollableState>(find.descendant(of: find.byKey(const ValueKey('listb')), matching: find.byType(Scrollable))).position.pixels, 0);
+    expect(t.state<ScrollableState>(find.descendant(of: find.byKey(const ValueKey('listq')), matching: find.byType(Scrollable))).position.pixels, 0);
   });
 
   for (final s in _sizes) {
     testWidgets('SCB-15.c nothing overflows at ${s.width.toInt()} x ${s.height.toInt()}', (t) async {
       await size(t, s);
-      await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'))));
+      await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'), questions: const _Tall('q'))));
       expect(t.takeException(), isNull);
       for (final key in ['scbRowTop', 'scbRowMiddle', 'scbRowBottom']) {
         final r = t.getRect(find.byKey(ValueKey(key)));
@@ -98,7 +101,7 @@ void main() {
   for (final b in Brightness.values) {
     testWidgets('SCB-01.g the page colors come from the theme in ${b.name}', (t) async {
       await size(t, _sizes[1]);
-      await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f')), brightness: b));
+      await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const _Tall('b'), features: const _Tall('f'), questions: const _Tall('q')), brightness: b));
       final scheme = buildScrumTheme(b).colorScheme;
       final box = t.widget<DecoratedBox>(find.descendant(of: find.byKey(const ValueKey('scbRowMiddle')), matching: find.byType(DecoratedBox)).first);
       expect((box.decoration as BoxDecoration).color, scheme.surfaceContainerLow);
@@ -113,7 +116,7 @@ void main() {
     await size(t, _sizes[1]);
     final api = FakeScrumBoardApi();
     final seen = <int>[];
-    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: _Probe(seen), features: const SizedBox.shrink())));
+    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: _Probe(seen), features: const SizedBox.shrink(), questions: const SizedBox.shrink())));
     expect(find.byKey(const ValueKey('scbReload')), findsNothing);
     await t.pump(poll);
     await t.pump(poll);
@@ -132,7 +135,7 @@ void main() {
   testWidgets('SCB-22 the page asks for the stamp at the interval', (t) async {
     await size(t, _sizes[1]);
     final api = FakeScrumBoardApi();
-    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: const SizedBox.shrink(), features: const SizedBox.shrink())));
+    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink())));
     await t.pump(poll);
     await t.pump(poll);
     await t.pump(poll);
@@ -145,7 +148,7 @@ void main() {
     await size(t, _sizes[1]);
     final api = FakeScrumBoardApi();
     final seen = <int>[];
-    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: _Probe(seen), features: const SizedBox.shrink())));
+    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: _Probe(seen), features: const SizedBox.shrink(), questions: const SizedBox.shrink())));
     await t.pump();
     expect(api.calls['changeStamp'], 1);
     expect(seen.last, 0);
@@ -157,7 +160,7 @@ void main() {
 
   testWidgets('SCB-15.d SCB-20 the header right zone holds zoom, theme, bin and a disabled add, in that order', (t) async {
     await size(t, _sizes[1]);
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), onZoomChanged: (_) {}, onToggleTheme: () {})));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), onZoomChanged: (_) {}, onToggleTheme: () {})));
     final keys = ['scbZoomOut', 'scbZoomIn', 'scbTheme', 'scbRetire', 'scbAdd'];
     final xs = [for (final k in keys) t.getCenter(find.byKey(ValueKey(k))).dx];
     expect(xs, [...xs]..sort());
@@ -169,7 +172,7 @@ void main() {
 
   testWidgets('SCB-20 the zoom is one icon whose left half is zoom out and right half zoom in', (t) async {
     await size(t, _sizes[1]);
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), onZoomChanged: (_) {})));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), onZoomChanged: (_) {})));
     expect(find.byIcon(Icons.zoom_in), findsNothing);
     expect(find.byIcon(Icons.zoom_out), findsNothing);
     final icon = t.getRect(find.byKey(const ValueKey('scbZoom')));
@@ -188,7 +191,7 @@ void main() {
     testWidgets('SCB-20 SCB-15.c the zoom icon draws in ${b.name} with no overflow at every DEF-01 size', (t) async {
       for (final s in _sizes) {
         await size(t, s);
-        await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: scrumZoomMax, onZoomChanged: (_) {}), brightness: b));
+        await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), zoomPercent: scrumZoomMax, onZoomChanged: (_) {}), brightness: b));
         expect(t.takeException(), isNull);
         expect(t.getRect(find.byKey(const ValueKey('scbZoom'))).right, lessThanOrEqualTo(s.width));
       }
@@ -198,7 +201,7 @@ void main() {
   testWidgets('SCB-20.a the minus half zooms out one step and the plus half zooms in one step', (t) async {
     await size(t, _sizes[1]);
     final got = <int>[];
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: 120, onZoomChanged: got.add)));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), zoomPercent: 120, onZoomChanged: got.add)));
     await t.tap(find.byKey(const ValueKey('scbZoomOut')));
     await t.tap(find.byKey(const ValueKey('scbZoomIn')));
     expect(got, [110, 130]);
@@ -207,7 +210,7 @@ void main() {
   testWidgets('SCB-20.a at 80 % the minus half is disabled and the plus half works', (t) async {
     await size(t, _sizes[1]);
     final got = <int>[];
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: scrumZoomMin, onZoomChanged: got.add)));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), zoomPercent: scrumZoomMin, onZoomChanged: got.add)));
     expect(t.widget<InkWell>(find.byKey(const ValueKey('scbZoomOut'))).onTap, isNull);
     await t.tap(find.byKey(const ValueKey('scbZoomOut')));
     await t.tap(find.byKey(const ValueKey('scbZoomIn')));
@@ -217,7 +220,7 @@ void main() {
   testWidgets('SCB-20.a at 160 % the plus half is disabled and the minus half works', (t) async {
     await size(t, _sizes[1]);
     final got = <int>[];
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: scrumZoomMax, onZoomChanged: got.add)));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), zoomPercent: scrumZoomMax, onZoomChanged: got.add)));
     expect(t.widget<InkWell>(find.byKey(const ValueKey('scbZoomIn'))).onTap, isNull);
     await t.tap(find.byKey(const ValueKey('scbZoomIn')));
     await t.tap(find.byKey(const ValueKey('scbZoomOut')));
@@ -234,6 +237,7 @@ void main() {
         api: FakeScrumBoardApi(),
         board: const SizedBox.shrink(),
         features: const SizedBox.shrink(),
+        questions: const SizedBox.shrink(),
         zoomPercent: zoom,
         onZoomChanged: (z) => set(() => zoom = z),
       );
@@ -258,7 +262,7 @@ void main() {
   testWidgets('SCB-20 the theme button calls back', (t) async {
     await size(t, _sizes[1]);
     var n = 0;
-    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), onToggleTheme: () => n++)));
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), questions: const SizedBox.shrink(), onToggleTheme: () => n++)));
     await t.tap(find.byKey(const ValueKey('scbTheme')));
     expect(n, 1);
   });
@@ -274,6 +278,7 @@ void main() {
         ),
       ),
       features: const SizedBox.shrink(),
+      questions: const SizedBox.shrink(),
     )));
     final g = await t.startGesture(t.getCenter(find.byKey(const ValueKey('src'))));
     await g.moveBy(const Offset(0, 40));

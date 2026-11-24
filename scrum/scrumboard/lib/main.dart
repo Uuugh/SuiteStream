@@ -78,6 +78,8 @@ class _ScrumBoardAppState extends State<ScrumBoardApp> {
           },
           board: BacklogTimeline(api: api),
           features: FeaturesColumn(api: api),
+          // Placeholder until QuestionsColumn lands (Sprint 015 task 10b).
+          questions: const SizedBox.shrink(),
         ),
       ),
     );

@@ -10,8 +10,8 @@ import 'package:scrumboard/src/theme/scrum_theme.dart';
 
 /// The ScrumBoard page (SCB-15.a): the page itself does not scroll. Three rows
 /// share the height 40 / 20 / 40. The top row holds [board]; the bottom row has
-/// three equal columns, [features] first, then the Issues and Questions
-/// placeholders; the middle row is a placeholder. Each part scrolls on its own
+/// three equal columns: [features], the Issues placeholder and [questions];
+/// the middle row is a placeholder. Each part scrolls on its own
 /// (SCB-15.b): a pane fills the space it gets and scrolls inside.
 class ScrumBoardPage extends StatefulWidget {
   const ScrumBoardPage({
@@ -19,6 +19,7 @@ class ScrumBoardPage extends StatefulWidget {
     required this.api,
     required this.board,
     required this.features,
+    required this.questions,
     this.pollInterval = scrumPollInterval,
     this.zoomPercent = scrumZoomDefault,
     this.onZoomChanged,
@@ -28,6 +29,10 @@ class ScrumBoardPage extends StatefulWidget {
   final ScrumBoardApi api;
   final Widget board;
   final Widget features;
+
+  /// SCB-17, SCB-15.a: the Questions and Verifications column, third in the
+  /// bottom row (shown in `scbColumnQuestions`).
+  final Widget questions;
 
   /// SCB-22: how often the change stamp is asked for (tests inject a short one).
   final Duration pollInterval;
@@ -166,7 +171,7 @@ class _ScrumBoardPageState extends State<ScrumBoardPage> {
                     const SizedBox(width: scrumPartGap),
                     const Expanded(child: _Part(key: ValueKey('scbColumnIssues'))),
                     const SizedBox(width: scrumPartGap),
-                    const Expanded(child: _Part(key: ValueKey('scbColumnQuestions'))),
+                    Expanded(child: _Part(key: const ValueKey('scbColumnQuestions'), child: widget.questions)),
                   ],
                 ),
               ),

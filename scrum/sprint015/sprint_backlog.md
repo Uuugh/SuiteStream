@@ -4,42 +4,42 @@ Sprint goal: the Executive sees every open question and every waiting verificati
 
 | PBI | Title | Points | Owners | Status |
 |---|---|---:|---|---|
-| PBI-126 | Every In Review PBI has its verification | 2 | Tanaka, Takahashi | Planned |
-| PBI-086 | ScrumBoard Questions and Verifications column lists both | 5 | Nakamura, Yamamoto, Ito, Tanaka | Planned |
+| PBI-126 | Every In Review PBI has its verification | 2 | Tanaka, Takahashi | Built (tasks 2 to 4 done; task 4 check passed: 44 In Review PBIs, one open verification each); In Review with task 12b |
+| PBI-086 | ScrumBoard Questions and Verifications column lists both | 5 | Nakamura, Yamamoto, Ito, Tanaka | In progress |
 | PBI-125 | ScrumBoard Questions and Verifications column writes answers and results | 3 | Nakamura, Ito, Tanaka | Planned (cut first) |
 | PBI-113 | Zoom icon sizes and alpha from theme tokens | (1) | - | Stretch, only if early |
 
-Total: 10 points. Burndown Day 0: 10. No new mark, seen state or count badge.
+Total: 10 points. Burndown (points not yet In Review): Day 0: 10; Day 1: 10 (wave 0 done, 27 of 61 task hours). No new mark, seen state or count badge.
 
 ## Tasks (61 h)
 
-| # | Wave | Task | PBI | h | Owner |
-|---|---|---|---|---:|---|
-| 1 | 0 | Row statements: SCB-17, 17.a-d, 15.a, 04, 22, 01.a, 13.b; SCB-17.c order: open first, then answered or closed, newest first within each | 086, 125 | 1 | Takahashi |
-| 2 | 0 | Verifications, first 18 In Review PBIs; a PBI whose check is already listed in a sprint review file takes that check; Suzuki reads the wording | 126 | 3 | Tanaka |
-| 3 | 0 | Verifications, other 18; same rule; Suzuki reads the wording | 126 | 3 | Tanaka |
-| 4 | 0 | "waits for verification N" on the 36 rows; check one per In Review PBI | 126 | 2 | Takahashi |
-| 5 | 0 | 13 keys in the six arb files; sync | 086, 125 | 3 | Yamamoto |
-| 8a | 0 (first) | `BoardItem` model; "model landed" in `handoffs.md` | 086 | 0.5 | Nakamura |
-| 6 | 0 | Generic bar and `requirementFilterFields`; Features column on it; then (after 8a) bar test on `BoardItem` | 086 | 4 | Yamamoto |
-| 7 | 0 | Parser, GET route, both files in the stamp; fixtures copied from the real files (note 9) | 086 | 6 | Nakamura |
-| 8b | 0 | Client read, interface with all three methods, fake with in-memory writes (`answerQuestion`, `setVerificationResult`), tests; `HttpScrumBoardApi` implements the two writes returning `(ok: false, reason)` until task 14; handoff "fake writes landed" | 086, 125 | 2.5 | Nakamura |
-| 9 | 0 | Page slot `questions`; page tests pass a placeholder; `main.dart` passes a placeholder until 10b | 086 | 2 | Tanaka |
-| 10 | 1 | Column read side: heading, list (order of task 1), PBI on verifications, bar, empty state, scrollbar, reload; DEF-01 test; theme tokens only | 086 | 7 | Ito |
-| 6b | 1, 2 | Tokens Ito asks for in `handoffs.md` (waves 1 and 2), added to `scrum_theme.dart` | 086, 125 | 1 | Tanaka |
-| 10b | 1 | `main.dart`: `questions: QuestionsColumn(api: api)`, after 10 | 086 | 1 | Tanaka |
-| 11 | 1 | README: GET route in the API table | 086 | 0.5 | Tanaka |
-| 12 | 1 | Kobayashi code review of waves 0-1 (IMP-003) | 086, 126 | 2 | Takahashi (runs Kobayashi) |
-| 12b | 1 | Verifications for PBI-086 and PBI-126 | 086, 126 | 1 | Tanaka |
-| 13 | 2 | Write routes, gone (changed heading and deleted item), 400s, line endings; SCB-01.a test | 125 | 5 | Nakamura |
-| 14 | 2 | HTTP client writes and their tests | 125 | 1 | Nakamura |
-| 14b | 2 | README: write routes and "server writes" | 125 | 0.5 | Tanaka |
-| 15 | 2 | Answer (choice or typed) and result UI; Returned disabled while empty; scbItemGone and reload; stays listed after a write; DEF-01 test; theme tokens only | 125 | 7 | Ito |
-| 16 | 2 | Kobayashi code review of wave 2 (IMP-003) | 125 | 2 | Takahashi (runs Kobayashi) |
-| 16b | 2 | Verification for PBI-125 | 125 | 1 | Tanaka |
-| 17a | 3 | Integration test with the real three columns on the fake (three `scb-shown-of`) | all | 1.5 | Tanaka |
-| 17b | 3 | Web build; Windows server on copies; Windows and web checks (after 10, 10b) | all | 1.5 | Nakamura |
-| 18 | 3 | Records, backlog, velocity | all | 2 | Takahashi |
+| # | Wave | Task | PBI | h | Owner | Status |
+|---|---|---|---|---:|---|---|
+| 1 | 0 | Row statements: SCB-17, 17.a-d, 15.a, 04, 22, 01.a, 13.b; SCB-17.c order: open first, then answered or closed, newest first within each (Day 1, Suzuki: one order across both kinds, see SCB-17.c) | 086, 125 | 1 | Takahashi | done |
+| 2 | 0 | Verifications, first 18 In Review PBIs; a PBI whose check is already listed in a sprint review file takes that check; Suzuki reads the wording | 126 | 3 | Tanaka | done |
+| 3 | 0 | Verifications, other 18; same rule; Suzuki reads the wording | 126 | 3 | Tanaka | done |
+| 4 | 0 | "waits for verification N" on the 36 rows; check one per In Review PBI | 126 | 2 | Takahashi | done |
+| 5 | 0 | 13 keys in the six arb files; sync | 086, 125 | 3 | Yamamoto | done |
+| 8a | 0 (first) | `BoardItem` model; "model landed" in `handoffs.md` | 086 | 0.5 | Nakamura | done |
+| 6 | 0 | Generic bar and `requirementFilterFields`; Features column on it; then (after 8a) bar test on `BoardItem` | 086 | 4 | Yamamoto | done |
+| 7 | 0 | Parser, GET route, both files in the stamp; fixtures copied from the real files (note 9) | 086 | 6 | Nakamura | done |
+| 8b | 0 | Client read, interface with all three methods, fake with in-memory writes (`answerQuestion`, `setVerificationResult`), tests; `HttpScrumBoardApi` implements the two writes returning `(ok: false, reason)` until task 14; handoff "fake writes landed" | 086, 125 | 2.5 | Nakamura | done |
+| 9 | 0 | Page slot `questions`; page tests pass a placeholder; `main.dart` passes a placeholder until 10b | 086 | 2 | Tanaka | done |
+| 10 | 1 | Column read side: heading, list (order of task 1), PBI on verifications, bar, empty state, scrollbar, reload; DEF-01 test; theme tokens only | 086 | 7 | Ito | to do |
+| 6b | 1, 2 | Tokens Ito asks for in `handoffs.md` (waves 1 and 2), added to `scrum_theme.dart` | 086, 125 | 1 | Tanaka | to do |
+| 10b | 1 | `main.dart`: `questions: QuestionsColumn(api: api)`, after 10 | 086 | 1 | Tanaka | to do |
+| 11 | 1 | README: GET route in the API table | 086 | 0.5 | Tanaka | to do |
+| 12 | 1 | Kobayashi code review of waves 0-1 (IMP-003) | 086, 126 | 2 | Takahashi (runs Kobayashi) | to do |
+| 12b | 1 | Verifications for PBI-086 and PBI-126 | 086, 126 | 1 | Tanaka | to do |
+| 13 | 2 | Write routes, gone (changed heading and deleted item), 400s, line endings; SCB-01.a test | 125 | 5 | Nakamura | to do |
+| 14 | 2 | HTTP client writes and their tests | 125 | 1 | Nakamura | to do |
+| 14b | 2 | README: write routes and "server writes" | 125 | 0.5 | Tanaka | to do |
+| 15 | 2 | Answer (choice or typed) and result UI; Returned disabled while empty; scbItemGone and reload; stays listed after a write; DEF-01 test; theme tokens only | 125 | 7 | Ito | to do |
+| 16 | 2 | Kobayashi code review of wave 2 (IMP-003) | 125 | 2 | Takahashi (runs Kobayashi) | to do |
+| 16b | 2 | Verification for PBI-125 | 125 | 1 | Tanaka | to do |
+| 17a | 3 | Integration test with the real three columns on the fake (three `scb-shown-of`) | all | 1.5 | Tanaka | to do |
+| 17b | 3 | Web build; Windows server on copies; Windows and web checks (after 10, 10b) | all | 1.5 | Nakamura | to do |
+| 18 | 3 | Records, backlog, velocity | all | 2 | Takahashi | to do |
 
 Load: Nakamura 16.5 h, Tanaka 14.5, Ito 14, Takahashi 9, Yamamoto 7. Tanaka backs up Ito. PBI-126 is done before 12b puts PBI-086 In Review. Tasks 2 and 3 are tight (36 verifications); Tanaka reports at the first Daily Scrum. Suzuki and Kobayashi own no tasks. New tokens: Ito asks Tanaka in `handoffs.md` (task 6b); `board_tokens.dart` only aliases `scrum_theme.dart`.
 
