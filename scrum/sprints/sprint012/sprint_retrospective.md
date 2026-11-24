@@ -22,3 +22,7 @@
 ## Actions
 - Suzuki: reconcile PBI-096 and PBI-097; define "agent-driven epic".
 - Executive: the visual check in the review; give the real usage reading.
+
+## Correction after the sprint
+
+PBI-095 ("Reset button hover color is too strong") and PBI-096 ("ScrumBoard needs no header bar") came from test messages that the orchestrator sent as if from the Executive; the Executive did not say them. Both were removed from the backlog, and the question about PBI-096 against PBI-097 is closed (PBI-097, the header icons, stands).
