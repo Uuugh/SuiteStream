@@ -364,15 +364,30 @@ void main() {
       expect(changed, {'scrum/sprint.md'});
     });
 
-    test('SCB-01.a the server code runs no shell or process', () {
+    test('SCB-01.a only usage_script.dart runs a process: bash with the configured script and estimate or trend',
+        () {
       for (final f in Directory('lib/server')
           .listSync(recursive: true)
           .whereType<File>()) {
         final text = f.readAsStringSync();
+        final runner = f.uri.pathSegments.last == 'usage_script.dart';
         expect(text, isNot(contains('Process.run')), reason: f.path);
-        expect(text, isNot(contains('Process.start')), reason: f.path);
-        expect(text, isNot(contains('Platform.environment')), reason: f.path);
+        expect(text, isNot(contains('Shell')), reason: f.path);
+        if (!runner) {
+          expect(text, isNot(contains('Process.start')), reason: f.path);
+          expect(text, isNot(contains('Platform.environment')), reason: f.path);
+          continue;
+        }
+        // One start, of bash, with the script and the checked mode only.
+        expect('Process.start'.allMatches(text).length, 1, reason: f.path);
+        expect(text, contains('Process.start(bash, [script, mode]'));
+        expect(text, contains("usageScriptModes = {'estimate', 'trend'}"));
+        expect(text, contains('if (!usageScriptModes.contains(mode))'));
       }
+      // The server passes only the two fixed modes.
+      final server = File('lib/server/server.dart').readAsStringSync();
+      final modes = RegExp(r"_usageScript\('(\w+)'\)").allMatches(server).map((m) => m.group(1)).toSet();
+      expect(modes, {'estimate', 'trend'});
     });
 
     test('SCB-01.a a bad sprint body is a 400 and the file is not touched',

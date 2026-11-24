@@ -136,8 +136,23 @@ void main() {
     await t.pump(poll);
     await t.pump(poll);
     await t.pump(poll);
-    expect(api.calls['changeStamp'], 3);
+    // One baseline read at the start (PBI-107) and one per interval.
+    expect(api.calls['changeStamp'], 4);
     expect(scrumPollInterval, const Duration(seconds: 2));
+  });
+
+  testWidgets('SCB-22 a change made before the first poll reloads the panes (PBI-107)', (t) async {
+    await size(t, _sizes[1]);
+    final api = FakeScrumBoardApi();
+    final seen = <int>[];
+    await t.pumpWidget(_app(ScrumBoardPage(api: api, pollInterval: poll, board: _Probe(seen), features: const SizedBox.shrink())));
+    await t.pump();
+    expect(api.calls['changeStamp'], 1);
+    expect(seen.last, 0);
+    api.bump();
+    await t.pump(poll);
+    await t.pump();
+    expect(seen.last, 1);
   });
 
   testWidgets('SCB-15.d SCB-20 the header right zone holds zoom, theme, bin and a disabled add, in that order', (t) async {
@@ -152,7 +167,64 @@ void main() {
     expect(t.getRect(find.byKey(const ValueKey('scbRowBottom'))).bottom, closeTo(_sizes[1].height - scrumPagePadding, 0.01));
   });
 
-  testWidgets('SCB-20.a zoom steps by 10 % between 80 % and 160 % and the icon is disabled at a limit', (t) async {
+  testWidgets('SCB-20 the zoom is one icon whose left half is zoom out and right half zoom in', (t) async {
+    await size(t, _sizes[1]);
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), onZoomChanged: (_) {})));
+    expect(find.byIcon(Icons.zoom_in), findsNothing);
+    expect(find.byIcon(Icons.zoom_out), findsNothing);
+    final icon = t.getRect(find.byKey(const ValueKey('scbZoom')));
+    final out = t.getRect(find.byKey(const ValueKey('scbZoomOut')));
+    final inn = t.getRect(find.byKey(const ValueKey('scbZoomIn')));
+    expect(icon.width, scrumZoomIconWidth);
+    expect(out.left, icon.left);
+    expect(inn.right, icon.right);
+    expect(out.right, closeTo(inn.left, 0.01));
+    expect(find.byTooltip('Zoom out'), findsOneWidget);
+    expect(find.byTooltip('Zoom in'), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const ValueKey('scbZoom')), matching: find.byType(CustomPaint)), findsWidgets);
+  });
+
+  for (final b in Brightness.values) {
+    testWidgets('SCB-20 SCB-15.c the zoom icon draws in ${b.name} with no overflow at every DEF-01 size', (t) async {
+      for (final s in _sizes) {
+        await size(t, s);
+        await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: scrumZoomMax, onZoomChanged: (_) {}), brightness: b));
+        expect(t.takeException(), isNull);
+        expect(t.getRect(find.byKey(const ValueKey('scbZoom'))).right, lessThanOrEqualTo(s.width));
+      }
+    });
+  }
+
+  testWidgets('SCB-20.a the minus half zooms out one step and the plus half zooms in one step', (t) async {
+    await size(t, _sizes[1]);
+    final got = <int>[];
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: 120, onZoomChanged: got.add)));
+    await t.tap(find.byKey(const ValueKey('scbZoomOut')));
+    await t.tap(find.byKey(const ValueKey('scbZoomIn')));
+    expect(got, [110, 130]);
+  });
+
+  testWidgets('SCB-20.a at 80 % the minus half is disabled and the plus half works', (t) async {
+    await size(t, _sizes[1]);
+    final got = <int>[];
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: scrumZoomMin, onZoomChanged: got.add)));
+    expect(t.widget<InkWell>(find.byKey(const ValueKey('scbZoomOut'))).onTap, isNull);
+    await t.tap(find.byKey(const ValueKey('scbZoomOut')));
+    await t.tap(find.byKey(const ValueKey('scbZoomIn')));
+    expect(got, [90]);
+  });
+
+  testWidgets('SCB-20.a at 160 % the plus half is disabled and the minus half works', (t) async {
+    await size(t, _sizes[1]);
+    final got = <int>[];
+    await t.pumpWidget(_app(ScrumBoardPage(api: FakeScrumBoardApi(), board: const SizedBox.shrink(), features: const SizedBox.shrink(), zoomPercent: scrumZoomMax, onZoomChanged: got.add)));
+    expect(t.widget<InkWell>(find.byKey(const ValueKey('scbZoomIn'))).onTap, isNull);
+    await t.tap(find.byKey(const ValueKey('scbZoomIn')));
+    await t.tap(find.byKey(const ValueKey('scbZoomOut')));
+    expect(got, [150]);
+  });
+
+  testWidgets('SCB-20.a zoom steps by 10 % between 80 % and 160 % and the half is disabled at a limit', (t) async {
     await size(t, _sizes[1]);
     var zoom = 100;
     late StateSetter set;
@@ -166,7 +238,7 @@ void main() {
         onZoomChanged: (z) => set(() => zoom = z),
       );
     })));
-    bool enabled(String k) => t.widget<IconButton>(find.byKey(ValueKey(k))).onPressed != null;
+    bool enabled(String k) => t.widget<InkWell>(find.byKey(ValueKey(k))).onTap != null;
     await t.tap(find.byKey(const ValueKey('scbZoomOut')));
     await t.pump();
     expect(zoom, 90);

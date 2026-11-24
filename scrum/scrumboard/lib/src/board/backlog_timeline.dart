@@ -3,6 +3,7 @@ import 'package:scrumboard/src/api/reload_scope.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/board/board_tokens.dart';
 import 'package:scrumboard/src/board/sprint_assign.dart';
+import 'package:scrumboard/src/board/status_choice.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/features/scb_filter_bar.dart';
 import 'package:scrumboard/src/features/scb_status_menu.dart';
@@ -97,27 +98,12 @@ class _BacklogTimelineState extends State<BacklogTimeline> {
     }
   }
 
-  /// SCB-21: a status-menu choice, handled as the drop handles it.
+  /// SCB-21: a status-menu choice, through the shared helper (PBI-108).
   Future<void> _status(String id, String status, String newStatus, String? storyId) async {
     final data = await _future;
     if (data == null || !mounted) return;
     setState(() => _refused = null);
-    ({bool ok, String reason}) r;
-    if (newStatus == 'retired') {
-      r = await widget.api.retire(id);
-    } else if (newStatus == 'planned' && storyId != null) {
-      r = await assignRequirementToSprint(widget.api, id, storyId);
-    } else if (newStatus == 'backlog') {
-      r = await moveRequirement(widget.api, id: id, status: status, sprint: data.sprint, storyId: null);
-    } else {
-      try {
-        r = await widget.api.setStatus(id, newStatus);
-      } on ScrumBoardApiException catch (e) {
-        r = (ok: false, reason: e.reason);
-      } on ScrumBoardUnreachableException catch (e) {
-        r = (ok: false, reason: e.reason);
-      }
-    }
+    final r = await applyStatusChoice(widget.api, id: id, choice: newStatus, storyId: storyId);
     if (!mounted) return;
     if (!r.ok) {
       setState(() => _refused = r.reason);

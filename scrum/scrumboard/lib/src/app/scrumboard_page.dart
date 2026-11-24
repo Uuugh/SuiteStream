@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/api/reload_scope.dart';
+import 'package:scrumboard/src/app/zoom_control.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
 import 'package:scrumboard/src/theme/scrum_theme.dart';
 
@@ -52,11 +53,15 @@ class _ScrumBoardPageState extends State<ScrumBoardPage> {
   @override
   void initState() {
     super.initState();
+    // SCB-22 (PBI-107): the baseline stamp is read when the page starts, so a
+    // change made before the first poll is seen by that poll.
+    _checkStamp();
     _poll = Timer.periodic(widget.pollInterval, (_) => _checkStamp());
   }
 
   /// SCB-22: a stamp that differs from the first one seen reloads every pane.
-  /// A failed poll is ignored.
+  /// A failed poll is ignored; when the first read fails, the next one that
+  /// succeeds becomes the baseline.
   Future<void> _checkStamp() async {
     if (_polling) return;
     _polling = true;
@@ -106,18 +111,7 @@ class _ScrumBoardPageState extends State<ScrumBoardPage> {
         appBar: AppBar(
           toolbarHeight: scrumToolbarHeight,
           actions: [
-            IconButton(
-              key: const ValueKey('scbZoomOut'),
-              tooltip: context.msg('scbZoomOut'),
-              icon: const Icon(Icons.zoom_out),
-              onPressed: onZoom != null && zoom > scrumZoomMin ? () => onZoom(zoom - scrumZoomStep) : null,
-            ),
-            IconButton(
-              key: const ValueKey('scbZoomIn'),
-              tooltip: context.msg('scbZoomIn'),
-              icon: const Icon(Icons.zoom_in),
-              onPressed: onZoom != null && zoom < scrumZoomMax ? () => onZoom(zoom + scrumZoomStep) : null,
-            ),
+            ScbZoomControl(zoomPercent: zoom, onZoomChanged: onZoom),
             IconButton(
               key: const ValueKey('scbTheme'),
               tooltip: context.msg('scbTheme'),
