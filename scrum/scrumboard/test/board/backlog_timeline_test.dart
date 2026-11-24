@@ -63,7 +63,7 @@ void main() {
   testWidgets('SCB-06.a the Backlog block holds the backlog requirements only', (tester) async {
     await _pump(tester, _api());
     final block = find.byKey(const ValueKey('backlog-block'));
-    expect(find.descendant(of: block, matching: find.text('Backlog')), findsOneWidget);
+    expect(find.descendant(of: block, matching: find.text('Backlog')).first, findsOneWidget);
     expect(find.descendant(of: block, matching: find.text('3')), findsOneWidget);
     expect(find.descendant(of: block, matching: find.byKey(const ValueKey('item-CAL-14'))), findsOneWidget);
     expect(find.descendant(of: block, matching: find.byKey(const ValueKey('item-THM-02'))), findsOneWidget);

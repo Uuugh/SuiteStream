@@ -79,3 +79,9 @@ If these conditions are not met, intervene appropriately to promote discussion.
 ## Sprint branch
 
 Each sprint works on a branch named for it (`sprintNNN`, for example `sprint007`), created from an up-to-date `main` when the sprint starts. Commit and push to that branch often (at least after each wave of agent work, and whenever tests are green) so no work is lost. The branch is merged into `main` after the retrospective is approved (see the sprint-retrospective skill).
+
+## File ownership
+
+- One editor per file. A file missing from a sprint's ownership table belongs to the developer who owned it last (see the previous sprint's table and `handoffs.md`): ask that developer through a handoff instead of editing it. An agent never restores a file from git while another agent owns it.
+- Only Yamamoto edits the six arb files (others send keys in `strings_*.md`). Every UI text is an arb key, with no English fallbacks.
+- Sizes and spacing come from theme tokens (`suite_theme.dart`) and colors from the Flutter theme (`ColorScheme`); no hardcoded values.

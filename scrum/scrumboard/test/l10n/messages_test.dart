@@ -5,10 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
 
 const _keys = [
-  'scbReload', 'scbLoadFailed', 'scbServerUnreachable', 'scbRequirements', 'scbBacklog',
+  'scbLoadFailed', 'scbServerUnreachable', 'scbRequirements', 'scbBacklog',
   'scbStatusProposed', 'scbStatusBacklog', 'scbStatusPlanned', 'scbStatusDone',
   'scbFilterFeature', 'scbFilterRequirement', 'scbFilterStatus', 'scbShownOf',
   'scbExpandRow', 'scbCollapseRow', 'scbExpandAll', 'scbFeaturesRequirements', 'scbMoveRefused',
+  'scbZoomIn', 'scbZoomOut', 'scbTheme', 'scbRetire', 'scbAdd', 'scbStatusRetired', 'scbStatusSprintItem', 'scbStatusMenu',
 ];
 
 // Tests run in scrum/scrumboard; the sources are at the repository root.
@@ -37,9 +38,9 @@ void main() {
   test('SCB-01.d the loader returns messages from the copies, with placeholders and fallback', () {
     final en = _arb(_copy('en'));
     final de = Messages.fromMaps('de', _arb(_copy('de')), en);
-    expect(de('scbReload'), _arb(_copy('de'))['scbReload']);
+    expect(de('scbBacklog'), _arb(_copy('de'))['scbBacklog']);
     expect(Messages.fromMaps('en', en, en)('scbShownOf', {'shown': 2, 'total': 9}), '2 of 9');
-    expect(Messages.fromMaps('fr', {'@@locale': 'fr'}, en)('scbReload'), en['scbReload']);
+    expect(Messages.fromMaps('fr', {'@@locale': 'fr'}, en)('scbBacklog'), en['scbBacklog']);
     expect(de('noSuchKey'), 'noSuchKey');
   });
 

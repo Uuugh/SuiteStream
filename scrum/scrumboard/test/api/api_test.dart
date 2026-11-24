@@ -79,6 +79,56 @@ void main() {
     expect((await fake.setStatus('A-1', 'proposed')).reason, 'no');
   });
 
+  test('SCB-22 changeStamp reads the stamp; the fake changes it', () async {
+    final api = HttpScrumBoardApi(
+      baseUri: base,
+      client: MockClient((req) async {
+        expect(req.method, 'GET');
+        expect(req.url.path, '/api/changes');
+        return json({'stamp': 'abc'});
+      }),
+    );
+    expect(await api.changeStamp(), 'abc');
+    final fake = FakeScrumBoardApi();
+    final a = await fake.changeStamp();
+    expect(await fake.changeStamp(), a);
+    fake.bump();
+    final b = await fake.changeStamp();
+    expect(b, isNot(a));
+    fake.sprintFile = const SprintFile(exists: true);
+    expect(await fake.changeStamp(), isNot(b));
+  });
+
+  test('SCB-19.a retire posts and returns ok and reason; the fake removes',
+      () async {
+    late http.Request seen;
+    final api = HttpScrumBoardApi(
+      baseUri: base,
+      client: MockClient((req) async {
+        seen = req;
+        return json({'ok': false, 'reason': 'no requirement X-1'});
+      }),
+    );
+    final r = await api.retire('X-1');
+    expect(seen.method, 'POST');
+    expect(seen.url.path, '/api/requirements/X-1/retire');
+    expect(r.ok, isFalse);
+    expect(r.reason, 'no requirement X-1');
+
+    final fake = FakeScrumBoardApi(requirementList: const [
+      Requirement(
+        id: 'A-1',
+        status: 'backlog',
+        statement: '',
+        feature: 'a',
+        file: 'requirements/a.md',
+      ),
+    ]);
+    expect((await fake.retire('B-2')).ok, isFalse);
+    expect((await fake.retire('A-1')).ok, isTrue);
+    expect(await fake.requirements(), isEmpty);
+  });
+
   test('SCB-02 reads and saves the sprint', () async {
     late String sentBody;
     final api = HttpScrumBoardApi(

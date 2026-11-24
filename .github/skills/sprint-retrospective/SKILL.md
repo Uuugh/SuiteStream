@@ -23,7 +23,7 @@ Target the latest sprintXXX in the scrum folder (XXX is sequential; the running 
 1. Read `scrum/${sprint_number}/sprint_backlog.md` and review sprint results.
 2. Read `scrum/${sprint_number}/sprint_review.md` and review the sprint review outcome.
 3. Read `scrum/impediment_log.csv` and check impediment occurrence and resolution.
-4. Read `scrum/velocity.csv` and review the velocity trend.
+4. Read `scrum/velocity.csv` and review the velocity trend. Every sprint ends with its own row there, also inside an epic.
 5. Read `scrum/definition_of_done.md` and review the Definition of Done.
 
 ## Conduct the Retrospective

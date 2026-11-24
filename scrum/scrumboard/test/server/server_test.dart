@@ -166,6 +166,108 @@ void main() {
       }
     });
 
+    test('SCB-13.b answers the retire and changes requests, not other verbs',
+        () async {
+      expect((await raw(server, 'GET', '/api/changes')).status, 200);
+      for (final c in [
+        ('POST', '/api/changes'),
+        ('GET', '/api/requirements/DEM-01/retire'),
+        ('PUT', '/api/requirements/DEM-01/retire'),
+        ('POST', '/api/requirements/DEM-01/other'),
+      ]) {
+        final r = await raw(server, c.$1, c.$2);
+        expect(r.status, 404, reason: '${c.$1} ${c.$2}');
+      }
+    });
+
+    test('SCB-22 the stamp changes when a watched file changes', () async {
+      Future<String> stamp() async => (jsonDecode(
+            (await raw(server, 'GET', '/api/changes')).body,
+          ) as Map<String, dynamic>)['stamp'] as String;
+      final first = await stamp();
+      expect(await stamp(), first);
+      final files = [
+        '${repo.path}/requirements/demo.md',
+        '${repo.path}/scrum/sprint.md',
+        '${repo.path}/scrum/usage.md',
+        '${repo.path}/progress/Nakamura',
+      ];
+      var previous = first;
+      for (final f in files) {
+        final file = File(f);
+        file.writeAsStringSync(
+          '${file.existsSync() ? file.readAsStringSync() : ''}x',
+        );
+        final now = await stamp();
+        expect(now, isNot(previous), reason: f);
+        previous = now;
+      }
+    });
+
+    test('SCB-22 refuses a foreign Host', () async {
+      final r = await raw(
+        server,
+        'GET',
+        '/api/changes',
+        host: 'evil.example:${server.port}',
+      );
+      expect(r.status, 403);
+    });
+
+    test('SCB-19.a retire moves the row to retired.md', () async {
+      final r = await raw(server, 'POST', '/api/requirements/DEM-01/retire');
+      expect(r.status, 200);
+      expect(jsonDecode(r.body), {'ok': true, 'reason': ''});
+      final demo = File('${repo.path}/requirements/demo.md').readAsStringSync();
+      expect(demo, isNot(contains('DEM-01')));
+      expect(demo, contains('|---|'));
+      final retired =
+          File('${repo.path}/requirements/retired.md').readAsStringSync();
+      expect(retired, contains('| DEM-01 | '));
+      expect(retired, contains('retired from the ScrumBoard by the Executive'));
+      expect(retired, contains('It’s a test — ok › fine.'));
+      expect(retired, matches(RegExp(r'\| DEM-01 \| \d{4}-\d\d-\d\d \|')));
+      final list = jsonDecode((await raw(server, 'GET', '/api/requirements')).body);
+      expect(list, isEmpty);
+      // The id is retired: asking again is refused.
+      final again = jsonDecode(
+        (await raw(server, 'POST', '/api/requirements/DEM-01/retire')).body,
+      ) as Map<String, dynamic>;
+      expect(again['ok'], isFalse);
+    });
+
+    test('SCB-19.a retire refuses an unknown id and changes nothing', () async {
+      final before =
+          File('${repo.path}/requirements/demo.md').readAsStringSync();
+      final r = await raw(server, 'POST', '/api/requirements/NOPE-9/retire');
+      final body = jsonDecode(r.body) as Map<String, dynamic>;
+      expect(body['ok'], isFalse);
+      expect(body['reason'], isNotEmpty);
+      expect(File('${repo.path}/requirements/demo.md').readAsStringSync(), before);
+      expect(File('${repo.path}/requirements/retired.md').existsSync(), isFalse);
+    });
+
+    test('SCB-19.a retire answers 403 for a foreign Host or Origin', () async {
+      final a = await raw(
+        server,
+        'POST',
+        '/api/requirements/DEM-01/retire',
+        host: 'evil.example:${server.port}',
+      );
+      expect(a.status, 403);
+      final b = await raw(
+        server,
+        'POST',
+        '/api/requirements/DEM-01/retire',
+        origin: 'http://evil.example',
+      );
+      expect(b.status, 403);
+      expect(
+        File('${repo.path}/requirements/demo.md').readAsStringSync(),
+        contains('DEM-01'),
+      );
+    });
+
     test('SCB-13.b serves build/web and nothing outside it', () async {
       final index = await raw(server, 'GET', '/');
       expect(index.status, 200);

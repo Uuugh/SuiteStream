@@ -51,6 +51,14 @@ abstract class ScrumBoardApi {
   /// `PUT /api/requirements/<id>/status` (SCB-13.c, SCB-13.d). A refused move
   /// is `ok: false` with the reason, not an exception.
   Future<({bool ok, String reason})> setStatus(String id, String status);
+
+  /// `GET /api/changes` (SCB-22): a stamp that differs whenever a watched
+  /// file changed.
+  Future<String> changeStamp();
+
+  /// `POST /api/requirements/<id>/retire` (SCB-19.a). A refusal is `ok: false`
+  /// with the reason, not an exception.
+  Future<({bool ok, String reason})> retire(String id);
 }
 
 /// Talks to the server over HTTP. [baseUri] is the page's own origin in the
@@ -104,6 +112,24 @@ class HttpScrumBoardApi implements ScrumBoardApi {
       'PUT',
       '/api/requirements/${Uri.encodeComponent(id)}/status',
       body: jsonEncode({'status': status}),
+    ) as Map<String, dynamic>;
+    return (
+      ok: json['ok'] == true,
+      reason: (json['reason'] ?? '').toString(),
+    );
+  }
+
+  @override
+  Future<String> changeStamp() async {
+    final json = await _send('GET', '/api/changes') as Map<String, dynamic>;
+    return (json['stamp'] ?? '').toString();
+  }
+
+  @override
+  Future<({bool ok, String reason})> retire(String id) async {
+    final json = await _send(
+      'POST',
+      '/api/requirements/${Uri.encodeComponent(id)}/retire',
     ) as Map<String, dynamic>;
     return (
       ok: json['ok'] == true,
@@ -226,6 +252,36 @@ class FakeScrumBoardApi implements ScrumBoardApi {
               )
             else
               r,
+        ];
+        return (ok: true, reason: '');
+      });
+
+  int _bumps = 0;
+
+  /// Makes [changeStamp] answer a new value, as if a file had changed.
+  void bump() => _bumps++;
+
+  /// Every id passed to [retire].
+  final List<String> retireCalls = [];
+
+  @override
+  Future<String> changeStamp() => _answer(
+        'changeStamp',
+        () => '$_bumps-'
+            '${requirementList.map((r) => '${r.id}:${r.status}').join(',')}-'
+            '${identityHashCode(sprintFile)}',
+      );
+
+  @override
+  Future<({bool ok, String reason})> retire(String id) =>
+      _answer('retire', () {
+        retireCalls.add(id);
+        if (!requirementList.any((r) => r.id == id)) {
+          return (ok: false, reason: 'no requirement $id');
+        }
+        requirementList = [
+          for (final r in requirementList)
+            if (r.id != id) r,
         ];
         return (ok: true, reason: '');
       });

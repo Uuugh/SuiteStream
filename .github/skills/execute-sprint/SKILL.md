@@ -34,3 +34,8 @@ Start a sub-agent with Opus 4.7 and execute the `sprint-review` skill procedure.
 
 ## Step 6: Perform the Sprint Retrospective
 Start a sub-agent with Opus 4.7 and execute the `sprint-retrospective` skill procedure.
+
+## Web check and icon glyphs
+
+- Web check: `flutter build web --release --no-web-resources-cdn`, served from `build/web` on port 8080. The service worker caches, so ask the Executive to hard-refresh.
+- New icon glyphs: add them to `lib/src/theme/suite_icons.dart`, then run `tool/update_icon_font.sh` (it rebuilds the font subset; Tanaka owns icons and the font assets).

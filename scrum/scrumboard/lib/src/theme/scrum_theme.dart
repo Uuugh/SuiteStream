@@ -8,11 +8,11 @@ const Color scrumThemeSeed = Color(0xFF93B4FF);
 /// Spacing and shape tokens. Widgets use these and never a literal.
 const double scrumPanelRadius = 12;
 const double scrumPanelBorderWidth = 1;
-const double scrumPagePadding = 12;
-const double scrumPartGap = 5;
+const double scrumPagePadding = 8;
+const double scrumPartGap = 3;
 const double scrumToolbarHeight = 44;
 /// Padding around a load-failed message.
-const double scrumErrorPadding = 12;
+const double scrumErrorPadding = 8;
 
 /// SCB-15.a: the share of the page height of each row (percent).
 const int scrumTopRowFlex = 40;
@@ -31,3 +31,12 @@ ThemeData buildScrumTheme(Brightness brightness) {
     dividerColor: scheme.outlineVariant,
   );
 }
+
+/// SCB-22: how often the page asks the server for the change stamp.
+const Duration scrumPollInterval = Duration(seconds: 2);
+
+/// SCB-20.a: the zoom default, limits and step (percent).
+const int scrumZoomDefault = 100;
+const int scrumZoomMin = 80;
+const int scrumZoomMax = 160;
+const int scrumZoomStep = 10;

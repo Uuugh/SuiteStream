@@ -138,6 +138,53 @@ void main() {
     expect(d.data, const RequirementDragData('AAA-02', 'proposed'));
   });
 
+  Future<void> choose(WidgetTester t, String id, String item) async {
+    await t.tap(find.descendant(of: find.byKey(ValueKey('scb-status-$id')), matching: find.byType(Text)));
+    await t.pumpAndSettle();
+    await t.tap(find.byKey(ValueKey(item)));
+    await t.pumpAndSettle();
+  }
+
+  FakeScrumBoardApi withStory() => FakeScrumBoardApi(
+        requirementList: [_r('AAA-02', 'proposed'), _r('AAA-03', 'backlog')],
+        sprintFile: const SprintFile(
+          exists: true,
+          blocks: [SprintBlock(id: 'S1', kind: 'story', name: 'First story')],
+        ),
+      );
+
+  testWidgets('SCB-21 the status menu offers the stories; retired removes the row (SCB-19.c)', (t) async {
+    final api = withStory();
+    await _pump(t, api);
+    await t.tap(find.descendant(of: find.byKey(const ValueKey('scb-status-AAA-02')), matching: find.byType(Text)));
+    await t.pumpAndSettle();
+    expect(find.text('Sprint: First story'), findsOneWidget);
+    await t.tap(find.byKey(const ValueKey('scbStatusMenu.retired')));
+    await t.pumpAndSettle();
+    expect(api.retireCalls, ['AAA-02']);
+    expect(_has('AAA-02'), isFalse);
+    expect(_has('AAA-03'), isTrue);
+  });
+
+  testWidgets('SCB-21 backlog and a story set the status; the column reloads', (t) async {
+    final api = withStory();
+    await _pump(t, api);
+    await choose(t, 'AAA-02', 'scbStatusMenu.backlog');
+    expect(api.statusCalls, [(id: 'AAA-02', status: 'backlog')]);
+    await choose(t, 'AAA-03', 'scbStatusMenu.story.S1');
+    expect(api.statusCalls.last, (id: 'AAA-03', status: 'planned'));
+    expect(api.sprintFile.members.any((m) => m.item == 'AAA-03' && m.block == 'S1'), isTrue);
+    expect(find.text('Planned'), findsOneWidget);
+  });
+
+  testWidgets('SCB-21 a refusal shows msg:scbMoveRefused and changes nothing', (t) async {
+    final api = withStory()..refuseWith = 'wrong order';
+    await _pump(t, api);
+    await choose(t, 'AAA-02', 'scbStatusMenu.backlog');
+    expect(find.textContaining('wrong order'), findsOneWidget);
+    expect(find.byKey(const ValueKey('move-refused')), findsOneWidget);
+  });
+
   testWidgets('SCB-04 the column uses the shared ScbFilterBar', (t) async {
     await _pump(t, _api());
     expect(find.byType(ScbFilterBar), findsOneWidget);
