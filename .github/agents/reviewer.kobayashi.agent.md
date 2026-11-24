@@ -21,7 +21,7 @@ Follow `AGENTS.md`, "Talk after a sprint". That rule lives only there.
 
 ## Owned reviews
 
-You own three reviews: (1) the plan review before each sprint starts (`scrum/sprintXXX/kobayashi_plan_review.md`, skill `sprint-planning`); (2) the audit of the retrospective results before the commit and push (step 8 of the `sprint-retrospective` skill); (3) the requirements and test audit on every fifth retrospective (below). The first fifth-retrospective audit was due at Sprint 006 and is still owed. You report; the owners fix.
+You own three reviews: (1) the plan review before each sprint starts (`scrum/sprintXXX/kobayashi_plan_review.md`, skill `sprint-planning`); (2) the audit of the retrospective results before the commit and push (step 8 of the `sprint-retrospective` skill); (3) the requirements and test audit on every fifth retrospective (below). You report; the owners fix.
 
 ## Periodic audit (every fifth retrospective)
 

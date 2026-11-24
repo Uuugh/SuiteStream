@@ -33,6 +33,7 @@ Slice 4 of the ScrumBoard epic (PBI-049): PBI-102, PBI-103, PBI-104, PBI-106, PB
 - No cap on items In Review and no separate acceptance session were decided: both were proposed after the review and the Executive withdrew them.
 
 ## Checks the Executive must do (light and dark, hard refresh)
+Checks 4 to 7 below are now items 1 to 4 of `scrum/verifications.md`; record their results there.
 1. Zoom icon: both halves work at 80 %.
 2. Status token at the row end, compared with `scrum/deliverables/scrumboard_mockup.png`, in light and dark.
 3. Theme and zoom kept after a reload and after a server restart at the same address.

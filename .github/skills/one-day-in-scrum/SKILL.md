@@ -47,7 +47,7 @@ Use the Ito, Tanaka, Yamamoto, and Nakamura agents to check each member's status
 - Resolve impediments that can be addressed immediately. For those that cannot, address them in the retrospective.
 
 #### Recording
-- Append today's daily Scrum record to `scrum/sprint${sprint_number}/daily_scrum.md`.
+- Append today's daily Scrum record to `scrum/sprint${sprint_number}/daily_scrum.md`. Each developer writes the test command they ran and the pass count it printed; the review cites those lines.
 - Update task statuses in `scrum/sprint${sprint_number}/sprint_backlog.md`.
 **Record both daily_scrum.md and sprint_backlog.md without omitting necessary elements, but keep the content concise.**
 

@@ -13,7 +13,7 @@ When the Executive types "questions", list every open question in the format bel
 - Each answer choice (a, b, c...) is on its own new line, indented 3 spaces under its question.
 
 ```
-<number>. <asker, sprint> <short title>
+## <number>. <asker, sprint> <short title>
 Status: open
 Question: ...
    Choices: ... (optional)

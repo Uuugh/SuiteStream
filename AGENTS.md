@@ -14,9 +14,9 @@ Never start or run a sprint unless the Executive says "start" ("start", "do" or 
 
 It is the retrospective: record each point as a backlog item (`scrum/product_backlog.csv`: 10 fields, no commas) or a requirement change. Do not change code unless the Executive says start or asks for a quick fix. Anything said while a sprint runs is input for the next sprint: never interrupt a running sprint. If unsure whether a request is for now, make it a backlog item and say so.
 
-## Questions
+## Questions and verifications
 
-Before changing anything, read `scrum/questions.md`: record each answered pair (answered in chat or on the ScrumBoard) where it belongs, then delete it. Look for an answer in earlier decisions before asking. Write each question there, as it says. Ask it once.
+Before changing anything, read `scrum/questions.md` and `scrum/verifications.md`: record each answered pair and act on each accepted or returned verification (answered in chat or on the ScrumBoard) as its file says, then delete it. Look for an answer in earlier decisions before asking. Write each question or verification there, as it says. Ask it once.
 
 ## Replies
 

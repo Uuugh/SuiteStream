@@ -18,7 +18,7 @@ An item is Done only when every applicable criterion below can be answered Yes.
 - Security and privacy requirements are met.
 
 ## Documentation
-- User-facing setup and usage instructions are current.
+- User-facing setup and usage instructions are current: every option, route or setting this sprint adds or changes is in its doc file (for the ScrumBoard, `scrum/scrumboard/README.md`), checked on Windows and web.
 - Test results and any known limitations are recorded.
 
 Requirement rows stay `planned` until the Executive has verified the work in the browser; only then `done`.
