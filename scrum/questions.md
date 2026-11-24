@@ -19,24 +19,8 @@ Question: Run the rule test again with an agent that has edit access and a tempt
 Choices: Yes / No
 Answer:
 
-## Mockup v2: Backlog content and width
+## Mockup v2: usage chart when the forecast is more than 100 %
 Status: open
-Question: The Backlog shows features (with their requirements) and issues as items, 380 px wide like a sprint block. Right content and width?
-Answer:
-
-## Mockup v2: older sprints
-Status: open
-Question: Should an accepted older sprint be dimmed or marked? Sprint 009 shows an "accepted" chip and no Accept button.
-Choices: Chip only / Dimmed too
-Answer:
-
-## Mockup v2: Accept on sprints that are not current
-Status: open
-Question: Planned sprints show a dimmed Accept button. Hide it there instead?
-Choices: Dimmed / Hidden
-Answer:
-
-## Mockup v2: usage over 100
-Status: open
-Question: A projection over 100 is a triangle just past the 100 line with the label "112 (above 100)". Right placement and wording?
+Question: The usage chart forecasts how much of the 5-hour session or the week the next sprint will use. If the forecast is more than 100 % (for example 112 %), the bar cannot go past the end of the chart. Plain version: do you want a small triangle at the right end with the real number next to it, or do you want nothing special?
+Choices: Triangle with the number / Nothing special
 Answer:

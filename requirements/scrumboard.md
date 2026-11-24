@@ -53,9 +53,12 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-07.g | backlog | A drop that would move a status down in any other way, or that is not allowed by SCB-07.c, changes nothing and says why (msg:scbMoveRefused, with the reason as {reason}). | — |
 | SCB-07.h | backlog | Dropping something where it already is changes nothing. | — |
 | SCB-07.i | backlog | Dragging a requirement or an issue out of the Backlog block, onto nothing, removes it from the Backlog and puts it back to the status it had before it entered the Backlog; the board keeps that earlier status in the sprint file (SCB-02.d) when the item enters the Backlog. The item stays listed in its own column in every case, with the status changed in the requirement file or the issue tracker; the board is a window onto the existing process. | — |
-| SCB-08 | backlog | A sprint block has one Accept control (msg:scbAccept), in its header to the right of its usage metric; stories have none. | — |
-| SCB-08.a | backlog | Accept sets the status of every requirement and issue of every story in the sprint to `done`. | — |
-| SCB-08.b | backlog | Only a sprint block that sits on the board has an Accept control; the Backlog block has none. | — |
+| SCB-08 | backlog | A sprint block has one lifecycle button (msg:scbStart, msg:scbStop, msg:scbAccept) in its header to the right of its usage metric; stories have none. A sprint's state is shown as a chip: planned, running, complete, accepted. | — |
+| SCB-08.a | backlog | On a planned sprint the button is Start. It is the Executive's word "start": pressing it sets the sprint to running in the sprint file (SCB-02.d), and agents begin the sprint only when they read that state. | — |
+| SCB-08.b | backlog | Start is inactive on every planned sprint that is not the next to run, and on every sprint while another sprint is running; the Backlog block has no lifecycle button. | — |
+| SCB-08.c | backlog | While the sprint is running the button is Stop; pressing it sets the sprint to stopped in the sprint file and the agents stop at their next safe point and report where they stopped. | — |
+| SCB-08.d | backlog | When the orchestrator records that the sprint work is finished (analysis, tests and the retrospective draft done) the sprint is complete and the button becomes Accept. | — |
+| SCB-08.e | backlog | Accept is the Executive's approval of the retrospective: it sets the status of every requirement and issue of every story in the sprint to `done`, sets the sprint to accepted and removes the button; an accepted sprint shows the chip only. | — |
 | SCB-09 | backlog | The Issues column has a New issue control (msg:scbNewIssue) that opens a form to enter an issue: a title, a description, and dropdowns for the feature, the requirement and the status. | — |
 | SCB-09.a | backlog | The form's requirement dropdown lists the requirements of the chosen feature, and choosing another feature clears it. | — |
 | SCB-09.b | backlog | The status dropdown offers the four statuses and nothing else, and starts as `backlog`. | — |
