@@ -7,6 +7,7 @@ import 'package:scrumboard/src/app/scrumboard_page.dart';
 import 'package:scrumboard/src/board/backlog_timeline.dart';
 import 'package:scrumboard/src/features/features_column.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
+import 'package:scrumboard/src/questions/questions_column.dart';
 import 'package:scrumboard/src/theme/scrum_theme.dart';
 
 /// The ScrumBoard app: the theme, the messages and the page with its panes.
@@ -78,6 +79,7 @@ class _ScrumBoardAppState extends State<ScrumBoardApp> {
           },
           board: BacklogTimeline(api: api),
           features: FeaturesColumn(api: api),
+          questions: QuestionsColumn(api: api),
         ),
       ),
     );

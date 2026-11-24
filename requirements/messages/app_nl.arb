@@ -1049,5 +1049,18 @@
   "scbExpandAll": "Alles uitklappen",
   "scbKindStory": "Story",
   "scbKindEpic": "Epic",
-  "scbKindSprint": "Sprint"
+  "scbKindSprint": "Sprint",
+  "scbQuestions": "Vragen en verificaties",
+  "scbNoQuestions": "Geen open vragen of verificaties",
+  "scbAnswered": "Beantwoord",
+  "scbAccepted": "Geaccepteerd",
+  "scbReturned": "Teruggestuurd",
+  "scbItemGone": "Een agent heeft dit item intussen verwijderd; er is niets geschreven",
+  "scbFilterKind": "Soort",
+  "scbFilterItem": "Nummer of PBI",
+  "scbKindQuestion": "Vraag",
+  "scbKindVerification": "Verificatie",
+  "scbStatusOpen": "Open",
+  "scbAnswerHint": "Je antwoord",
+  "scbResultHint": "Resultaat (vereist om terug te sturen)"
 }

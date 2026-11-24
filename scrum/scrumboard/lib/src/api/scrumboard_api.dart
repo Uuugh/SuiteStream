@@ -66,13 +66,41 @@ abstract class ScrumBoardApi {
 
   /// `GET /api/usage/trend` (SCB-14.o): the output of `usage.sh trend`.
   Future<({bool ok, String output, String reason})> usageTrend();
+
+  /// `GET /api/questions` (SCB-17): the questions of `scrum/questions.md` and
+  /// the verifications of `scrum/verifications.md`, each in column order
+  /// (SCB-17.c: open first, then answered or closed, newest first).
+  Future<({List<BoardItem> questions, List<BoardItem> verifications})>
+  boardItems();
+
+  /// `PUT /api/questions/<number>/answer` (SCB-17.b): writes [answer] under
+  /// the question with this [number] AND [heading] and sets it answered. An
+  /// item whose heading changed or that is gone is `ok: false` with reason
+  /// `gone` (nothing written), not an exception. A line break or an empty
+  /// answer is refused by the server (400, [ScrumBoardApiException]).
+  Future<({bool ok, String reason})> answerQuestion(
+    int number,
+    String heading,
+    String answer,
+  );
+
+  /// `PUT /api/verifications/<number>/result` (SCB-17.b): writes [result]
+  /// and [status] (`accepted` or `returned`) for the verification with this
+  /// [number] AND [heading]; `gone` as for [answerQuestion]. A line break, or
+  /// `returned` with an empty result, is refused (400).
+  Future<({bool ok, String reason})> setVerificationResult(
+    int number,
+    String heading,
+    String result,
+    String status,
+  );
 }
 
 /// Talks to the server over HTTP. [baseUri] is the page's own origin in the
 /// browser (`Uri.base`), so no host or port is written in code.
 class HttpScrumBoardApi implements ScrumBoardApi {
   HttpScrumBoardApi({required this.baseUri, http.Client? client})
-      : _client = client ?? http.Client();
+    : _client = client ?? http.Client();
 
   final Uri baseUri;
   final http.Client _client;
@@ -87,8 +115,8 @@ class HttpScrumBoardApi implements ScrumBoardApi {
 
   @override
   Future<SprintFile> sprint() async => SprintFile.fromJson(
-        await _send('GET', '/api/sprint') as Map<String, dynamic>,
-      );
+    await _send('GET', '/api/sprint') as Map<String, dynamic>,
+  );
 
   @override
   Future<SprintFile> saveSprint(SprintFile file) async {
@@ -110,20 +138,19 @@ class HttpScrumBoardApi implements ScrumBoardApi {
 
   @override
   Future<UsageData> usage() async => UsageData.fromJson(
-        await _send('GET', '/api/usage') as Map<String, dynamic>,
-      );
+    await _send('GET', '/api/usage') as Map<String, dynamic>,
+  );
 
   @override
   Future<({bool ok, String reason})> setStatus(String id, String status) async {
-    final json = await _send(
-      'PUT',
-      '/api/requirements/${Uri.encodeComponent(id)}/status',
-      body: jsonEncode({'status': status}),
-    ) as Map<String, dynamic>;
-    return (
-      ok: json['ok'] == true,
-      reason: (json['reason'] ?? '').toString(),
-    );
+    final json =
+        await _send(
+              'PUT',
+              '/api/requirements/${Uri.encodeComponent(id)}/status',
+              body: jsonEncode({'status': status}),
+            )
+            as Map<String, dynamic>;
+    return (ok: json['ok'] == true, reason: (json['reason'] ?? '').toString());
   }
 
   @override
@@ -134,14 +161,13 @@ class HttpScrumBoardApi implements ScrumBoardApi {
 
   @override
   Future<({bool ok, String reason})> retire(String id) async {
-    final json = await _send(
-      'POST',
-      '/api/requirements/${Uri.encodeComponent(id)}/retire',
-    ) as Map<String, dynamic>;
-    return (
-      ok: json['ok'] == true,
-      reason: (json['reason'] ?? '').toString(),
-    );
+    final json =
+        await _send(
+              'POST',
+              '/api/requirements/${Uri.encodeComponent(id)}/retire',
+            )
+            as Map<String, dynamic>;
+    return (ok: json['ok'] == true, reason: (json['reason'] ?? '').toString());
   }
 
   @override
@@ -151,6 +177,50 @@ class HttpScrumBoardApi implements ScrumBoardApi {
   @override
   Future<({bool ok, String output, String reason})> usageTrend() =>
       _script('/api/usage/trend');
+
+  @override
+  Future<({List<BoardItem> questions, List<BoardItem> verifications})>
+  boardItems() async {
+    final json = await _send('GET', '/api/questions') as Map<String, dynamic>;
+    List<BoardItem> list(String key) => [
+      for (final i in json[key] as List<dynamic>? ?? const <dynamic>[])
+        BoardItem.fromJson(i as Map<String, dynamic>),
+    ];
+    return (questions: list('questions'), verifications: list('verifications'));
+  }
+
+  @override
+  Future<({bool ok, String reason})> answerQuestion(
+    int number,
+    String heading,
+    String answer,
+  ) => _write(
+    '/api/questions/$number/answer',
+    {'heading': heading, 'answer': answer},
+  );
+
+  @override
+  Future<({bool ok, String reason})> setVerificationResult(
+    int number,
+    String heading,
+    String result,
+    String status,
+  ) => _write(
+    '/api/verifications/$number/result',
+    {'heading': heading, 'result': result, 'status': status},
+  );
+
+  /// A `PUT` that answers `{ok, reason}` (SCB-17.b); a 400 throws
+  /// [ScrumBoardApiException] with statusCode 400.
+  Future<({bool ok, String reason})> _write(
+    String path,
+    Map<String, String> body,
+  ) async {
+    final json =
+        await _send('PUT', path, body: jsonEncode(body))
+            as Map<String, dynamic>;
+    return (ok: json['ok'] == true, reason: (json['reason'] ?? '').toString());
+  }
 
   Future<({bool ok, String output, String reason})> _script(String path) async {
     final json = await _send('GET', path) as Map<String, dynamic>;
@@ -204,6 +274,8 @@ class FakeScrumBoardApi implements ScrumBoardApi {
     this.sprintFile = const SprintFile(exists: false),
     this.progressList = const [],
     this.usageData = const UsageData(exists: false),
+    this.questionList = const [],
+    this.verificationList = const [],
     this.failWith,
     this.delay = Duration.zero,
   });
@@ -212,6 +284,11 @@ class FakeScrumBoardApi implements ScrumBoardApi {
   SprintFile sprintFile;
   List<ProgressEntry> progressList;
   UsageData usageData;
+
+  /// What [boardItems] answers, in the order given (the server orders; a test
+  /// gives the lists in column order). The writes change them.
+  List<BoardItem> questionList;
+  List<BoardItem> verificationList;
 
   /// When set, every call throws this (a [ScrumBoardApiException] or a
   /// [ScrumBoardUnreachableException]).
@@ -238,13 +315,13 @@ class FakeScrumBoardApi implements ScrumBoardApi {
 
   @override
   Future<SprintFile> saveSprint(SprintFile file) => _answer('saveSprint', () {
-        sprintFile = SprintFile(
-          exists: true,
-          blocks: file.blocks,
-          members: file.members,
-        );
-        return sprintFile;
-      });
+    sprintFile = SprintFile(
+      exists: true,
+      blocks: file.blocks,
+      members: file.members,
+    );
+    return sprintFile;
+  });
 
   @override
   Future<List<ProgressEntry>> progress() =>
@@ -290,31 +367,38 @@ class FakeScrumBoardApi implements ScrumBoardApi {
 
   @override
   Future<String> changeStamp() => _answer(
-        'changeStamp',
-        () => '$_bumps-'
-            '${requirementList.map((r) => '${r.id}:${r.status}').join(',')}-'
-            '${identityHashCode(sprintFile)}',
-      );
+    'changeStamp',
+    () =>
+        '$_bumps-'
+        '${requirementList.map((r) => '${r.id}:${r.status}').join(',')}-'
+        '${identityHashCode(sprintFile)}-'
+        '${[...questionList, ...verificationList].map((i) => '${i.kind}${i.number}:${i.status}').join(',')}',
+  );
 
   @override
-  Future<({bool ok, String reason})> retire(String id) =>
-      _answer('retire', () {
-        retireCalls.add(id);
-        if (!requirementList.any((r) => r.id == id)) {
-          return (ok: false, reason: 'no requirement $id');
-        }
-        requirementList = [
-          for (final r in requirementList)
-            if (r.id != id) r,
-        ];
-        return (ok: true, reason: '');
-      });
+  Future<({bool ok, String reason})> retire(String id) => _answer('retire', () {
+    retireCalls.add(id);
+    if (!requirementList.any((r) => r.id == id)) {
+      return (ok: false, reason: 'no requirement $id');
+    }
+    requirementList = [
+      for (final r in requirementList)
+        if (r.id != id) r,
+    ];
+    return (ok: true, reason: '');
+  });
 
   /// What [usageEstimate] and [usageTrend] answer (SCB-14.o).
-  ({bool ok, String output, String reason}) estimateAnswer =
-      (ok: true, output: '', reason: '');
-  ({bool ok, String output, String reason}) trendAnswer =
-      (ok: true, output: '', reason: '');
+  ({bool ok, String output, String reason}) estimateAnswer = (
+    ok: true,
+    output: '',
+    reason: '',
+  );
+  ({bool ok, String output, String reason}) trendAnswer = (
+    ok: true,
+    output: '',
+    reason: '',
+  );
 
   @override
   Future<({bool ok, String output, String reason})> usageEstimate() =>
@@ -323,4 +407,91 @@ class FakeScrumBoardApi implements ScrumBoardApi {
   @override
   Future<({bool ok, String output, String reason})> usageTrend() =>
       _answer('usageTrend', () => trendAnswer);
+
+  @override
+  Future<({List<BoardItem> questions, List<BoardItem> verifications})>
+  boardItems() => _answer(
+    'boardItems',
+    () => (
+      questions: List.of(questionList),
+      verifications: List.of(verificationList),
+    ),
+  );
+
+  /// Every [answerQuestion] call.
+  final List<({int number, String heading, String answer})> answerCalls = [];
+
+  /// Every [setVerificationResult] call.
+  final List<({int number, String heading, String result, String status})>
+  resultCalls = [];
+
+  /// Like the server: writes the answer and sets `answered` on the question
+  /// with this number AND heading; `gone` when there is none; a line break or
+  /// an empty answer throws the server's 400 as [HttpScrumBoardApi] would.
+  @override
+  Future<({bool ok, String reason})> answerQuestion(
+    int number,
+    String heading,
+    String answer,
+  ) => _answer('answerQuestion', () {
+    answerCalls.add((number: number, heading: heading, answer: answer));
+    if (answer.trim().isEmpty) _badRequest('the answer is empty');
+    if (_hasLineBreak(answer)) _badRequest('the answer has a line break');
+    final at = _find(questionList, number, heading);
+    if (at < 0) return (ok: false, reason: 'gone');
+    questionList = List.of(questionList)
+      ..[at] = _with(questionList[at], 'answered', answer);
+    return (ok: true, reason: '');
+  });
+
+  /// Like the server: writes the result and the status (`accepted` or
+  /// `returned`) on the verification with this number AND heading; `gone`
+  /// when there is none; the server's 400s as for [answerQuestion].
+  @override
+  Future<({bool ok, String reason})> setVerificationResult(
+    int number,
+    String heading,
+    String result,
+    String status,
+  ) => _answer('setVerificationResult', () {
+    resultCalls.add((
+      number: number,
+      heading: heading,
+      result: result,
+      status: status,
+    ));
+    if (status != 'accepted' && status != 'returned') {
+      _badRequest('the status is not accepted or returned');
+    }
+    if (status == 'returned' && result.trim().isEmpty) {
+      _badRequest('a returned verification needs a result');
+    }
+    if (_hasLineBreak(result)) _badRequest('the result has a line break');
+    final at = _find(verificationList, number, heading);
+    if (at < 0) return (ok: false, reason: 'gone');
+    verificationList = List.of(verificationList)
+      ..[at] = _with(verificationList[at], status, result);
+    return (ok: true, reason: '');
+  });
+
+  static Never _badRequest(String reason) =>
+      throw ScrumBoardApiException(reason, statusCode: 400);
+
+  static bool _hasLineBreak(String s) => s.contains('\n') || s.contains('\r');
+
+  /// The index of the item with this number AND heading; -1 when it is gone.
+  static int _find(List<BoardItem> items, int number, String heading) =>
+      items.indexWhere((i) => i.number == number && i.heading == heading);
+
+  static BoardItem _with(BoardItem i, String status, String answer) =>
+      BoardItem(
+        kind: i.kind,
+        number: i.number,
+        heading: i.heading,
+        status: status,
+        text: i.text,
+        choices: i.choices,
+        pbi: i.pbi,
+        answer: answer,
+      );
 }

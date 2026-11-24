@@ -1049,5 +1049,18 @@
   "scbExpandAll": "Expandir todo",
   "scbKindStory": "Historia",
   "scbKindEpic": "Épica",
-  "scbKindSprint": "Sprint"
+  "scbKindSprint": "Sprint",
+  "scbQuestions": "Preguntas y verificaciones",
+  "scbNoQuestions": "No hay preguntas ni verificaciones abiertas",
+  "scbAnswered": "Respondido",
+  "scbAccepted": "Aceptado",
+  "scbReturned": "Devuelto",
+  "scbItemGone": "Un agente eliminó este elemento mientras tanto; no se escribió nada",
+  "scbFilterKind": "Tipo",
+  "scbFilterItem": "Número o PBI",
+  "scbKindQuestion": "Pregunta",
+  "scbKindVerification": "Verificación",
+  "scbStatusOpen": "Abierto",
+  "scbAnswerHint": "Tu respuesta",
+  "scbResultHint": "Resultado (obligatorio para devolver)"
 }

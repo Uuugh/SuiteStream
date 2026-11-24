@@ -13,12 +13,12 @@ class Requirement {
   });
 
   factory Requirement.fromJson(Map<String, dynamic> json) => Requirement(
-        id: json['id'] as String,
-        status: json['status'] as String,
-        statement: json['statement'] as String,
-        feature: json['feature'] as String,
-        file: json['file'] as String,
-      );
+    id: json['id'] as String,
+    status: json['status'] as String,
+    statement: json['statement'] as String,
+    feature: json['feature'] as String,
+    file: json['file'] as String,
+  );
 
   /// For example `SCB-11.a`.
   final String id;
@@ -42,12 +42,12 @@ class Requirement {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'status': status,
-        'statement': statement,
-        'feature': feature,
-        'file': file,
-      };
+    'id': id,
+    'status': status,
+    'statement': statement,
+    'feature': feature,
+    'file': file,
+  };
 }
 
 /// One row of the Blocks table of `scrum/sprint.md` (SCB-02.b).
@@ -63,14 +63,14 @@ class SprintBlock {
   });
 
   factory SprintBlock.fromJson(Map<String, dynamic> json) => SprintBlock(
-        id: json['id'] as String,
-        kind: json['kind'] as String,
-        name: json['name'] as String,
-        parent: json['parent'] as String?,
-        assignee: json['assignee'] as String?,
-        estimate: json['estimate'] as num?,
-        usage: json['usage'] as num?,
-      );
+    id: json['id'] as String,
+    kind: json['kind'] as String,
+    name: json['name'] as String,
+    parent: json['parent'] as String?,
+    assignee: json['assignee'] as String?,
+    estimate: json['estimate'] as num?,
+    usage: json['usage'] as num?,
+  );
 
   final String id;
 
@@ -85,14 +85,14 @@ class SprintBlock {
   final num? usage;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'kind': kind,
-        'name': name,
-        'parent': parent,
-        'assignee': assignee,
-        'estimate': estimate,
-        'usage': usage,
-      };
+    'id': id,
+    'kind': kind,
+    'name': name,
+    'parent': parent,
+    'assignee': assignee,
+    'estimate': estimate,
+    'usage': usage,
+  };
 }
 
 /// One row of the Members table (SCB-02.c): a story and one item, a
@@ -101,9 +101,9 @@ class SprintMember {
   const SprintMember({required this.block, required this.item});
 
   factory SprintMember.fromJson(Map<String, dynamic> json) => SprintMember(
-        block: json['block'] as String,
-        item: json['item'] as String,
-      );
+    block: json['block'] as String,
+    item: json['item'] as String,
+  );
 
   final String block;
   final String item;
@@ -121,26 +121,26 @@ class SprintFile {
   });
 
   factory SprintFile.fromJson(Map<String, dynamic> json) => SprintFile(
-        exists: json['exists'] as bool? ?? true,
-        blocks: [
-          for (final b in json['blocks'] as List<dynamic>)
-            SprintBlock.fromJson(b as Map<String, dynamic>),
-        ],
-        members: [
-          for (final m in json['members'] as List<dynamic>)
-            SprintMember.fromJson(m as Map<String, dynamic>),
-        ],
-      );
+    exists: json['exists'] as bool? ?? true,
+    blocks: [
+      for (final b in json['blocks'] as List<dynamic>)
+        SprintBlock.fromJson(b as Map<String, dynamic>),
+    ],
+    members: [
+      for (final m in json['members'] as List<dynamic>)
+        SprintMember.fromJson(m as Map<String, dynamic>),
+    ],
+  );
 
   final bool exists;
   final List<SprintBlock> blocks;
   final List<SprintMember> members;
 
   Map<String, dynamic> toJson() => {
-        'exists': exists,
-        'blocks': [for (final b in blocks) b.toJson()],
-        'members': [for (final m in members) m.toJson()],
-      };
+    'exists': exists,
+    'blocks': [for (final b in blocks) b.toJson()],
+    'members': [for (final m in members) m.toJson()],
+  };
 }
 
 /// One agent's progress file (`done/total`).
@@ -152,17 +152,20 @@ class ProgressEntry {
   });
 
   factory ProgressEntry.fromJson(Map<String, dynamic> json) => ProgressEntry(
-        label: json['label'] as String,
-        done: json['done'] as int,
-        total: json['total'] as int,
-      );
+    label: json['label'] as String,
+    done: json['done'] as int,
+    total: json['total'] as int,
+  );
 
   final String label;
   final int done;
   final int total;
 
-  Map<String, dynamic> toJson() =>
-      {'label': label, 'done': done, 'total': total};
+  Map<String, dynamic> toJson() => {
+    'label': label,
+    'done': done,
+    'total': total,
+  };
 }
 
 /// One row of the Usage table (SCB-14.a). A dash cell is null.
@@ -178,14 +181,14 @@ class UsageRow {
   });
 
   factory UsageRow.fromJson(Map<String, dynamic> json) => UsageRow(
-        block: json['block'] as String,
-        estimateSession: json['estimateSession'] as num?,
-        estimateWeekly: json['estimateWeekly'] as num?,
-        beforeSession: json['beforeSession'] as num?,
-        beforeWeekly: json['beforeWeekly'] as num?,
-        afterSession: json['afterSession'] as num?,
-        afterWeekly: json['afterWeekly'] as num?,
-      );
+    block: json['block'] as String,
+    estimateSession: json['estimateSession'] as num?,
+    estimateWeekly: json['estimateWeekly'] as num?,
+    beforeSession: json['beforeSession'] as num?,
+    beforeWeekly: json['beforeWeekly'] as num?,
+    afterSession: json['afterSession'] as num?,
+    afterWeekly: json['afterWeekly'] as num?,
+  );
 
   final String block;
   final num? estimateSession;
@@ -196,14 +199,87 @@ class UsageRow {
   final num? afterWeekly;
 
   Map<String, dynamic> toJson() => {
-        'block': block,
-        'estimateSession': estimateSession,
-        'estimateWeekly': estimateWeekly,
-        'beforeSession': beforeSession,
-        'beforeWeekly': beforeWeekly,
-        'afterSession': afterSession,
-        'afterWeekly': afterWeekly,
-      };
+    'block': block,
+    'estimateSession': estimateSession,
+    'estimateWeekly': estimateWeekly,
+    'beforeSession': beforeSession,
+    'beforeWeekly': beforeWeekly,
+    'afterSession': afterSession,
+    'afterWeekly': afterWeekly,
+  };
+}
+
+/// One item of the Questions and Verifications column (SCB-17): a question
+/// from `scrum/questions.md` or a verification from `scrum/verifications.md`.
+class BoardItem {
+  const BoardItem({
+    required this.kind,
+    required this.number,
+    required this.heading,
+    required this.status,
+    this.text = '',
+    this.choices = const [],
+    this.pbi,
+    this.answer = '',
+  });
+
+  factory BoardItem.fromJson(Map<String, dynamic> json) => BoardItem(
+    kind: json['kind'] as String,
+    number: json['number'] as int,
+    heading: json['heading'] as String,
+    status: json['status'] as String,
+    text: json['text'] as String? ?? '',
+    choices: [
+      for (final c in json['choices'] as List<dynamic>? ?? const [])
+        c as String,
+    ],
+    pbi: json['pbi'] as String?,
+    answer: json['answer'] as String? ?? '',
+  );
+
+  /// Kind of a question item.
+  static const question = 'question';
+
+  /// Kind of a verification item.
+  static const verification = 'verification';
+
+  /// [question] or [verification].
+  final String kind;
+
+  /// The `<n>` of the `## <n>. ` heading. Numbers repeat across the two
+  /// files, so an item is identified by kind and number together.
+  final int number;
+
+  /// The heading text after `## <n>. `; a write matches number AND heading.
+  final String heading;
+
+  /// The `Status:` word: `open`, `answered`, `accepted`, `returned` (or
+  /// another word found in the file).
+  final String status;
+
+  /// The `Question:` or `Verify:` text.
+  final String text;
+
+  /// The indented choice lines of a question, trimmed, letter included.
+  final List<String> choices;
+
+  /// The PBI a verification waits for (first word of its heading); null for a
+  /// question.
+  final String? pbi;
+
+  /// The `Answer:` or `Result:` text; empty while none is written.
+  final String answer;
+
+  Map<String, dynamic> toJson() => {
+    'kind': kind,
+    'number': number,
+    'heading': heading,
+    'status': status,
+    'text': text,
+    'choices': choices,
+    'pbi': pbi,
+    'answer': answer,
+  };
 }
 
 /// The usage file as the API shows it (decision 3 of the sprint plan).
@@ -211,18 +287,18 @@ class UsageData {
   const UsageData({required this.exists, this.rows = const []});
 
   factory UsageData.fromJson(Map<String, dynamic> json) => UsageData(
-        exists: json['exists'] as bool,
-        rows: [
-          for (final r in json['rows'] as List<dynamic>)
-            UsageRow.fromJson(r as Map<String, dynamic>),
-        ],
-      );
+    exists: json['exists'] as bool,
+    rows: [
+      for (final r in json['rows'] as List<dynamic>)
+        UsageRow.fromJson(r as Map<String, dynamic>),
+    ],
+  );
 
   final bool exists;
   final List<UsageRow> rows;
 
   Map<String, dynamic> toJson() => {
-        'exists': exists,
-        'rows': [for (final r in rows) r.toJson()],
-      };
+    'exists': exists,
+    'rows': [for (final r in rows) r.toJson()],
+  };
 }

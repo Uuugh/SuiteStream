@@ -28,7 +28,12 @@ Future<void> _pump(WidgetTester t, ScrumBoardApi api, {double width = 600, Theme
       child: Scaffold(
         body: Align(
           alignment: Alignment.topLeft,
-          child: SizedBox(width: width, height: 600, child: FeaturesColumn(api: api)),
+          child: SizedBox(
+            width: width,
+            height: 600,
+            // The page's key for this column (scrumboard_page.dart), so the bar is found in it.
+            child: KeyedSubtree(key: const ValueKey('scbColumnFeatures'), child: FeaturesColumn(api: api)),
+          ),
         ),
       ),
     ),
@@ -244,7 +249,13 @@ void main() {
 
   testWidgets('SCB-04 the column uses the shared ScbFilterBar', (t) async {
     await _pump(t, _api());
-    expect(find.byType(ScbFilterBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('scbColumnFeatures')),
+        matching: find.byType(ScbFilterBar<Requirement>),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('SCB-01.f a failing server shows the message in the column', (t) async {

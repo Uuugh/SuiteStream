@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:scrumboard/server/board_item_write.dart';
+import 'package:scrumboard/server/board_items.dart';
 import 'package:scrumboard/server/paths.dart';
 import 'package:scrumboard/server/progress_usage_readers.dart';
 import 'package:scrumboard/server/requirement_status.dart';
@@ -13,6 +15,12 @@ import 'package:scrumboard/server/usage_script.dart';
 /// Default for the request body limit (the DEF-01 row "ScrumBoard request
 /// body limit"; 1 MiB).
 const int defaultMaxBodyBytes = 1024 * 1024;
+
+/// The questions file of the Questions and Verifications column (SCB-17).
+const String questionsFile = 'scrum/questions.md';
+
+/// The verifications file of the Questions and Verifications column (SCB-17).
+const String verificationsFile = 'scrum/verifications.md';
 
 /// The ScrumBoard server (SCB-13): serves the built web app and the API on
 /// 127.0.0.1 only. It holds no token. The one process it runs is the usage
@@ -194,6 +202,63 @@ class ScrumBoardServer {
         );
         return await _json(request, 200, answer);
       }
+      if (path == '/api/questions' && method == 'GET') {
+        final items = readBoardItems(
+          resolveInside(root, questionsFile),
+          resolveInside(root, verificationsFile),
+        );
+        return await _json(request, 200, {
+          'questions': [for (final q in items.questions) q.toJson()],
+          'verifications': [for (final v in items.verifications) v.toJson()],
+        });
+      }
+      // SCB-17.b: the two write routes. Each reads its file again inside
+      // _serialized and changes only the item with that number AND heading.
+      final answerMatch =
+          RegExp(r'^/api/questions/(\d{1,9})/answer$').firstMatch(path);
+      if (answerMatch != null && method == 'PUT') {
+        final body = await _jsonBody(request);
+        if (body == null) return;
+        final refusal = answerRefusal(body['heading'], body['answer']);
+        if (refusal != null) {
+          return await _json(request, 400, {'error': refusal});
+        }
+        final number = int.parse(answerMatch.group(1)!);
+        final answer = await _serialized(
+          () => writeQuestionAnswer(
+            resolveInside(root, questionsFile),
+            number,
+            body['heading'] as String,
+            body['answer'] as String,
+          ),
+        );
+        return await _json(request, 200, answer);
+      }
+      final resultMatch =
+          RegExp(r'^/api/verifications/(\d{1,9})/result$').firstMatch(path);
+      if (resultMatch != null && method == 'PUT') {
+        final body = await _jsonBody(request);
+        if (body == null) return;
+        final refusal = resultRefusal(
+          body['heading'],
+          body['result'],
+          body['status'],
+        );
+        if (refusal != null) {
+          return await _json(request, 400, {'error': refusal});
+        }
+        final number = int.parse(resultMatch.group(1)!);
+        final answer = await _serialized(
+          () => writeVerificationResult(
+            resolveInside(root, verificationsFile),
+            number,
+            body['heading'] as String,
+            body['result'] as String,
+            body['status'] as String,
+          ),
+        );
+        return await _json(request, 200, answer);
+      }
       if (path == '/api/changes' && method == 'GET') {
         return await _json(request, 200, {'stamp': _changeStamp()});
       }
@@ -223,7 +288,8 @@ class ScrumBoardServer {
   }
 
   /// SCB-22: a stamp built from the names, modified times and sizes of the
-  /// requirement files, the sprint file, the usage file and the progress files.
+  /// requirement files, the sprint file, the usage file, the questions and
+  /// verifications files and the progress files.
   String _changeStamp() {
     final parts = <String>[];
     void add(FileSystemEntity e) {
@@ -255,6 +321,8 @@ class ScrumBoardServer {
     walk(Directory(resolveInside(root, 'requirements')), onlyMd: true);
     add(File(resolveInside(root, 'scrum/sprint.md')));
     add(File(resolveInside(root, 'scrum/usage/usage.log')));
+    add(File(resolveInside(root, questionsFile)));
+    add(File(resolveInside(root, verificationsFile)));
     final progress = progressDir;
     if (progress != null) walk(progress, onlyMd: false);
     var hash = 0xcbf29ce484222325 & 0x7fffffffffffffff;
@@ -271,6 +339,28 @@ class ScrumBoardServer {
     final result = _lastWrite.then((_) => job());
     _lastWrite = result.then<void>((_) {}, onError: (Object _) {});
     return result;
+  }
+
+  /// Reads a JSON object body. When the body is too large (413), not JSON or
+  /// not an object (400), answers that itself and returns null.
+  Future<Map<String, dynamic>?> _jsonBody(HttpRequest request) async {
+    final body = await _readBody(request);
+    if (body == null) {
+      await _json(request, 413, {'error': 'body too large'});
+      return null;
+    }
+    Object? decoded;
+    try {
+      decoded = jsonDecode(utf8.decode(body));
+    } on FormatException {
+      await _json(request, 400, {'error': 'the body is not JSON'});
+      return null;
+    }
+    if (decoded is! Map<String, dynamic>) {
+      await _json(request, 400, {'error': 'the body is not a JSON object'});
+      return null;
+    }
+    return decoded;
   }
 
   /// Reads the body, or returns null when it is over [maxBodyBytes].

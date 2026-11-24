@@ -1272,5 +1272,18 @@
   "scbExpandAll": "Expand all",
   "scbKindStory": "Story",
   "scbKindEpic": "Epic",
-  "scbKindSprint": "Sprint"
+  "scbKindSprint": "Sprint",
+  "scbQuestions": "Questions and Verifications",
+  "scbNoQuestions": "No open questions or verifications",
+  "scbAnswered": "Answered",
+  "scbAccepted": "Accepted",
+  "scbReturned": "Returned",
+  "scbItemGone": "An agent removed this item meanwhile; nothing was written",
+  "scbFilterKind": "Kind",
+  "scbFilterItem": "Number or PBI",
+  "scbKindQuestion": "Question",
+  "scbKindVerification": "Verification",
+  "scbStatusOpen": "Open",
+  "scbAnswerHint": "Your answer",
+  "scbResultHint": "Result (required to return)"
 }
