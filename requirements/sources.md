@@ -4,5 +4,5 @@ Settings > Sources: a container for the connections that are sources. Everything
 
 | ID | status | statement | test |
 |---|---|---|---|
-| SRC-01 | backlog | The Sources section contains the connections that are sources; each connection supplies its own header, settings and operation, and the section adds nothing about them. | — |
+| SRC-01 | proposed | The Sources section contains the connections that are sources; each connection supplies its own header, settings and operation, and the section adds nothing about them. | — |
 | SRC-01.a | backlog | The section is called Sources and is a section as UIC-05 says. | — |

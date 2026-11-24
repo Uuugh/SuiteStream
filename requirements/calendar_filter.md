@@ -2,7 +2,7 @@
 
 | ID | status | statement | test |
 |---|---|---|---|
-| FLT-01 | backlog | The Calendar filter chooses which calendars and event states the calendar shows, and what is printed. | — |
+| FLT-01 | proposed | The Calendar filter chooses which calendars and event states the calendar shows, and what is printed. | — |
 | FLT-01.a | done | The Calendar filter is one filter icon with a dropdown (UIC-12). It lists every calendar with its color and the event states (Edited, Changed by the source since the edit, Hidden from Google, Deleted); choosing items shows only those events. It changes only what the calendar shows: nothing changes in Sources, Feeds, Rules or the other sections. | test/calendar/filter_test.dart |
 | FLT-01.b | done | The Calendar filter follows the common filter rules (UIC-21). | test/calendar/filter_test.dart |
 | FLT-01.d | backlog | The filter applies in every calendar view and Print follows it: what the user chooses to see is what is printed. | — |

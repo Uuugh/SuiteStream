@@ -67,7 +67,7 @@ PBI-011, PBI-013, PBI-014 and PBI-018 stay In Review; they are the Sprint 006 st
 The orchestrator checks `usage-now.json` first. When it is stale or null (the VS Code extension does not run the status line, so only a terminal session refreshes it), the orchestrator estimates usage itself, without asking:
 
 - Anchor: the Executive's last pasted reading and the time it was given.
-- Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens, plus the orchestrator's own turns).
+- Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens in Sprint 007, but only about 2.7 per 100k in Sprints 009 and 011 (about 16 points for 590k tokens and 31 points for 1.2M tokens, against the Executive's readings); use 2.7 for the next estimate and replace it with the next measured value, plus the orchestrator's own turns).
 - Apply the Caution (70%) and Warning (85%) actions to the estimate. Say the number is an estimate, and take any new reading the Executive (XO) gives as the new anchor.
 - The session window resets at the time in the reading; weekly usage does not reset until its reset time, so check the weekly estimate too.
 
