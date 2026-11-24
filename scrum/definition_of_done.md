@@ -21,5 +21,7 @@ An item is Done only when every applicable criterion below can be answered Yes.
 - User-facing setup and usage instructions are current.
 - Test results and any known limitations are recorded.
 
+Requirement rows stay `planned` until the Executive has verified the work in the browser; only then `done`.
+
 ## History
 See [definition_of_done_history.md](definition_of_done_history.md).
