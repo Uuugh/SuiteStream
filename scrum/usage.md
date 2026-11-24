@@ -73,7 +73,7 @@ The orchestrator checks `usage-now.json` first. When it is stale or null (the VS
 
 ## Cost per story point (calibrated 2026-11-23; use it instead of asking)
 
-**Which rate wins:** the most recently measured rate (Sprint 011: about 3.9 session points per story point, or 2.7 per 100k agent tokens) wins over the older figures below; the older figures are history. Use the measured rate for the slice cost and keep the "plus 3 for orchestration" only when the measurement did not include it.
+**Which rate wins:** the most recently measured rate (a dated calibration note counts as a measurement; Sprint 011: about 3.9 session points per story point, or 2.7 per 100k agent tokens) wins over the older figures below; the older figures are history. Use the measured rate for the slice cost and keep the "plus 3 for orchestration" only when the measurement did not include it.
 Measured over Sprints 006 and 007 (planning, three waves of four developers, Kobayashi's review, rounds of fixes):
 
 - **About 1 session point per story point.** Sprint 007 delivered 22 points and the session went from about 44% to about 65%, plus planning and review.

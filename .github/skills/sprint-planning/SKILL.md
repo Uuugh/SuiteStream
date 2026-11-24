@@ -85,3 +85,4 @@ Each sprint works on a branch named for it (`sprintNNN`, for example `sprint007`
 - One editor per file. A file missing from a sprint's ownership table belongs to the developer who owned it last (see the previous sprint's table and `handoffs.md`): ask that developer through a handoff instead of editing it. An agent never restores a file from git while another agent owns it.
 - Only Yamamoto edits the six arb files (others send keys in `strings_*.md`). Every UI text is an arb key, with no English fallbacks.
 - Sizes and spacing come from theme tokens (`suite_theme.dart`) and colors from the Flutter theme (`ColorScheme`); no hardcoded values.
+- Never run `git stash`, `git checkout` or `git reset` on the shared working tree while other agents work in it.

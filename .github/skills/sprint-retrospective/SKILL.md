@@ -68,7 +68,7 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 - Record findings and prioritized actions in the retrospective, with owners and deadlines. Do not change requirement status or remove tests without supporting evidence.
 
 ### 8. Audit the Retrospective Results
-- Kobayashi owns this audit and runs it before the commit and push in every retrospective (inside a usage epic it may be limited to the files changed in the sprint).
+- Kobayashi owns this audit and runs it before the commit and push in every retrospective (inside an agent-driven epic it may be limited to the files changed in the sprint).
   - Check that every file requiring an update was updated correctly and that nothing was missed.
 
 ### 9. Apply Changes to the Repository
@@ -94,6 +94,6 @@ commit everything for the sprint (except stray or generated files) on the sprint
 Archive the finished sprint in the same commit, before the merge: move `scrum/sprintNNN` to `scrum/sprints/sprintNNN` (`git mv`) and change the path in any record that points at the sprint folder.
 The next sprint's branch is created from the updated `main` and the sprint is planned; it runs only when the Executive (XO) says "start" (except the next sprint of a usage-split epic).
 
-## Automatic completion inside a usage epic
+## Automatic completion inside an agent-driven epic
 
-If this sprint is part of an epic that was split to fit usage (see the Epics section of the `backlog-refinement` skill), the retrospective is recorded and the sprint is completed automatically (commit, push, merge, new branch) without waiting for approval. Tests and analysis must pass. The next sprint of the epic starts at once. The Executive (XO) reviews after the epic's last sprint.
+If this sprint is part of an agent-driven epic (see the agent-driven epics section of the `backlog-refinement` skill), the retrospective is recorded and the sprint is completed automatically (commit, push, merge, new branch) without waiting for approval. Tests and analysis must pass. The next sprint of the epic starts at once. The Executive (XO) reviews after the epic's last sprint.

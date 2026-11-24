@@ -8,7 +8,7 @@ The human is the **Executive (XO)**: sets direction, makes judgment calls, appro
 
 ## Start
 
-Never start or run a sprint unless the Executive says "start" ("start", "do" or "run sprint N") or presses Start on the ScrumBoard. Approving a retrospective, choosing a scope or answering a question is not a start. Exception: an epic the agents split to fit usage runs on its own, unless the Executive sets a sprint pause or limit (working agreement). If unsure, ask in `scrum/questions.md` and wait.
+Never start or run a sprint unless the Executive says "start" ("start", "do" or "run sprint N") or presses Start on the ScrumBoard. Approving a retrospective, choosing a scope or answering a question is not a start. Exception: an agent-driven epic (defined in the working agreement) runs on its own, unless the Executive sets a sprint pause or limit (working agreement). If unsure, ask in `scrum/questions.md` and wait.
 
 ## Talk after a sprint
 
