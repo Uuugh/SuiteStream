@@ -42,6 +42,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-06.d | backlog | A story holds the requirements and the issues that were dropped on it and shows each with its ID or number and title. | — |
 | SCB-06.e | backlog | The board's blocks start at the left edge of the board area, in one row, and the row scrolls sideways inside the board area when the blocks do not fit; the board is never centered. | — |
 | SCB-06.f | backlog | The board shows the Backlog block, then the sprints newest first; a scrollbar on the board moves to older sprints, which are read from `scrum/sprints` and loaded in batches of the size in DEF-01 only when the scroll nears them, never all at once. | — |
+| SCB-06.g | backlog | The Backlog block is as wide as a sprint block; every block of the top level has the same width, and its contents scroll inside it (SCB-15.b). | — |
 | SCB-07 | backlog | The Product Owner and the team build the sprint by dragging and dropping. | — |
 | SCB-07.a | backlog | A block can be dragged onto a block it may sit in (SCB-06.c) and then sits there, written to the sprint file (SCB-02.d). | — |
 | SCB-07.b | backlog | A block can be dragged to the top of the board and then sits there if it may (SCB-06.c). | — |
