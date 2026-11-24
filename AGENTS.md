@@ -8,7 +8,7 @@ The human is the **Executive (XO)**: sets direction, makes judgment calls, appro
 
 ## A sprint starts only when the Executive says "start"
 
-Never start or run a sprint (launching agents that build, editing code for a sprint) unless the Executive says "start" in their own words or presses Start on the ScrumBoard (the sprint file says running). Approving a retrospective, choosing a scope or answering a question is not a start. After an approved retrospective: merge, create the next sprint's branch, plan it, then wait. Only the next sprint of a usage-split epic starts on its own.
+Never start or run a sprint (launching agents that build, editing code for a sprint) unless the Executive says "start" in their own words or presses Start on the ScrumBoard (the sprint file says running). Approving a retrospective, choosing a scope or answering a question is not a start. After an approved retrospective: merge, create the next sprint's branch, plan it, then wait. Only the next sprint of a usage-split epic starts on its own: an epic that the agents split to fit usage. An epic the Executive named (such as the ScrumBoard), or one where it is not clear who split it or why, needs the Executive's approval before each next sprint.
 
 ## Talk after a sprint is the retrospective
 
