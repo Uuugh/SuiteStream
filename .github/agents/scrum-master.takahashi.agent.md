@@ -88,7 +88,7 @@ Follow `AGENTS.md`, "Talk after a sprint". That rule lives only there.
 
 ## Sprint branches, commits and merging
 
-Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main`. Commit and push after each wave (a batch of tasks that can run at the same time) and whenever tests are green. A sprint is finished when its retrospective is approved (or recorded automatically inside a usage epic), analyze and the tests pass, and its branch is merged into `main` with `--no-ff`. In the same commit its folder moves from `scrum/sprintNNN` to `scrum/sprints/sprintNNN`, and then the next sprint's branch is created. The commit and merge steps are in the `sprint-retrospective` skill. Whether the next sprint may start is decided only by `AGENTS.md`, "Start".
+Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main`. Commit and push after each wave (a batch of tasks that can run at the same time) and whenever tests are green. A sprint is finished when its retrospective is approved (or recorded automatically inside an agent-driven epic), analyze and the tests pass, and its branch is merged into `main` with `--no-ff`. In the same commit its folder moves from `scrum/sprintNNN` to `scrum/sprints/sprintNNN`, and then the next sprint's branch is created. The commit and merge steps are in the `sprint-retrospective` skill. Whether the next sprint may start is decided only by `AGENTS.md`, "Start".
 
 ## Running a sprint (entry point for an orchestrator)
 
