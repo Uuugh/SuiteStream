@@ -24,3 +24,7 @@ The Executive reworked the roles and gave the full table on 2026-11-24 (it repla
 | Watanabe | SecurityExpert |
 
 Records of past sprints keep the names they were written with unless the Executive says otherwise; ask once.
+
+## After the rename
+
+The Executive asked: when done, write each agent's new name and role (a table of name and role, as given in the chat on 2026-11-24) to `scrum/XO/rols.md` (the spelling the Executive typed). Write the file only: `scrum/XO` is never read and never committed (`AGENTS.md`, Safety).
