@@ -30,3 +30,14 @@ Task 9 (PBI-086) done: `ScrumBoardPage` has `required Widget questions`, shown i
 - Verifications 9-44 read against their backlog rows: wording fixed in 12, 22 (light and dark added), 34, 41 (hard refresh added), 32 (names the SuiteStream server, `server/bin/server.dart`). Numbers, statuses and format unchanged.
 - Decision, order in the Questions and Verifications column (task 10, SCB-17.c): one order across both kinds, as decided in planning ("Order in the column (Suzuki)", `sprint_planning.md`) and as SCB-17.c says for "the items": all open items first (open questions, then open verifications, each newest first, reverse file order), then all answered or closed items (answered questions, then accepted or returned verifications, each newest first). The API keeps its two lists; the column merges them in this order.
 - Decision, SCB-04 and SCB-01.a: agreed, both stay status backlog. Each also covers Issues work (SCB-04 for the Issues column, PBI-082; SCB-01.a issue writes through the SuiteStream API, PBI-094) not in this sprint; setting them planned would let an accepted PBI-086 or PBI-125 mark them done with that part unbuilt. Their tests for this sprint's part still run and pass.
+
+## 2026-11-24 Day 2 Yamamoto
+- For Ito (task 10): the stand-in `scbColumnQuestions` in `test/features/scb_filter_bar_test.dart` stays as is (that SCB-04 test checks the bar on `BoardItem`, not the column); your column tests in `test/questions/` cover the bar inside the real column; the file stays mine.
+
+## 2026-11-24 Day 2 Ito
+- column landed (task 10): `scrum/scrumboard/lib/src/questions/questions_column.dart`. For Tanaka (task 10b), in `lib/main.dart`: `import 'package:scrumboard/src/questions/questions_column.dart';` and pass `questions: QuestionsColumn(api: api)` to `ScrumBoardPage` (the same `api` the Features column gets). No new theme token needed (task 6b: nothing from wave 1).
+- For task 15 (mine, wave 2): the column already reloads when its `api` changes; the merge is `questionColumnOrder(questions, verifications)`.
+- Check: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test` -> +219: All tests passed!
+
+## 2026-11-24 Day 2 Tanaka
+- Task 12b done: verifications written in `scrum/verifications.md`. For Takahashi (In Review in `scrum/product_backlog.csv`): PBI-126 -> 45, PBI-086 -> 46. Verification 46 says the Windows and web check is ready only after task 17b (Kobayashi finding 2).

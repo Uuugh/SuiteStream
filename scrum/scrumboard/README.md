@@ -21,7 +21,7 @@ Options:
 |---|---|---|
 | `--port <n>` | 8081 | Port to listen on |
 | `--progress <dir>` | none | Folder of agent progress files, each named by the agent's label and holding `done/total`. It must exist |
-| `--root <dir>` | `../..` | The repository. The server reads `requirements/`, `scrum/sprint.md` and `scrum/usage/usage.log` there and refuses any path outside it |
+| `--root <dir>` | `../..` | The repository. The server reads `requirements/`, `scrum/sprint.md`, `scrum/usage/usage.log`, `scrum/questions.md` and `scrum/verifications.md` there and refuses any path outside it |
 | `--web <dir>` | `build/web` | The built page |
 | `--usage-script <path>` | `scrum/usage/usage.sh` | The usage script run for the estimate and the trend. A relative path is taken from `--root` |
 | `--bash <path>` | Git Bash on Windows, `bash` elsewhere | The bash that runs the usage script. On Windows the default is `<git>\bin\bash.exe` for a `git.exe` on PATH, then `C:\Program Files\Git\bin\bash.exe`, then the first `bash.exe` on PATH; never a bash under `System32`, `Sysnative` or `WindowsApps` (the WSL launchers). With no Git Bash found, the usage answers say so |
@@ -58,6 +58,16 @@ other request, 413 for a body over the limit, 400 for a sprint body that is not 
 | `GET /api/usage` | `{exists, rows}` |
 | `GET /api/usage/estimate` | `{ok, output, reason}`: runs the usage script with `estimate` |
 | `GET /api/usage/trend` | `{ok, output, reason}`: runs the usage script with `trend` |
+| `GET /api/questions` | `{"questions":[item],"verifications":[item]}`, each item `{kind, number, heading, status, text, choices, pbi, answer}` |
+
+`GET /api/questions` reads `scrum/questions.md` (kind `question`) and `scrum/verifications.md` (kind `verification`)
+for the Questions and Verifications column (SCB-17, `lib/server/board_items.dart`). Each item is one `## <n>. <heading>`
+section; the heading inside the ``` Format block is skipped, and CRLF and LF files both read. `status` is the item's
+Status line in lower case, `text` its Question or Verify text, `choices` the indented lines under a question (empty
+for a verification), `pbi` the heading's first word when it is `PBI-<n>` (verifications only, else null), and
+`answer` its Answer or Result text. Each list holds every status: open items first, then answered or closed ones,
+newest first (reverse file order) within each (SCB-17.c). A missing file gives an empty list. Both files are part of
+the change stamp (`GET /api/changes`, SCB-22), so a change to either reloads the board.
 
 For the two usage-script requests, `ok` is true when the script exits with 0, and `output` is what it printed.
 Otherwise `ok` is false and `reason` says why: the script's own output for another exit code, or that bash or the
