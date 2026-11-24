@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scrumboard/src/api/reload_scope.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/board/board_tokens.dart';
+import 'package:scrumboard/src/board/sprint_assign.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/features/scb_filter_bar.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
@@ -32,9 +33,11 @@ class _Data {
           if (b.parent == id && !trail.contains(b.id)) b,
       ];
 
+  /// SCB-19.c: a member naming a requirement that is gone (retired) is not
+  /// listed; an issue (`#N`) is not a requirement and stays.
   List<SprintMember> membersOf(String id) => [
         for (final m in sprint.members)
-          if (m.block == id) m,
+          if (m.block == id && (m.item.startsWith('#') || byId.containsKey(m.item))) m,
       ];
 }
 
@@ -72,38 +75,12 @@ class _BacklogTimelineState extends State<BacklogTimeline> {
         if (m.item == drag.id) m,
     ];
     final inStory = rows.any((m) => m.block == storyId);
-    final String target;
-    if (storyId == null) {
-      // SCB-07.h: a backlog requirement that is in no story is already here.
-      if (status == 'backlog' && rows.isEmpty) return;
-      target = 'backlog';
-    } else {
-      if (inStory && status == 'planned') return; // SCB-07.h
-      target = 'planned';
-    }
+    // SCB-07.h: a drop where the requirement already is does nothing.
+    if (storyId == null ? status == 'backlog' && rows.isEmpty : inStory && status == 'planned') return;
     setState(() => _refused = null);
-    try {
-      if (status != target) {
-        final r = await widget.api.setStatus(drag.id, target);
-        if (!r.ok) {
-          if (mounted) setState(() => _refused = r.reason);
-          return; // SCB-07.g: nothing changed.
-        }
-      }
-      final members = [
-        for (final m in data.sprint.members)
-          if (m.item != drag.id) m,
-        if (storyId != null) SprintMember(block: storyId, item: drag.id),
-      ];
-      final changed = storyId != null ? !(inStory && rows.length == 1) : rows.isNotEmpty;
-      if (changed) {
-        await widget.api.saveSprint(SprintFile(exists: true, blocks: data.sprint.blocks, members: members));
-      }
-    } on ScrumBoardApiException catch (e) {
-      if (mounted) setState(() => _refused = e.reason);
-      return;
-    } on ScrumBoardUnreachableException catch (e) {
-      if (mounted) setState(() => _refused = e.reason);
+    final r = await moveRequirement(widget.api, id: drag.id, status: status, sprint: data.sprint, storyId: storyId);
+    if (!r.ok) {
+      if (mounted) setState(() => _refused = r.reason); // SCB-07.g: nothing changed.
       return;
     }
     if (mounted) {

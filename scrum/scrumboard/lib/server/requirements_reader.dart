@@ -8,6 +8,7 @@ import 'package:scrumboard/server/paths.dart';
 const Set<String> excludedRequirementFiles = {
   'readme.md',
   'oldkey.md',
+  'retired.md',
   'open-questions.md',
 };
 

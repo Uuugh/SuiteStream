@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:scrumboard/server/paths.dart';
 import 'package:scrumboard/server/progress_usage_readers.dart';
 import 'package:scrumboard/server/requirement_status.dart';
+import 'package:scrumboard/server/requirement_retire.dart';
 import 'package:scrumboard/server/requirements_reader.dart';
 import 'package:scrumboard/server/sprint_file.dart';
 
@@ -148,6 +149,22 @@ class ScrumBoardServer {
         );
         return await _json(request, 200, answer);
       }
+      final retireMatch =
+          RegExp(r'^/api/requirements/([^/]+)/retire$').firstMatch(path);
+      if (retireMatch != null && method == 'POST') {
+        final id = Uri.decodeComponent(retireMatch.group(1)!);
+        final now = DateTime.now();
+        final today = '${now.year.toString().padLeft(4, '0')}-'
+            '${now.month.toString().padLeft(2, '0')}-'
+            '${now.day.toString().padLeft(2, '0')}';
+        final answer = await _serialized(
+          () => retireRequirement(root, id, today),
+        );
+        return await _json(request, 200, answer);
+      }
+      if (path == '/api/changes' && method == 'GET') {
+        return await _json(request, 200, {'stamp': _changeStamp()});
+      }
       if (path == '/api/progress' && method == 'GET') {
         return await _json(request, 200, readProgress(progressDir));
       }
@@ -165,6 +182,48 @@ class ScrumBoardServer {
       stderr.writeln('ScrumBoard server error: $e');
       await _json(request, 500, {'error': 'internal error'});
     }
+  }
+
+  /// SCB-22: a stamp built from the names, modified times and sizes of the
+  /// requirement files, the sprint file, the usage file and the progress files.
+  String _changeStamp() {
+    final parts = <String>[];
+    void add(FileSystemEntity e) {
+      try {
+        if (e is! File) return;
+        final stat = e.statSync();
+        if (stat.type != FileSystemEntityType.file) return;
+        parts.add(
+          '${e.path}:${stat.modified.microsecondsSinceEpoch}:${stat.size}',
+        );
+      } on FileSystemException {
+        // A file that vanished while reading simply is not counted.
+      }
+    }
+
+    void walk(Directory dir, {required bool onlyMd}) {
+      if (!dir.existsSync()) return;
+      final entries = dir.listSync(followLinks: false)
+        ..sort((a, b) => a.path.compareTo(b.path));
+      for (final e in entries) {
+        if (e is File && (!onlyMd || e.path.toLowerCase().endsWith('.md'))) {
+          add(e);
+        } else if (e is Directory && onlyMd && e.path.endsWith('.d')) {
+          walk(e, onlyMd: true);
+        }
+      }
+    }
+
+    walk(Directory(resolveInside(root, 'requirements')), onlyMd: true);
+    add(File(resolveInside(root, 'scrum/sprint.md')));
+    add(File(resolveInside(root, 'scrum/usage.md')));
+    final progress = progressDir;
+    if (progress != null) walk(progress, onlyMd: false);
+    var hash = 0xcbf29ce484222325 & 0x7fffffffffffffff;
+    for (final unit in parts.join('\n').codeUnits) {
+      hash = ((hash ^ unit) * 0x100000001b3) & 0x7fffffffffffffff;
+    }
+    return '${parts.length}-${hash.toRadixString(16)}';
   }
 
   Future<void> _lastWrite = Future<void>.value();

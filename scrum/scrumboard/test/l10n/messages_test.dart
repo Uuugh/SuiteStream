@@ -9,6 +9,7 @@ const _keys = [
   'scbStatusProposed', 'scbStatusBacklog', 'scbStatusPlanned', 'scbStatusDone',
   'scbFilterFeature', 'scbFilterRequirement', 'scbFilterStatus', 'scbShownOf',
   'scbExpandRow', 'scbCollapseRow', 'scbExpandAll', 'scbFeaturesRequirements', 'scbMoveRefused',
+  'scbZoomIn', 'scbZoomOut', 'scbTheme', 'scbRetire', 'scbAdd', 'scbStatusRetired', 'scbStatusSprintItem', 'scbStatusMenu',
 ];
 
 // Tests run in scrum/scrumboard; the sources are at the repository root.
