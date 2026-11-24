@@ -56,4 +56,4 @@ Fixed: PBI-068 (Reset on its own side with a shared inline "Are you sure?" confi
 - Cancel | Save (Executive): the pair is one joined shape; a single animation function does the work: the pressed button grows toward the other side, its corners become fully rounded, and its word changes to Cancelled or Saved (UIC-27.a, UIC-27.f, UIC-27.g); rebuilt from stock buttons as PBI-075.
 - The pair animation is for any paired buttons (UIC-27.g), including the Yes | No of the Reset confirm.
 - Button states vocabulary (Executive): enabled, disabled, pressed, hovered, focused, selected (dragged and error only where defined) are the words for every button, since the pair, toggle, icon button and confirm are built from stock buttons (UIC-49).
-- Elevated button (Executive): stock ElevatedButton is available; the main side of a pair (Save, Yes) is built with an option so a Theme setting switches it between contained and elevated (UIC-27.h, in PBI-075). Default asked in scrum/questions.md.
+- Elevated button (Executive): not used. The main side of a pair (Save, Yes) stays a stock contained (filled) button; no Main button style setting and no UIC-27.h.
