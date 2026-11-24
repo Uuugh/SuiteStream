@@ -21,3 +21,9 @@ Answer:
 
 
 
+
+## Orchestrator, Sprint 010: the OutlinedButton with two rounded corners
+Status: open
+Question: You pasted an OutlinedButton whose shape rounds only the top-left and bottom-right corners (radius 20). What is it for? My guesses: (a) the Cancel | Save pair as one joined shape (Cancel rounded on the left, Save on the right, square where they meet); (b) a new look for a button type; (c) just a reference on how stock Flutter shapes a button.
+Choices: (a) the pair / (b) a button type, say which / (c) reference only
+Answer:
