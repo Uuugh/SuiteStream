@@ -1,5 +1,5 @@
 /// Data classes shared by every ScrumBoard pane. They mirror the JSON of the
-/// API contract in `scrum/sprint011/handoffs.md`.
+/// API contract in `scrum/sprints/sprint011/handoffs.md`.
 library;
 
 /// One requirement row read from `requirements/**.md` (SCB-03).

@@ -1,4 +1,4 @@
-# Sprint 011 Retrospective (draft)
+# Sprint 011 Retrospective (approved by the Executive)
 
 ## What went well
 
@@ -30,3 +30,9 @@
 - Suzuki: the three rule fixes above.
 - Executive: the browser check in the review, then accept or return the slice.
 - Usage: after-reading in `scrum/usage.md` is an orchestrator estimate; replace it with the real reading.
+
+## Executive decisions at the close
+
+- Approved by the Executive after the sprint: "because it was a weird sprint without our pause rule. accept the retro and merge." Sprint 011 was run before the sprint pause, the Start and Pause buttons and the sprint-limit rules existed, so the epic was treated as needing approval; from now on the epic runs under the sprint pause rule.
+- New terms and rules written after this sprint: sprint pause (and "pause at N"); the Executive may move backlog items into sprints; the usage chart asks for and takes readings (SCB-14.l to SCB-14.n); the measured usage rate wins (2.7 points per 100k tokens).
+- Rule test result: a fresh orchestrator found AGENTS.md first and followed it; the one block was the permission system denying a merge to main by a sub-agent.

@@ -7,7 +7,7 @@ environment:
   sdk: ^3.12.2
 
 # Independent of the root app (no path dependency). Exact pins, named in
-# scrum/sprint011/handoffs.md "Dependencies".
+# scrum/sprints/sprint011/handoffs.md "Dependencies".
 dependencies:
   flutter:
     sdk: flutter
