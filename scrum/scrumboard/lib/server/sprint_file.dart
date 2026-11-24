@@ -134,6 +134,19 @@ Map<String, dynamic>? _parseMember(String line) {
   return {'block': c[0], 'item': c[1]};
 }
 
+/// SEC-S01: a cell stays on one line and cannot end in a backslash, so a value
+/// cannot add rows, headings or text to the file.
+void _checkCell(String cell) {
+  if (RegExp(r'[\u0000-\u001f\u007f\u0085  ]').hasMatch(cell)) {
+    throw const SprintFormatException(
+      'a value may not contain a line break or control character',
+    );
+  }
+  if (cell.endsWith(r'\')) {
+    throw const SprintFormatException('a value may not end with a backslash');
+  }
+}
+
 String _numText(num n) =>
     n == n.truncate() ? n.truncate().toString() : n.toString();
 
@@ -204,6 +217,9 @@ String _numText(num n) =>
       throw const SprintFormatException('a member needs block and item');
     }
     members.add([m['block'] as String, m['item'] as String]);
+  }
+  for (final cell in [...blocks.expand((r) => r), ...members.expand((r) => r)]) {
+    _checkCell(cell);
   }
   return (blocks: blocks, members: members);
 }
@@ -341,9 +357,13 @@ Map<String, dynamic> writeSprintFile(String path, Object? body) {
   final f = File(path);
   final existing = f.existsSync() ? f.readAsStringSync() : null;
   final text = renderSprint(existing, body);
-  f.parent.createSync(recursive: true);
+  // The one extra file the server may write; always removed (SCB-01.a).
   final tmp = File('$path.tmp');
-  tmp.writeAsStringSync(text);
-  tmp.renameSync(path);
+  try {
+    tmp.writeAsStringSync(text);
+    tmp.renameSync(path);
+  } finally {
+    if (tmp.existsSync()) tmp.deleteSync();
+  }
   return parseSprint(text);
 }

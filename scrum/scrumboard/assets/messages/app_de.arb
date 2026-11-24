@@ -1037,5 +1037,8 @@
   "scbShownOf": "{shown} von {total}",
   "scbExpandRow": "Aufklappen",
   "scbCollapseRow": "Zuklappen",
-  "scbExpandAll": "Alle aufklappen"
+  "scbExpandAll": "Alle aufklappen",
+  "scbKindStory": "Story",
+  "scbKindEpic": "Epic",
+  "scbKindSprint": "Sprint"
 }

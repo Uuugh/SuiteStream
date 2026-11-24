@@ -1258,5 +1258,8 @@
   "@scbShownOf": {"placeholders": {"shown": {"type": "String"}, "total": {"type": "String"}}},
   "scbExpandRow": "Expand",
   "scbCollapseRow": "Collapse",
-  "scbExpandAll": "Expand all"
+  "scbExpandAll": "Expand all",
+  "scbKindStory": "Story",
+  "scbKindEpic": "Epic",
+  "scbKindSprint": "Sprint"
 }

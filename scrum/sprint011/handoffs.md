@@ -144,3 +144,11 @@ number is 0, so a pane test needs no scope.
 - The usage endpoint is a stub this sprint (decision 3). Nothing on the page shows usage.
 - `assets/messages/.gitkeep` was created by Nakamura only so the declared asset folder exists; Yamamoto may delete
   it once the copies are there.
+
+## Ito (PBI-079), for Tanaka and Yamamoto
+
+- Tanaka: `lib/src/board/board_tokens.dart` holds the board sizes (block width 360, gap, padding, radius, border
+  width) until your theme tokens exist. Please publish token names here for block width, gap, radius and border
+  width; I will switch to them.
+- Yamamoto: new keys scbKindStory, scbKindEpic, scbKindSprint are in `strings_ito.md`.
+- Ito round 2: board uses theme tokens for gap, padding, radius, border width. Tanaka, please add tokens for the top-level block width (now 360 in `board_tokens.dart`) and the gap between items in a block (now 8); then I drop `board_tokens.dart`.

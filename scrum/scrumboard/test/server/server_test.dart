@@ -33,6 +33,7 @@ Future<({int status, String body, HttpHeaders headers})> raw(
 }
 
 void main() {
+  group("security", securityTests);
   late Directory repo;
   late Directory outside;
   late ScrumBoardServer server;
@@ -303,4 +304,107 @@ Map<String, String> _snapshot(Directory repo) {
     out[rel] = f.readAsStringSync();
   }
   return out;
+}
+
+void securityTests() {
+  late Directory repo;
+  late ScrumBoardServer server;
+  setUp(() async {
+    repo = Directory.systemTemp.createTempSync('scb_sec_');
+    Directory('${repo.path}/scrum').createSync();
+    server = await ScrumBoardServer.start(root: repo, port: 0);
+  });
+  tearDown(() async {
+    await server.close();
+    repo.deleteSync(recursive: true);
+  });
+
+  Future<int> put(Object body, {String? origin}) async =>
+      (await raw(server, 'PUT', '/api/sprint',
+              body: jsonEncode(body), origin: origin))
+          .status;
+  String sprintPath() => '${repo.path}/scrum/sprint.md';
+
+  test('SCB-01.a a value with a line break is refused (SEC-S01)', () async {
+    for (final bad in ['a\n## Injected', 'a\r\nb', 'a b', 'a\tb']) {
+      final status = await put({
+        'blocks': [
+          {'id': 'S1', 'kind': 'story', 'name': bad},
+        ],
+        'members': <Object>[],
+      });
+      expect(status, 400, reason: bad);
+    }
+    expect(
+      await put({
+        'blocks': <Object>[],
+        'members': [
+          {'block': 'S1', 'item': 'X\n| S2 | y |'},
+        ],
+      }),
+      400,
+    );
+    expect(File(sprintPath()).existsSync(), isFalse);
+  });
+
+  test('SCB-01.a a value ending with a backslash is refused (SEC-S01)',
+      () async {
+    expect(
+      await put({
+        'blocks': [
+          {'id': 'S1', 'kind': 'story', 'name': r'ends with \'},
+        ],
+        'members': <Object>[],
+      }),
+      400,
+    );
+  });
+
+  test('SCB-13.a a foreign Origin on PUT gets 403 and writes nothing (SEC-S07)',
+      () async {
+    final status = await put(
+      {'blocks': <Object>[], 'members': <Object>[]},
+      origin: 'http://evil.example',
+    );
+    expect(status, 403);
+    expect(File(sprintPath()).existsSync(), isFalse);
+  });
+
+  test('SCB-01.a the only files written are scrum/sprint.md and no temp stays '
+      '(sprint.md.tmp, SEC-S03)', () async {
+    expect(
+      await put({
+        'blocks': [
+          {'id': 'S1', 'kind': 'story', 'name': 'n'},
+        ],
+        'members': <Object>[],
+      }),
+      200,
+    );
+    final names = Directory('${repo.path}/scrum')
+        .listSync()
+        .map((e) => e.uri.pathSegments.last)
+        .toList();
+    expect(names, ['sprint.md']);
+  });
+
+  test('SCB-01.a concurrent writes all finish and the file stays whole',
+      () async {
+    final results = await Future.wait([
+      for (var i = 0; i < 8; i++)
+        put({
+          'blocks': [
+            {'id': 'S$i', 'kind': 'story', 'name': 'n$i'},
+          ],
+          'members': <Object>[],
+        }),
+    ]);
+    expect(results, everyElement(200));
+    expect(File(sprintPath()).readAsStringSync(), contains('| S'));
+  });
+
+  test('SCB-13.a a 413 answer carries the frame headers (SEC-S05)', () async {
+    final r = await raw(server, 'GET', '/api/usage');
+    expect(r.headers.value('x-frame-options'), 'DENY');
+  });
 }

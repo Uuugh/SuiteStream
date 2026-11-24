@@ -1037,5 +1037,8 @@
   "scbShownOf": "{shown} sur {total}",
   "scbExpandRow": "Développer",
   "scbCollapseRow": "Réduire",
-  "scbExpandAll": "Tout développer"
+  "scbExpandAll": "Tout développer",
+  "scbKindStory": "Story",
+  "scbKindEpic": "Epic",
+  "scbKindSprint": "Sprint"
 }

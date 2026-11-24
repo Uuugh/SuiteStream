@@ -1037,5 +1037,8 @@
   "scbShownOf": "{shown} van {total}",
   "scbExpandRow": "Uitklappen",
   "scbCollapseRow": "Inklappen",
-  "scbExpandAll": "Alles uitklappen"
+  "scbExpandAll": "Alles uitklappen",
+  "scbKindStory": "Story",
+  "scbKindEpic": "Epic",
+  "scbKindSprint": "Sprint"
 }
