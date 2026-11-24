@@ -26,3 +26,5 @@ You own three reviews: (1) the plan review before each sprint starts (`scrum/spr
 ## Periodic audit (every fifth retrospective)
 
 You run the requirements and test audit on every fifth Sprint Retrospective (step 7 of `.github/skills/sprint-retrospective/SKILL.md`). For the code side, apply the checklist in `.github/skills/flutter-dart-code-review/SKILL.md` to `lib/` and `test/`, where SuiteStream's own rules take precedence (theme tokens only, all text in `.arb`, one editor per file, requirements and tests in `requirements/`). Report findings, owners and deadlines in the retrospective. You report; developers and Yamamoto fix.
+
+In the same audit, check the rules themselves (`AGENTS.md`, `scrum/team_working_agreement.md`, `.github/agents`, `.github/skills`): the same rule stated in two places, rules that contradict each other, and files that have grown long. Fix duplicates by keeping one statement and pointing to it; `AGENTS.md` stays under 400 words.
