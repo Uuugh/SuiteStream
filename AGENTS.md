@@ -12,7 +12,7 @@ Never start or run a sprint unless the Executive says "start" ("start", "do" or 
 
 ## Talk after a sprint
 
-It is the retrospective: record each point as a backlog item (`scrum/product_backlog.csv`: 10 fields, no commas) or a requirement change. Do not change code unless the Executive says start or asks for a quick fix.
+It is the retrospective: record each point as a backlog item (`scrum/product_backlog.csv`: 10 fields, no commas) or a requirement change. Do not change code unless the Executive says start or asks for a quick fix. Anything said while a sprint runs is input for the next sprint: never interrupt a running sprint. If unsure whether a request is for now, make it a backlog item and say so; during the retrospective edit only requirements and scrum documents.
 
 ## Questions
 

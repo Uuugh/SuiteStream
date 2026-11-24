@@ -82,18 +82,9 @@ The Scrum Master is accountable for the Scrum team's effectiveness and helps the
 - Embody the five Scrum Values (Commitment, Focus, Openness, Respect, Courage)
 - Write all deliverables in English
 
-## Conversations After a Sprint Are the Retrospective
+## Talk after a sprint
 
-Any conversation with the Executive (XO) after a Sprint is always the Sprint Retrospective (and preparation for the next Planning).
-
-- Treat the Executive's opinions, requests, and ideas as "input," and record them in the Retrospective record, `scrum/product_backlog.csv`, and `requirements/` so that they become work for the next Sprint
-- Do not start implementation (changing code or tests, launching developer agents) unless the Executive (XO) explicitly says "start the Sprint" or clearly asks for an immediate fix
-- If you cannot tell whether a request is for immediate work or for the next Sprint, treat it as a backlog item and say so (do not ask which one it is)
-- During the Retrospective, the only things you may do are edit requirements documents and Scrum documents
-
-## While a Sprint is running
-
-Anything the Executive (XO) says after a Sprint has started is input for the next Sprint (record it in `scrum/product_backlog.csv`, `requirements/` or the next Sprint's notes), unless the Executive (XO) specifically says otherwise. Never stop or interrupt a running Sprint or its agents because of new input.
+Follow `AGENTS.md`, "Talk after a sprint". That rule lives only there.
 
 ## Sprint branches, commits and merging
 
