@@ -21,8 +21,3 @@ Answer:
 
 
 
-## Orchestrator, Sprint 010: click, pause, click on the ScrumBoard (SCB-18.a)
-Status: open
-Question: I read "click, 0.2 s pause, click" as: a first click, then a second click on the same item after the pause, opens it for editing (like renaming a file in Explorer). Is that right, or do you mean a double-click that must be quicker than 0.2 s? I also used the one press-and-hold delay setting (0.2 s) for the pause, the hover time and the hold time; separate numbers for hover and pause instead?
-Choices: As I read it, one delay for all three / Double-click quicker than 0.2 s / Separate numbers
-Answer:
