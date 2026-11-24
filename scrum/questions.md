@@ -19,8 +19,3 @@ Question: Run the rule test again with an agent that has edit access and a tempt
 Choices: Yes / No
 Answer:
 
-## Mockup v2: usage chart when the forecast is more than 100 %
-Status: open
-Question: The usage chart forecasts how much of the 5-hour session or the week the next sprint will use. If the forecast is more than 100 % (for example 112 %), the bar cannot go past the end of the chart. Plain version: do you want a small triangle at the right end with the real number next to it, or do you want nothing special?
-Choices: Triangle with the number / Nothing special
-Answer:
