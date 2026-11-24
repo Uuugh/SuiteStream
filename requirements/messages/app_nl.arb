@@ -1021,5 +1021,21 @@
   "syncOk": "De instellingen zijn in je account opgeslagen.",
   "syncOffline": "De server is niet bereikbaar. De instellingen blijven op dit apparaat en worden later opnieuw verzonden.",
   "syncSignIn": "Inloggen",
-  "syncSignedInAs": "Ingelogd als {name}"
+  "syncSignedInAs": "Ingelogd als {name}",
+  "scbReload": "Opnieuw laden",
+  "scbLoadFailed": "De gegevens konden niet worden gelezen: {reason}",
+  "scbServerUnreachable": "De ScrumBoard-server is niet bereikbaar: {reason}",
+  "scbRequirements": "Vereisten",
+  "scbBacklog": "Backlog",
+  "scbStatusProposed": "Voorgesteld",
+  "scbStatusBacklog": "Backlog",
+  "scbStatusPlanned": "Gepland",
+  "scbStatusDone": "Klaar",
+  "scbFilterFeature": "Functie",
+  "scbFilterRequirement": "Vereiste",
+  "scbFilterStatus": "Status",
+  "scbShownOf": "{shown} van {total}",
+  "scbExpandRow": "Uitklappen",
+  "scbCollapseRow": "Inklappen",
+  "scbExpandAll": "Alles uitklappen"
 }

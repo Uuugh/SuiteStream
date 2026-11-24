@@ -1021,5 +1021,21 @@
   "syncOk": "Die Einstellungen sind in Ihrem Konto gespeichert.",
   "syncOffline": "Der Server ist nicht erreichbar. Die Einstellungen bleiben auf diesem Gerät und werden später erneut gesendet.",
   "syncSignIn": "Anmelden",
-  "syncSignedInAs": "Angemeldet als {name}"
+  "syncSignedInAs": "Angemeldet als {name}",
+  "scbReload": "Neu laden",
+  "scbLoadFailed": "Die Daten konnten nicht gelesen werden: {reason}",
+  "scbServerUnreachable": "Der ScrumBoard-Server ist nicht erreichbar: {reason}",
+  "scbRequirements": "Anforderungen",
+  "scbBacklog": "Backlog",
+  "scbStatusProposed": "Vorgeschlagen",
+  "scbStatusBacklog": "Backlog",
+  "scbStatusPlanned": "Geplant",
+  "scbStatusDone": "Erledigt",
+  "scbFilterFeature": "Funktion",
+  "scbFilterRequirement": "Anforderung",
+  "scbFilterStatus": "Status",
+  "scbShownOf": "{shown} von {total}",
+  "scbExpandRow": "Aufklappen",
+  "scbCollapseRow": "Zuklappen",
+  "scbExpandAll": "Alle aufklappen"
 }

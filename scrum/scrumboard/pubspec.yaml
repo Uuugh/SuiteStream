@@ -1,0 +1,25 @@
+name: scrumboard
+description: "ScrumBoard: a local web page for the backlog, sprint blocks and requirements."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+# Independent of the root app (no path dependency). Exact pins, named in
+# scrum/sprint011/handoffs.md "Dependencies".
+dependencies:
+  flutter:
+    sdk: flutter
+  http: 1.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    # Generated copies of requirements/messages/*.arb (tool/sync_messages.sh).
+    - assets/messages/
