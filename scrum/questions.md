@@ -19,12 +19,6 @@ Question: SCB-06.a says the Backlog block holds the features and issues whose st
 Choices: Only dragged items (new marker) / Keep as written
 Answer:
 
-## Orchestrator, Sprint 011: Features or Requirements?
-Status: open
-Question: The mockup headed the left column "Features"; the built page and SCB-03 say "Requirements". Which heading do you want?
-Choices: Features / Requirements
-Answer:
-
 ## Orchestrator, Sprint 011: continue the ScrumBoard epic now?
 Status: open
 Question: The ScrumBoard epic was split by the agents, so by the rule it continues on its own: I complete Sprint 011 (analyze, tests, archive, merge to main), plan Sprint 012, and run it after the usage reset at 10:50 PM (the session is at 58%), and so on until the epic is done; you approve only the final retrospective. Do you want a sprint limit on it?
