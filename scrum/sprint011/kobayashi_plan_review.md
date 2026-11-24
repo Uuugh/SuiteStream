@@ -1,0 +1,35 @@
+# Kobayashi plan review: Sprint 011
+
+Reviewed: `sprint_planning.md`, `sprint_backlog.md`, PBI-049 and PBI-077 to PBI-088 in `product_backlog.csv`, against `requirements/scrumboard.md`, `scrum/usage.md`, `scrum/definition_of_done.md`, `AGENTS.md` and the Takahashi file. Checked at the source: root `pubspec.yaml`, `lib/src/l10n/messages.dart`, `requirements/common.md`, `requirements/scrumboard.md`, `scrum/` contents.
+
+Verified clean: new CSV rows all have 10 fields and no stray commas; PBI-077 to PBI-088 sizes sum to 40 = PBI-049; the sprint slice is 3+1+2+2 = 8 and matches the sprint backlog; usage slice 8+3 = 11 follows `usage.md`; sprint not started (status says so); one editor per file holds for every file named; no Docker.
+
+## Findings
+
+### High
+
+1. **Message loading cannot work as planned, and its owner is missing.** `Messages.load` in `lib/src/l10n/messages.dart` hard-codes `requirements/messages/app_<code>.arb`. A path dependency serves those assets as `packages/suitestream/requirements/messages/...`, so the ScrumBoard cannot load them without changing `lib/src/l10n/messages.dart` (an asset prefix parameter). That file is in nobody's ownership table (Tanaka owns only `lib/src/ui/*` and `lib/src/theme/*` at the root). The plan treats this as a "risk 1" fallback decided mid-sprint; it is a certain change. Owner: Takahashi. Name the owner of `lib/src/l10n/*` now (Tanaka, by handoff) and make the wave 0 scaffold prove one arb key loads in a web build before wave 1 fans out.
+2. **SCB-02, SCB-14 and the usage endpoint disagree with the plan, and the rows are fixed "later".** The rows still say `SCRUM.d/sprint.md` and `SCRUM.d/usage.md`; the plan builds `scrum/sprint.md` and tests "SCB-02.a-f". Tests named after a row that states a different path will mislead the Executive's verification. Also `GET /api/usage` promises `{exists, rows}` but `scrum/usage.md` has no table with SCB-14.a's columns (its tables are Sprint/Story/Model... plus ChatGPT and Copilot tables), and no sprint file exists yet. Owner: Suzuki. Reword SCB-02 and SCB-14 paths before the start (a one-line edit), and either define the usage row parse in the contract or drop the endpoint from this slice (nothing in PBI-077 to PBI-080 shows usage).
+
+### Medium
+
+3. **Wave 1 integration has no owner.** Tanaka owns `main.dart` and the shell; Ito (`lib/src/board`) and Yamamoto (`lib/src/features`) build the two panes in parallel. Nobody is named to wire their widgets into the shell, and the sprint backlog has no task for it. Owner: Takahashi. Add to Tanaka (shell tests) a wiring task after wave 1, or state that Ito and Yamamoto export one widget each with a fixed name in `handoffs.md` wave 0.
+4. **Sub-requirement parent is undefined.** SCB-11 needs each requirement's parent, but `GET /api/requirements` returns `{id, status, statement, feature, file}` with no parent. State whether the client derives it from the ID (dotted IDs) or the server adds `parent`. Owner: Nakamura with Yamamoto in `handoffs.md`.
+5. **SCB-12.e is claimed but not built.** The Done criteria say the owners mark the Done column (SCB-12.e) and "the server counts the `x`", but `GET /api/progress` reads only the `--progress` folder, and PBI-085 (SCB-12) is next sprint. The `x` marking is a process rule this sprint; no server counting exists. Owner: Takahashi. Reword so the plan does not imply SCB-12.e is met; the row must not be set `planned` for it.
+6. **SCB-13.b is only partly met.** The row lists writes (set status, create requirement, issues) that this slice answers 404. Planning says "all else 404" which is right for the slice, but then the SCB-13.b test cell must state the slice (read endpoints plus sprint write). Owner: Takahashi (test cells).
+7. **Coverage gaps against the rows the PBIs cite.** No named test or task for: SCB-01.d (every label an arb key; a scan test would do), SCB-03.a (the `connections.d` and `plugins.d` files and the three excluded files are named in Nakamura's reader test but not in the PBI), SCB-06.d (a story's members shown with ID and title; Ito's task names "nesting" only), SCB-15.c (nothing clipped at DEF-01 window sizes is left to the visual check only). Owner: Takahashi: add to the Done column of the tasks or mark those rows as visual-only.
+8. **No security step for a new local server.** The Definition of Done requires security and privacy to be met. A new HTTP server with a write endpoint (`PUT /api/sprint`) has Host/Origin checks (good) but no body-size limit, no check that `--root` and `--progress` stay inside the intended folders, and no Watanabe review. Owner: Takahashi. Add a short Watanabe review of `bin/server.dart` in wave 2 and a body limit in DEF-01 (rule 7 of `requirements/README.md`: states limits).
+9. **No documentation task.** The Definition of Done requires current setup instructions. SCB-13 is "one command starts the server", but no task writes the command (a README in `scrum/scrumboard`, and the AGENTS.md "web check" line for port 8081). Owner: Nakamura (README) and Takahashi (AGENTS.md); one hour.
+10. **Root package weight in a web build.** `scrum/scrumboard` depends on the root package, which pulls `flutter_timezone`, `shared_preferences`, `url_launcher` and `timezone` into a web release build, and the plan names no check that the theme and messages files import nothing from `dart:io`. Add that to the wave 0 scaffold check next to finding 1. Owner: Nakamura.
+11. **Shared filter reuse is a root change for two owners.** UIC-21 lives in `lib/src/ui` (Tanaka); Yamamoto needs it "by handoff", but the planning gives no wave 0 handoff and UIC-21 stores its choices in `shared_preferences`, which SCB-04 does not ask for. Owner: Takahashi: say in `handoffs.md` whether the board's filter keeps its choices.
+
+### Low
+
+12. **"Do sprint 11" is not "start".** `AGENTS.md` and the Takahashi file: a sprint starts only when the Executive says "start" in their own words or presses Start. The plan records "do sprint 11" as the order and sets four PBIs to `In Sprint` before the start. The plan says "not started", which is right; add one line that waves launch only on "start", and either keep the four PBIs `Backlog` until then or accept `In Sprint` as "committed" (`usage.md` status table allows that reading).
+13. **PBI-049 status is `Epic (split into PBI-077 to PBI-088)`.** It is not in the status table of `usage.md`. Add the value there or use `In Sprint`. Owner: Takahashi.
+14. **Usage: weekly not stated.** `usage.md` says check the weekly figure too; the plan gives only the session (27% estimate, `usage-now.json` null). Last weekly reading is 29%; one line suffices.
+15. **Heading ambiguity.** SCB-03.c names the heading `msg:scbRequirements`; SCB-15.a calls the column "Features". Plan uses both; confirm the shown heading is `scbRequirements` and add no extra key.
+
+## Verdict
+
+Not ready to start until findings 1 and 2 are addressed (they decide whether wave 1 can run); 3 to 11 can be accepted by Takahashi as added tasks or notes before the start. Kobayashi does not edit any other file.
