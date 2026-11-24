@@ -9,9 +9,9 @@ description: >
 # Conduct a Comprehensive Security Audit
 
 ## Preparation
-- Run the Watanabe agent (`.github/agents/security.watanabe.agent.md`) as a sub-agent with the model "GPT 5.5".
-- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
+- Run the Watanabe agent (`.github/agents/security.watanabe.agent.md`) as a sub-agent with the model "GPT" (if not available, use Opus).
+- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Opus".
+- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Opus".
 
 ## Purpose
 

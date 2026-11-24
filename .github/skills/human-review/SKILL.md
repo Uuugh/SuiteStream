@@ -16,17 +16,17 @@ The following sub-agents are available.
 
 - **Suzuki Agent**
   - Role: Product Owner
-  - Model: Claude Opus 4.7
+  - Model: Opus
   - Definition: `.github/agents/product-owner.suzuki.agent.md`
 
 - **Tanaka Agent**
   - Role: Developer
-  - Model: Claude Opus 4.7
+  - Model: Opus
   - Definition: `.github/agents/developer.tanaka.agent.md`
 
 - **Takahashi Agent**
   - Role: Scrum Master
-  - Model: Claude Opus 4.7
+  - Model: Opus
   - Definition: `.github/agents/scrum-master.takahashi.agent.md`
 
 ---

@@ -8,12 +8,12 @@ Use each sub-agent started in "Preparation" according to the instructions below.
 (1) Hold the daily Scrum with everyone, then (2) have each person create increments, (3) address and report audit findings, and (4) apply the code to the repository.
 
 ## Preparation
-- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Yamamoto agent (`.github/agents/contractor.yamamoto.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Nakamura agent (`.github/agents/contractor.nakamura.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT-5.5".
+- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Opus".
+- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Opus".
+- Run the Yamamoto agent (`.github/agents/contractor.yamamoto.agent.md`) as a sub-agent with the model "Opus".
+- Run the Nakamura agent (`.github/agents/contractor.nakamura.agent.md`) as a sub-agent with the model "Opus".
+- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Opus".
+- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT" (if not available, use Opus).
 
 ---
 
@@ -54,7 +54,7 @@ Use the Ito, Tanaka, Yamamoto, and Nakamura agents to check each member's status
 #### Adapt
 - If the plan needs adjustment, update the sprint backlog.
 - If the sprint goal is affected, consider renegotiating the scope with the Suzuki agent.
- ※To renegotiate with the Suzuki agent, run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
+ ※To renegotiate with the Suzuki agent, run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Opus".
 
 ---
 

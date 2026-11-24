@@ -7,12 +7,12 @@ description: Perform backlog refinement. Detail and split PBIs, estimate effort,
 Use each sub-agent started in "Preparation" according to the instructions below to perform product backlog refinement.
 
 ## Preparation
-- Run the Sato agent (`.github/agents/customer.sato.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT-5.5".
+- Run the Sato agent (`.github/agents/customer.sato.agent.md`) as a sub-agent with the model "Opus".
+- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Opus".
+- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Opus".
+- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Opus".
+- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Opus".
+- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT" (if not available, use Opus).
 
 > Product backlog refinement is the act of breaking down and further defining product backlog items into smaller and more precise items.
 > It is an ongoing activity that adds detail, order, and size.
@@ -108,4 +108,4 @@ A PBI too big for one sprint (about 8 points or more, or one that cannot be test
 
 ### Agent-driven epics (Executive rule, 2026-11-23; the first ones were split to fit usage)
 
-When the orchestrator or Scrum Master decides to split a story so that it fits within the available usage (see `scrum/usage/README.md`), the children form an epic and the sprints that build it run on automatically: at the end of each sprint in the epic, complete it without waiting for the Executive's review or retrospective approval (analyze and test, commit, push the sprint branch, merge into `main`, push `main`), then plan and start the next sprint, until the epic is complete. The Executive gives feedback after the epic, not between its sprints. This applies to every agent-driven epic (any epic the agents divide into sprints, split for usage or for size); any other sprint still waits for the Executive's approval of its retrospective. A failing analyze or test run still stops the run, and the Executive's other rules still hold (input during a sprint is for the next sprint). The Executive may set a sprint limit during such an epic (a number of sprints, a stop time or a usage level); the orchestrator stops after the sprint that reaches it and reports.
+When the orchestrator or Scrum Master decides to split a story so that it fits within the available usage (see `scrum/usage/README.md`), the children form an epic and the sprints that build it run on automatically: at the end of each sprint in the epic, complete it without waiting for the Executive's review or retrospective approval (analyze and test, commit, push the sprint branch, merge into `main`, push `main`), then plan and start the next sprint, until the epic is complete. The Executive gives feedback after the epic, not between its sprints. This applies to every agent-driven epic (any epic the agents divide into sprints, split for usage or for size); any other sprint still waits for the Executive's approval of its retrospective. A failing analyze or test run still stops the run, and the Executive's other rules still hold (input during a sprint is for the next sprint). The sprint limit is in `scrum/team_working_agreement.md`.

@@ -15,10 +15,12 @@ Readings come from the Executive, who pastes `/usage` or the status line. `usage
 
 ## When
 
-- Only the orchestrator asks the Executive for a reading: at the start of every sprint, and it records the before and after readings at the sprint's end. Other agents never ask; they read `usage.log` and use `estimate`, `trend` and `project` to plan sprints, stories and epics.
-- Run `project` before starting any job.
+- The orchestrator asks the Executive for a reading first, before it launches any sub-agent (before Step 1 of `execute-sprint`), and runs `project`. That reading is the sprint's before-reading. The orchestrator also takes the after-reading at the sprint's end and logs both.
+- Takahashi fits the sprint to the usage period during sprint planning (Topic 2, scope), using the sprint's before-reading plus an assumed 5% of the session already used by Steps 1 to 3 (and the weekly equivalent, found with the ratio of week to session % per point in `estimate`), and `project`. A scope that does not fit is split; the split stories form an agent-driven epic (`scrum/team_working_agreement.md`).
+- Other agents never ask; they read `usage.log` and use `estimate`, `trend` and `project`.
+- The model column names the model the orchestrator runs on (for example "Sonnet 5.5"), so that one model's usage data is never used to predict another's (Claude data for GPT). Sub-agent models are not logged separately.
 - Caution (70%): tell the Executive, then continue.
-- Warning (85%): do not start the job; split it or wait for the reset (an epic decides alone, otherwise ask).
+- Warning (85%): launch nothing; split or wait for the reset (an epic decides alone, otherwise ask the Executive). Stop and report if a real reading reaches 85% during a sprint.
 
 ## How the estimate works
 

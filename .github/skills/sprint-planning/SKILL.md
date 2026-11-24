@@ -7,11 +7,11 @@ description: Conduct sprint planning. The PO, SM, and developers discuss the spr
 Use each sub-agent started in "Preparation" according to the instructions below to conduct sprint planning.
 
 ## Preparation
-- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT-5.5".
+- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Opus".
+- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Opus".
+- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Opus".
+- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Opus".
+- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT" (if not available, use Opus).
 
 Plan the sprint for five days total. (It is a one-week sprint.)
 The developers (Tanaka, Ito, Yamamoto, and Nakamura) are among the world's expert engineers. It is possible to plan on the assumption of exceptionally high productivity.
@@ -44,6 +44,7 @@ The running sprint lives in `scrum/sprintXXX`; finished sprints are archived in 
 - Use the Tanaka agent to determine eligible PBIs based on capacity and velocity.
 - Use the Ito agent to verify, based on capacity and velocity, that the eligible PBIs can be selected.
   - The selected PBIs must be appropriately sized to satisfy the Definition of Done.
+- Use the Takahashi agent to fit the scope to the usage period, as `scrum/usage/README.md` ("When") says.
 
 ## Topic 3: How will the selected work be completed? (How)
 - Use the Ito agent to break the selected PBIs into tasks.

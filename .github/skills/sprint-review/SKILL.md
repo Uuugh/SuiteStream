@@ -8,12 +8,12 @@ description: Conduct a sprint review. Inspect increments, collect stakeholder fe
 Use each sub-agent started in "Preparation" according to the instructions below to conduct the sprint review.
 
 ## Preparation
-- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Sato agent (`.github/agents/customer.sato.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
-- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT-5.5".
+- Run the Suzuki agent (`.github/agents/product-owner.suzuki.agent.md`) as a sub-agent with the model "Opus".
+- Run the Ito agent (`.github/agents/developer.ito.agent.md`) as a sub-agent with the model "Opus".
+- Run the Tanaka agent (`.github/agents/developer.tanaka.agent.md`) as a sub-agent with the model "Opus".
+- Run the Takahashi agent (`.github/agents/scrum-master.takahashi.agent.md`) as a sub-agent with the model "Opus".
+- Run the Sato agent (`.github/agents/customer.sato.agent.md`) as a sub-agent with the model "Opus".
+- Run the Kobayashi agent (`.github/agents/reviewer.kobayashi.agent.md`) as a sub-agent with the model "GPT" (if not available, use Opus).
 
 Yamamoto and Nakamura cannot participate in the review due to contractual constraints. Proceed on the assumption that any feedback will be provided through Tanaka and Ito.
 

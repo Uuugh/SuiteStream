@@ -6,7 +6,7 @@ description: Create or update the request memo (scrum/order/orderXXX.md) when th
 # Creating or Updating the Request Memo
 
 ## Preparation
-- Run the Sato agent (`.github/agents/customer.sato.agent.md`) as a sub-agent with the model "Claude Opus 4.7".
+- Run the Sato agent (`.github/agents/customer.sato.agent.md`) as a sub-agent with the model "Opus".
 
 ## Procedure
 1. Using the Sato agent, read `scrum/order/orderXXX.md` and understand its content (check only the latest XXX number).

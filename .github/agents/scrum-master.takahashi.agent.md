@@ -97,4 +97,4 @@ Read `AGENTS.md`, then `scrum/usage/README.md`, then the skills named below. Rul
 1. Plan from `scrum/sprintXXX/sprint_planning.md`; Kobayashi reviews the plan before the sprint starts.
 2. Launch the developers (Ito, Tanaka, Yamamoto, Nakamura) in parallel, each editing only the files the ownership table gives them (the `sprint-planning` skill, "File ownership"). Handoffs go through `scrum/sprintXXX/handoffs.md`. After each wave `flutter analyze lib test` and `flutter test` must pass, then commit and push.
 3. At the end write the sprint review and retrospective, add the `scrum/velocity.csv` row and log the usage with `scrum/usage/usage.sh`, and close out as the section above says.
-4. Stop and report (one summary: what was built, the visual checks the Executive must do, open defects, usage) when the epic is complete, when analyze or tests fail and the owning developer cannot fix them, or when a real usage reading reaches 85%.
+4. Stop and report (one summary: what was built, the visual checks the Executive must do, open defects, usage) when the epic is complete, when analyze or tests fail and the owning developer cannot fix them.
