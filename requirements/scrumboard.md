@@ -35,12 +35,12 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-05.c | backlog | An issue's requirement is the ID on the line starting `Requirement:` in its description. | — |
 | SCB-05.d | backlog | An issue without a feature or a requirement shows a dash in its place. | — |
 | SCB-05.e | backlog | The issue list holds at most the number of issues in DEF-01, newest first, and says when more exist (msg:scbIssuesTruncated, with the number as {limit}). | — |
-| SCB-06 | backlog | The board along the top is a timeline: the sprint blocks run from the oldest on the left to the newest on the right, followed by the Backlog block at the right end; the add control is the `+` in the right zone of the board's header (SCB-16.a). | — |
+| SCB-06 | backlog | The board along the top has the Backlog block fixed at its left edge, and to the right of it the sprint timeline: the sprint blocks run from the oldest on the left to the newest on the right, and the timeline scrolls sideways in from behind the Backlog block; the add control is the `+` in the right zone of the board's header (SCB-16.a). | — |
 | SCB-06.a | backlog | The Backlog block (heading msg:scbBacklog) is the queue for a sprint: it holds the features (requirements) and the issues whose status is `backlog`. | — |
 | SCB-06.b | backlog | The add control (msg:scbAddBlock) asks which kind of block (msg:scbBlockKind, msg:scbKindStory, msg:scbKindEpic, msg:scbKindSprint) and its name (msg:scbBlockName), and adds the block at the end of the board; its Cancel is msg:cancel and its Save is msg:scbSave. | — |
 | SCB-06.c | backlog | A story can sit in an epic or in a sprint, an epic can sit in a sprint, and a sprint sits at the top of the board; a block is drawn inside the block it sits in. | — |
 | SCB-06.d | backlog | A story holds the requirements and the issues that were dropped on it and shows each with its ID or number and title. | — |
-| SCB-06.e | backlog | The blocks stand in one row, and the row scrolls sideways inside the board area when the blocks do not fit; when the page opens the row is scrolled to its right end, so the newest sprints and the Backlog are in view. | — |
+| SCB-06.e | backlog | The Backlog block does not scroll with the timeline; the sprint blocks stand in one row that scrolls sideways under it, and when the page opens the timeline is scrolled to its right end, so the newest sprints are in view. | — |
 | SCB-06.f | backlog | A scrollbar on the board moves to older sprints, to the left; they are read from `scrum/sprints` and loaded in batches of the size in DEF-01 only when the scroll nears them, never all at once. | — |
 | SCB-06.g | backlog | The Backlog block is as wide as a sprint block; every block of the top level has the same width, and its contents scroll inside it (SCB-15.b). | — |
 | SCB-07 | backlog | The Product Owner and the team build the sprint by dragging and dropping. | — |
@@ -52,7 +52,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-07.f | backlog | Dropping a requirement or an issue that is in a story on the Backlog block removes it from the story's Members rows and sets its status to `backlog`. | — |
 | SCB-07.g | backlog | A drop that would move a status down in any other way, or that is not allowed by SCB-07.c, changes nothing and says why (msg:scbMoveRefused, with the reason as {reason}). | — |
 | SCB-07.h | backlog | Dropping something where it already is changes nothing. | — |
-| SCB-07.i | backlog | Dragging a requirement or an issue out of the Backlog block, onto nothing, removes it from the Backlog: its status goes back to `proposed`. It stays listed in its own column in every case, with the status changed in the requirement file or the issue tracker; the board is a window onto the existing process. | — |
+| SCB-07.i | backlog | Dragging a requirement or an issue out of the Backlog block, onto nothing, removes it from the Backlog and puts it back to the status it had before it entered the Backlog; the board keeps that earlier status in the sprint file (SCB-02.d) when the item enters the Backlog. The item stays listed in its own column in every case, with the status changed in the requirement file or the issue tracker; the board is a window onto the existing process. | — |
 | SCB-08 | backlog | A sprint block has one Accept control (msg:scbAccept), in its header to the right of its usage metric; stories have none. | — |
 | SCB-08.a | backlog | Accept sets the status of every requirement and issue of every story in the sprint to `done`. | — |
 | SCB-08.b | backlog | Only a sprint block that sits on the board has an Accept control; the Backlog block has none. | — |
