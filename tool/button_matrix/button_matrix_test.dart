@@ -2,7 +2,6 @@
 //   flutter test tool/button_matrix/button_matrix_test.dart --update-goldens
 import 'dart:io';
 import 'package:flutter/gestures.dart';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -112,7 +111,7 @@ Widget _cell0(BuildContext context, int col, int r) {
   final cs = Theme.of(context).colorScheme;
   final f = _forceOf(r);
   final off = r == 1;
-  final forced = <WidgetState>{if (f != null) f};
+  final forced = <WidgetState>{?f};
   VoidCallback? tap() => off ? null : () {};
   Widget w(Widget Function(WidgetStatesController c) b) => _Forced(forced, b);
   // Plain buttons: selected, dragged, error are n/a.

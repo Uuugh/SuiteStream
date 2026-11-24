@@ -30,7 +30,7 @@ fakes: `cd ../server && dart test`). Expect first-run fixes.
 PKCE). Authentik returns to `/auth/callback`; the server exchanges the code,
 reads the user from the userinfo endpoint and sets an HttpOnly session cookie.
 Settings are saved per user in Postgres through `/api/settings`. Contract:
-`scrum/sprint010/handoffs.md`, "API contract".
+`scrum/sprints/sprint010/handoffs.md`, "API contract".
 
 ## Not verified
 - The Docker build (Flutter image tag `stable` is unpinned; Dart runtime copy).

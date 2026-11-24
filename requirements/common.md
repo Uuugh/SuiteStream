@@ -291,6 +291,7 @@ SuiteStream), **rule** (made by a rule).
 | Update check time limit | 15 seconds | | default only |
 | Update checker first wait | 30 seconds | | default only |
 | Update checker wait between rounds | until the next check is due | at least 60 seconds, at most 1 hour | default only |
+| ScrumBoard port | 8081 | any free port with --port (SCB-13.a) | default only |
 | Update progress asked | every 2 seconds | gives up after 15 minutes | default only |
 | Update status asked while the page is shown | every minute | | default only |
 | Reload when the restart was never seen | 0.8 seconds | | default only |

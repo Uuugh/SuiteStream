@@ -6,7 +6,7 @@ version: 0.1.0
 environment:
   sdk: ^3.5.0
 
-# Exact pins (no ranges), see scrum/sprint010/handoffs.md "New dependencies".
+# Exact pins (no ranges), see scrum/sprints/sprint010/handoffs.md "New dependencies".
 dependencies:
   crypto: 3.0.7
   http: 1.6.0
