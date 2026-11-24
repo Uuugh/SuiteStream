@@ -8,13 +8,16 @@ import 'package:scrumboard/server/requirement_status.dart';
 import 'package:scrumboard/server/requirement_retire.dart';
 import 'package:scrumboard/server/requirements_reader.dart';
 import 'package:scrumboard/server/sprint_file.dart';
+import 'package:scrumboard/server/usage_script.dart';
 
 /// Default for the request body limit (the DEF-01 row "ScrumBoard request
 /// body limit"; 1 MiB).
 const int defaultMaxBodyBytes = 1024 * 1024;
 
 /// The ScrumBoard server (SCB-13): serves the built web app and the API on
-/// 127.0.0.1 only. It runs no shell and no process, and holds no token.
+/// 127.0.0.1 only. It holds no token. The one process it runs is the usage
+/// script, `usage.sh estimate` or `trend` through bash, in `usage_script.dart`
+/// (SCB-14.o); no other file starts a process.
 class ScrumBoardServer {
   ScrumBoardServer._(
     this._http,
@@ -22,17 +25,26 @@ class ScrumBoardServer {
     this.progressDir,
     this.webDir,
     this.maxBodyBytes,
+    this.usageScript,
+    this.bash,
+    this.usageTimeout,
   );
 
   /// Starts listening on 127.0.0.1:[port] (0 picks a free port).
   /// [root] is the repository; every path it reads or writes must stay inside
   /// it. [progressDir], when given, must exist. [webDir] is `build/web`.
+  /// [usageScript] is the usage script (relative to [root] unless absolute;
+  /// `--usage-script`), [bash] overrides the default bash ([findDefaultBash];
+  /// `--bash`), and [usageTimeout] is the time limit of one run (SCB-14.o).
   static Future<ScrumBoardServer> start({
     required Directory root,
     Directory? progressDir,
     Directory? webDir,
     int port = 8081,
     int maxBodyBytes = defaultMaxBodyBytes,
+    String usageScript = defaultUsageScript,
+    String? bash,
+    Duration usageTimeout = usageScriptTimeout,
   }) async {
     if (!root.existsSync()) {
       throw ArgumentError('the root folder does not exist: ${root.path}');
@@ -49,6 +61,9 @@ class ScrumBoardServer {
       progressDir,
       webDir,
       maxBodyBytes,
+      usageScript,
+      bash,
+      usageTimeout,
     );
     unawaited(server._serve());
     return server;
@@ -59,6 +74,23 @@ class ScrumBoardServer {
   final Directory? progressDir;
   final Directory? webDir;
   final int maxBodyBytes;
+  final String usageScript;
+  final String? bash;
+  final Duration usageTimeout;
+
+  /// SCB-14.o: runs the usage script with [mode] (`estimate` or `trend`).
+  Future<UsageScriptResult> _usageScript(String mode) {
+    final script = File(usageScript).isAbsolute
+        ? usageScript
+        : File.fromUri(Uri.directory(root.path).resolve(usageScript.replaceAll(r'\', '/'))).path;
+    return runUsageScript(
+      bash: bash ?? findDefaultBash(),
+      script: script,
+      mode: mode,
+      workingDirectory: root.path,
+      timeout: usageTimeout,
+    );
+  }
 
   int get port => _http.port;
 
@@ -167,6 +199,12 @@ class ScrumBoardServer {
       }
       if (path == '/api/progress' && method == 'GET') {
         return await _json(request, 200, readProgress(progressDir));
+      }
+      if (path == '/api/usage/estimate' && method == 'GET') {
+        return await _json(request, 200, (await _usageScript('estimate')).toJson());
+      }
+      if (path == '/api/usage/trend' && method == 'GET') {
+        return await _json(request, 200, (await _usageScript('trend')).toJson());
       }
       if (path == '/api/usage' && method == 'GET') {
         return await _json(request, 200, readUsage(root));

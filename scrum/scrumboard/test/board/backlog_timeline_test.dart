@@ -7,6 +7,7 @@ import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/board/backlog_timeline.dart';
 import 'package:scrumboard/src/board/board_tokens.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
+import 'package:scrumboard/src/theme/scrum_theme.dart';
 
 Requirement _req(String id, String status, String statement, String feature) =>
     Requirement(id: id, status: status, statement: statement, feature: feature, file: 'requirements/$feature.md');
@@ -109,7 +110,7 @@ void main() {
   testWidgets('SCB-06.g every top-level block, and the Backlog block, has the same width', (tester) async {
     await _pump(tester, _api());
     for (final key in ['backlog-block', 'block-S10', 'block-S11']) {
-      expect(tester.getSize(find.byKey(ValueKey(key))).width, BoardTokens.blockWidth, reason: key);
+      expect(tester.getSize(find.byKey(ValueKey(key))).width, scrumBlockWidth, reason: key);
     }
   });
 

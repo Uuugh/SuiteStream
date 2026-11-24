@@ -59,6 +59,13 @@ abstract class ScrumBoardApi {
   /// `POST /api/requirements/<id>/retire` (SCB-19.a). A refusal is `ok: false`
   /// with the reason, not an exception.
   Future<({bool ok, String reason})> retire(String id);
+
+  /// `GET /api/usage/estimate` (SCB-14.o): the output of `usage.sh estimate`;
+  /// a missing, failing or timed-out script is `ok: false` with the reason.
+  Future<({bool ok, String output, String reason})> usageEstimate();
+
+  /// `GET /api/usage/trend` (SCB-14.o): the output of `usage.sh trend`.
+  Future<({bool ok, String output, String reason})> usageTrend();
 }
 
 /// Talks to the server over HTTP. [baseUri] is the page's own origin in the
@@ -133,6 +140,23 @@ class HttpScrumBoardApi implements ScrumBoardApi {
     ) as Map<String, dynamic>;
     return (
       ok: json['ok'] == true,
+      reason: (json['reason'] ?? '').toString(),
+    );
+  }
+
+  @override
+  Future<({bool ok, String output, String reason})> usageEstimate() =>
+      _script('/api/usage/estimate');
+
+  @override
+  Future<({bool ok, String output, String reason})> usageTrend() =>
+      _script('/api/usage/trend');
+
+  Future<({bool ok, String output, String reason})> _script(String path) async {
+    final json = await _send('GET', path) as Map<String, dynamic>;
+    return (
+      ok: json['ok'] == true,
+      output: (json['output'] ?? '').toString(),
       reason: (json['reason'] ?? '').toString(),
     );
   }
@@ -285,4 +309,18 @@ class FakeScrumBoardApi implements ScrumBoardApi {
         ];
         return (ok: true, reason: '');
       });
+
+  /// What [usageEstimate] and [usageTrend] answer (SCB-14.o).
+  ({bool ok, String output, String reason}) estimateAnswer =
+      (ok: true, output: '', reason: '');
+  ({bool ok, String output, String reason}) trendAnswer =
+      (ok: true, output: '', reason: '');
+
+  @override
+  Future<({bool ok, String output, String reason})> usageEstimate() =>
+      _answer('usageEstimate', () => estimateAnswer);
+
+  @override
+  Future<({bool ok, String output, String reason})> usageTrend() =>
+      _answer('usageTrend', () => trendAnswer);
 }

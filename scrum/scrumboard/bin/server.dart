@@ -1,16 +1,22 @@
 import 'dart:io';
 
 import 'package:scrumboard/server/server.dart';
+import 'package:scrumboard/server/usage_script.dart';
 
 const String _usage = '''
 ScrumBoard server (127.0.0.1 only)
 
   dart run bin/server.dart [--port 8081] [--progress <dir>] [--root <repo>] [--web <build/web>]
+                           [--usage-script <path>] [--bash <path>]
 
-  --port      port to listen on (default 8081)
-  --progress  folder of agent progress files (must exist)
-  --root      the repository (default ../.. from scrum/scrumboard)
-  --web       the built web app (default build/web next to bin/)
+  --port          port to listen on (default 8081)
+  --progress      folder of agent progress files (must exist)
+  --root          the repository (default ../.. from scrum/scrumboard)
+  --web           the built web app (default build/web next to bin/)
+  --usage-script  the usage script run for the estimate and the trend
+                  (default scrum/usage/usage.sh under the root)
+  --bash          the bash that runs it (default: Git Bash on Windows, bash
+                  elsewhere; never the WSL bash of System32)
 ''';
 
 Future<void> main(List<String> args) async {
@@ -18,6 +24,8 @@ Future<void> main(List<String> args) async {
   String? progress;
   var root = '../..';
   String? web;
+  var usageScript = defaultUsageScript;
+  String? bash;
   try {
     for (var i = 0; i < args.length; i++) {
       final a = args[i];
@@ -35,6 +43,10 @@ Future<void> main(List<String> args) async {
           root = value();
         case '--web':
           web = value();
+        case '--usage-script':
+          usageScript = value();
+        case '--bash':
+          bash = value();
         case '--help' || '-h':
           stdout.write(_usage);
           return;
@@ -64,6 +76,8 @@ Future<void> main(List<String> args) async {
       progressDir: progress == null ? null : Directory(progress),
       webDir: webDir,
       port: port,
+      usageScript: usageScript,
+      bash: bash,
     );
     stdout.writeln('ScrumBoard at http://127.0.0.1:${server.port}');
   } on Object catch (e) {

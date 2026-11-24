@@ -14,6 +14,17 @@ const double scrumToolbarHeight = 44;
 /// Padding around a load-failed message.
 const double scrumErrorPadding = 8;
 
+/// SCB-06.g: width of the Backlog block and of every top-level block.
+const double scrumBlockWidth = 360;
+
+/// SCB-20: the one zoom icon: its whole size (both halves), the size of the
+/// magnifier, of the minus and plus marks, and the stroke they are drawn with.
+const double scrumZoomIconWidth = 44;
+const double scrumZoomIconHeight = 36;
+const double scrumZoomGlyphSize = 20;
+const double scrumZoomMarkSize = 8;
+const double scrumZoomStroke = 2;
+
 /// SCB-15.a: the share of the page height of each row (percent).
 const int scrumTopRowFlex = 40;
 const int scrumMiddleRowFlex = 20;

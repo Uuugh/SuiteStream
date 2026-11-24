@@ -23,9 +23,15 @@ Options:
 | `--progress <dir>` | none | Folder of agent progress files, each named by the agent's label and holding `done/total`. It must exist |
 | `--root <dir>` | `../..` | The repository. The server reads `requirements/`, `scrum/sprint.md` and `scrum/usage/usage.log` there and refuses any path outside it |
 | `--web <dir>` | `build/web` | The built page |
+| `--usage-script <path>` | `scrum/usage/usage.sh` | The usage script run for the estimate and the trend. A relative path is taken from `--root` |
+| `--bash <path>` | Git Bash on Windows, `bash` elsewhere | The bash that runs the usage script. On Windows the default is `<git>\bin\bash.exe` for a `git.exe` on PATH, then `C:\Program Files\Git\bin\bash.exe`, then the first `bash.exe` on PATH; never a bash under `System32`, `Sysnative` or `WindowsApps` (the WSL launchers). With no Git Bash found, the usage answers say so |
 
-The server writes one file only: `scrum/sprint.md` (`PUT /api/sprint`). It runs no shell and no process, and holds
-no token or secret.
+The server writes one file only: `scrum/sprint.md` (`PUT /api/sprint`). It holds no token or secret.
+
+It runs one process only: the usage script through bash, as `<bash> <usage script> estimate` or
+`<bash> <usage script> trend`, in the repository folder (SCB-14.o, `lib/server/usage_script.dart`). These two
+arguments are fixed in the server; nothing from the page or the request reaches the process. It is not started
+through a shell. A run that takes over 10 seconds is stopped.
 
 ## Build
 
@@ -50,6 +56,12 @@ other request, 413 for a body over the limit, 400 for a sprint body that is not 
 | `PUT /api/sprint` | the same shape; written at once, keeping the text the board does not edit |
 | `GET /api/progress` | `[{label, done, total}]` |
 | `GET /api/usage` | `{exists, rows}` |
+| `GET /api/usage/estimate` | `{ok, output, reason}`: runs the usage script with `estimate` |
+| `GET /api/usage/trend` | `{ok, output, reason}`: runs the usage script with `trend` |
+
+For the two usage-script requests, `ok` is true when the script exits with 0, and `output` is what it printed.
+Otherwise `ok` is false and `reason` says why: the script's own output for another exit code, or that bash or the
+script was not found, bash could not start, or the run timed out. Both answer with 200.
 
 ## Check
 

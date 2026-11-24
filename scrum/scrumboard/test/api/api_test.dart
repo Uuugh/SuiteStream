@@ -209,6 +209,43 @@ void main() {
     expect((await api.usage()).rows, isEmpty);
   });
 
+  test('SCB-14.o the client reads the estimate and the trend answers', () async {
+    final api = HttpScrumBoardApi(
+      baseUri: base,
+      client: MockClient((req) async {
+        expect(req.method, 'GET');
+        return switch (req.url.path) {
+          '/api/usage/estimate' => json({'ok': true, 'output': 'est out\n', 'reason': ''}),
+          '/api/usage/trend' => json({'ok': false, 'output': '', 'reason': 'No rows for x'}),
+          _ => json({'error': 'not found'}, 404),
+        };
+      }),
+    );
+    expect(await api.usageEstimate(), (ok: true, output: 'est out\n', reason: ''));
+    expect(await api.usageTrend(), (ok: false, output: '', reason: 'No rows for x'));
+  });
+
+  test('SCB-14.o SCB-13.h an unreachable server is an exception, not empty data', () async {
+    final api = HttpScrumBoardApi(
+      baseUri: base,
+      client: MockClient((_) async => throw http.ClientException('refused')),
+    );
+    expect(api.usageEstimate(), throwsA(isA<ScrumBoardUnreachableException>()));
+    expect(api.usageTrend(), throwsA(isA<ScrumBoardUnreachableException>()));
+  });
+
+  test('SCB-14.o the fake answers what it is given and counts the calls', () async {
+    final fake = FakeScrumBoardApi()
+      ..estimateAnswer = (ok: true, output: 'e', reason: '')
+      ..trendAnswer = (ok: false, output: '', reason: 'missing');
+    expect(await fake.usageEstimate(), (ok: true, output: 'e', reason: ''));
+    expect(await fake.usageTrend(), (ok: false, output: '', reason: 'missing'));
+    expect(fake.calls['usageEstimate'], 1);
+    expect(fake.calls['usageTrend'], 1);
+    fake.failWith = const ScrumBoardUnreachableException('down');
+    expect(fake.usageTrend(), throwsA(isA<ScrumBoardUnreachableException>()));
+  });
+
   test('SCB-01.c the fake counts calls and can fail', () async {
     final fake = FakeScrumBoardApi();
     await fake.requirements();
