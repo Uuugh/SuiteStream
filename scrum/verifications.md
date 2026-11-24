@@ -61,3 +61,8 @@ Result:
 Status: open
 Verify: `.github/skills/sprint-retrospective/SKILL.md` line 65 and `.github/agents/reviewer.kobayashi.agent.md` line 24 no longer say the first audit is owed.
 Result:
+
+## 8. PBI-092 Shared filter bar
+Status: open
+Verify: On the board, in light and dark after a hard refresh, the Features & Requirements column and the Backlog block show the same filter bar (feature, requirement and status filters and the shown-of count), and filtering in each hides the same kind of items (SCB-04).
+Result:

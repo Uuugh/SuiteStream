@@ -19,3 +19,11 @@ Question: ...
    Choices: ... (optional)
 Answer:
 ```
+
+## 1. Suzuki, Sprint 015 What marks a question or verification as new
+Status: open
+Question: SCB-17.e says a new open item is marked new until the Product Owner has seen it. On the board you are the reader. Where is "seen" kept? PBI-086 is planned with choice a until you answer.
+   a) In your browser, like the zoom (SCB-24): an item is no longer new once the column has shown it. (recommended)
+   b) Drop the new mark; keep only the count badge on the heading.
+   c) In the file: a "Seen:" line the board writes when you open the item.
+Answer:
