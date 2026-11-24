@@ -88,13 +88,13 @@ Follow `AGENTS.md`, "Talk after a sprint". That rule lives only there.
 
 ## Sprint branches, commits and merging
 
-Each sprint runs on its own branch `sprintNNN`, created from an up-to-date `main`. Commit and push after each wave (a batch of tasks that can run at the same time) and whenever tests are green. A sprint is finished when its retrospective is approved (or recorded automatically inside an agent-driven epic), analyze and the tests pass, and its branch is merged into `main` with `--no-ff`. In the same commit its folder moves from `scrum/sprintNNN` to `scrum/sprints/sprintNNN`, and then the next sprint's branch is created. The commit and merge steps are in the `sprint-retrospective` skill. Whether the next sprint may start is decided only by `AGENTS.md`, "Start".
+Each sprint runs on its own branch `sprintXXX`, created from an up-to-date `main`. Commit and push after each wave (a batch of tasks that can run at the same time) and whenever tests are green. A sprint is finished when its retrospective is approved (or recorded automatically inside an agent-driven epic), analyze and the tests pass, and its branch is merged into `main` with `--no-ff`. In the same commit its folder moves from `scrum/sprintXXX` to `scrum/sprints/sprintXXX`, and then the next sprint's branch is created. The commit and merge steps are in the `sprint-retrospective` skill. Whether the next sprint may start is decided only by `AGENTS.md`, "Start".
 
 ## Running a sprint (entry point for an orchestrator)
 
 Read `AGENTS.md`, then `scrum/usage/README.md`, then the skills named below. Rules about starts, epics, sprint pauses, questions and talk during a sprint live in `AGENTS.md` and `scrum/team_working_agreement.md`, nowhere else.
 
-1. Plan from `scrum/sprintNNN/sprint_planning.md`; Kobayashi reviews the plan before the sprint starts.
-2. Launch the developers (Ito, Tanaka, Yamamoto, Nakamura) in parallel, each editing only the files the ownership table gives them (the `sprint-planning` skill, "File ownership"). Handoffs go through `scrum/sprintNNN/handoffs.md`. After each wave `flutter analyze lib test` and `flutter test` must pass, then commit and push.
+1. Plan from `scrum/sprintXXX/sprint_planning.md`; Kobayashi reviews the plan before the sprint starts.
+2. Launch the developers (Ito, Tanaka, Yamamoto, Nakamura) in parallel, each editing only the files the ownership table gives them (the `sprint-planning` skill, "File ownership"). Handoffs go through `scrum/sprintXXX/handoffs.md`. After each wave `flutter analyze lib test` and `flutter test` must pass, then commit and push.
 3. At the end write the sprint review and retrospective, add the `scrum/velocity.csv` row and log the usage with `scrum/usage/usage.sh`, and close out as the section above says.
 4. Stop and report (one summary: what was built, the visual checks the Executive must do, open defects, usage) when the epic is complete, when analyze or tests fail and the owning developer cannot fix them, or when a real usage reading reaches 85%.

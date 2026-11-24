@@ -5,4 +5,4 @@ The PR body must include the related issue number in the form `Fixes #<issue-num
 
 ## Sprint Branch Rules
 
-Each sprint works on one branch, `sprintNNN`, created from an up-to-date `main` at sprint start. Agents work in the same directory under the file-ownership table of the sprint plan. Commit and push to the sprint branch often. After the retrospective is approved, merge the branch into `main` and push `main`.
+Each sprint works on one branch, `sprintXXX`, created from an up-to-date `main` at sprint start. Agents work in the same directory under the file-ownership table of the sprint plan. Commit and push to the sprint branch often. After the retrospective is approved, merge the branch into `main` and push `main`.

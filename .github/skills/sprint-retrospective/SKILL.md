@@ -87,11 +87,11 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 
 ## Commit and merge on approval
 
-Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill). When the Executive (XO) approves the retrospective:
+Every sprint works on its own branch (`sprintXXX`, see the sprint-planning skill). When the Executive (XO) approves the retrospective:
 run `flutter analyze` and the full test suite first (continue only if they pass; otherwise report the failures and stop);
 commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
 "Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
-Archive the finished sprint in the same commit, before the merge: move `scrum/sprintNNN` to `scrum/sprints/sprintNNN` (`git mv`) and change the path in any record that points at the sprint folder.
+Archive the finished sprint in the same commit, before the merge: move `scrum/sprintXXX` to `scrum/sprints/sprintXXX` (`git mv`) and change the path in any record that points at the sprint folder.
 The next sprint's branch is created from the updated `main` and the sprint is planned; it runs only when the Executive (XO) says "start" (except the next sprint of a usage-split epic).
 
 ## Automatic completion inside an agent-driven epic
