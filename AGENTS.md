@@ -22,4 +22,5 @@ Before making any change, read `scrum/questions.md`. For each answered pair: rec
 
 - Work only in this repository.
 - Keep chat updates short and few; ask only what blocks a decision.
+- Pictures, mockups and other deliverables for the Executive go in `scrum/deliverables`, not in `scrum/`.
 - Do not add a requirement row that restates another (point to DEF-01 or the existing row).
