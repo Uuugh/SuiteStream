@@ -35,13 +35,13 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-05.c | backlog | An issue's requirement is the ID on the line starting `Requirement:` in its description. | — |
 | SCB-05.d | backlog | An issue without a feature or a requirement shows a dash in its place. | — |
 | SCB-05.e | backlog | The issue list holds at most the number of issues in DEF-01, newest first, and says when more exist (msg:scbIssuesTruncated, with the number as {limit}). | — |
-| SCB-06 | backlog | The board along the top shows the Backlog block, then the add control, then the blocks of the sprint. | — |
+| SCB-06 | backlog | The board along the top is a timeline: the sprint blocks run from the oldest on the left to the newest on the right, followed by the Backlog block at the right end; the add control is the `+` in the right zone of the board's header (SCB-16.a). | — |
 | SCB-06.a | backlog | The Backlog block (heading msg:scbBacklog) is the queue for a sprint: it holds the features (requirements) and the issues whose status is `backlog`. | — |
 | SCB-06.b | backlog | The add control (msg:scbAddBlock) asks which kind of block (msg:scbBlockKind, msg:scbKindStory, msg:scbKindEpic, msg:scbKindSprint) and its name (msg:scbBlockName), and adds the block at the end of the board; its Cancel is msg:cancel and its Save is msg:scbSave. | — |
 | SCB-06.c | backlog | A story can sit in an epic or in a sprint, an epic can sit in a sprint, and a sprint sits at the top of the board; a block is drawn inside the block it sits in. | — |
 | SCB-06.d | backlog | A story holds the requirements and the issues that were dropped on it and shows each with its ID or number and title. | — |
-| SCB-06.e | backlog | The board's blocks start at the left edge of the board area, in one row, and the row scrolls sideways inside the board area when the blocks do not fit; the board is never centered. | — |
-| SCB-06.f | backlog | The board shows the Backlog block, then the sprints newest first; a scrollbar on the board moves to older sprints, which are read from `scrum/sprints` and loaded in batches of the size in DEF-01 only when the scroll nears them, never all at once. | — |
+| SCB-06.e | backlog | The blocks stand in one row, and the row scrolls sideways inside the board area when the blocks do not fit; when the page opens the row is scrolled to its right end, so the newest sprints and the Backlog are in view. | — |
+| SCB-06.f | backlog | A scrollbar on the board moves to older sprints, to the left; they are read from `scrum/sprints` and loaded in batches of the size in DEF-01 only when the scroll nears them, never all at once. | — |
 | SCB-06.g | backlog | The Backlog block is as wide as a sprint block; every block of the top level has the same width, and its contents scroll inside it (SCB-15.b). | — |
 | SCB-07 | backlog | The Product Owner and the team build the sprint by dragging and dropping. | — |
 | SCB-07.a | backlog | A block can be dragged onto a block it may sit in (SCB-06.c) and then sits there, written to the sprint file (SCB-02.d). | — |
