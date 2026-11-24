@@ -64,7 +64,7 @@ PBI-011, PBI-013, PBI-014 and PBI-018 stay In Review; they are the Sprint 006 st
 
 ## Monitoring without the Executive (XO) (added 2026-11-23)
 
-The orchestrator checks `usage-now.json` first. When it is stale or null (the VS Code extension does not run the status line, so only a terminal session refreshes it), the orchestrator estimates usage itself, without asking:
+The orchestrator checks `usage-now.json` first. When it is stale or null (the VS Code extension does not run the status line, so only a terminal session refreshes it), the orchestrator estimates usage itself between readings (when to ask for a reading is in "Asking for a reading" below):
 
 - Anchor: the Executive's last pasted reading and the time it was given.
 - Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens in Sprint 007, but only about 2.7 per 100k in Sprints 009 and 011 (about 16 points for 590k tokens and 31 points for 1.2M tokens, against the Executive's readings); use 2.7 for the next estimate and replace it with the next measured value, plus the orchestrator's own turns).
@@ -89,7 +89,9 @@ Measured over Sprints 006 and 007 (planning, three waves of four developers, Kob
 4. Only when not even the smallest useful slice fits below 85%, wait for the reset time in the reading, then continue. Never stop a running agent for usage unless a real reading reaches 85%.
 5. Take any new reading the Executive (XO) pastes as the new anchor and note how far the estimate was off.
 
-If `usage-now.json` is null or stale (the VS Code extension does not refresh it), do not ask: estimate as above from the Executive's last pasted reading. Ask only if there has never been a reading.
+### Asking for a reading
+
+If `usage-now.json` is null or stale (the VS Code extension does not refresh it), estimate from the Executive's last pasted reading, as above. Ask the Executive (XO) for a new reading at the start of every sprint, when there has never been a reading, and when the estimate is low-confidence: the last reading is from before a session reset, is more than 60 minutes old, or puts the projected end within 10 points of the Caution (70%) or Warning (85%) level.
 
 | sprint008-009 | Usage epic slices 1 and 2 (Sprint 009 run by an orchestrator sub-agent) | 2026-11-23 | Sonnet 5.5 | 16–20 (est.) | 0 (after reset) / ? | ? | est. 25 | Sprint 009 agents reported about 590k tokens in total (waves 1 and 2); at 4 points per 100k that is about 24 session points. No real reading taken; the coordinator reported 94% before the 11:50 reset and 0% after. |
 
@@ -104,3 +106,4 @@ Sprint 012 calibration: 300k agent tokens plus the orchestrator's chat cost abou
 | sprint013 | ScrumBoard slice 3 (PBI-097, 098, 099, 101), 10 agent runs, about 850k agent tokens | 2026-11-23 | Sonnet 5.5 | 22–42 (10 points at 2.1 to 3.9, plus about 3) | 17 / 40 (Executive, 11:18 PM) | 37 / 42 (the Executive's reading at 11:36 PM) | 20 | Same session window; 16 minutes of wall time from 11:18 to 11:34 PM; estimate = 850k tokens at 2.7 per 100k (23) plus about 2 for the orchestrator's own turns. Measured: 20 session points for 10 story points (2.0 per point), 850k tokens (2.35 per 100k) and 16 minutes (1.25 points per minute, 1.6 minutes per story point), with almost no chat from the orchestrator. |
 
 Sprint 013 calibration (the cleanest measurement so far, no chat during the run): 20 session points and 2 week points for 10 story points in 16 minutes of wall time. Use for the next estimate: about **2.0 session points per story point** (Sprint 012: about 2.1; Sprint 011, a new project: 3.9), **2.35 per 100k agent tokens**, and **about 1.6 minutes of wall time per story point** with three agents in parallel (about 1.25 session points per minute).
+
