@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:scrumboard/server/board_item_write.dart';
 import 'package:scrumboard/server/board_items.dart';
 import 'package:scrumboard/server/paths.dart';
 import 'package:scrumboard/server/progress_usage_readers.dart';
@@ -211,6 +212,53 @@ class ScrumBoardServer {
           'verifications': [for (final v in items.verifications) v.toJson()],
         });
       }
+      // SCB-17.b: the two write routes. Each reads its file again inside
+      // _serialized and changes only the item with that number AND heading.
+      final answerMatch =
+          RegExp(r'^/api/questions/(\d{1,9})/answer$').firstMatch(path);
+      if (answerMatch != null && method == 'PUT') {
+        final body = await _jsonBody(request);
+        if (body == null) return;
+        final refusal = answerRefusal(body['heading'], body['answer']);
+        if (refusal != null) {
+          return await _json(request, 400, {'error': refusal});
+        }
+        final number = int.parse(answerMatch.group(1)!);
+        final answer = await _serialized(
+          () => writeQuestionAnswer(
+            resolveInside(root, questionsFile),
+            number,
+            body['heading'] as String,
+            body['answer'] as String,
+          ),
+        );
+        return await _json(request, 200, answer);
+      }
+      final resultMatch =
+          RegExp(r'^/api/verifications/(\d{1,9})/result$').firstMatch(path);
+      if (resultMatch != null && method == 'PUT') {
+        final body = await _jsonBody(request);
+        if (body == null) return;
+        final refusal = resultRefusal(
+          body['heading'],
+          body['result'],
+          body['status'],
+        );
+        if (refusal != null) {
+          return await _json(request, 400, {'error': refusal});
+        }
+        final number = int.parse(resultMatch.group(1)!);
+        final answer = await _serialized(
+          () => writeVerificationResult(
+            resolveInside(root, verificationsFile),
+            number,
+            body['heading'] as String,
+            body['result'] as String,
+            body['status'] as String,
+          ),
+        );
+        return await _json(request, 200, answer);
+      }
       if (path == '/api/changes' && method == 'GET') {
         return await _json(request, 200, {'stamp': _changeStamp()});
       }
@@ -291,6 +339,28 @@ class ScrumBoardServer {
     final result = _lastWrite.then((_) => job());
     _lastWrite = result.then<void>((_) {}, onError: (Object _) {});
     return result;
+  }
+
+  /// Reads a JSON object body. When the body is too large (413), not JSON or
+  /// not an object (400), answers that itself and returns null.
+  Future<Map<String, dynamic>?> _jsonBody(HttpRequest request) async {
+    final body = await _readBody(request);
+    if (body == null) {
+      await _json(request, 413, {'error': 'body too large'});
+      return null;
+    }
+    Object? decoded;
+    try {
+      decoded = jsonDecode(utf8.decode(body));
+    } on FormatException {
+      await _json(request, 400, {'error': 'the body is not JSON'});
+      return null;
+    }
+    if (decoded is! Map<String, dynamic>) {
+      await _json(request, 400, {'error': 'the body is not a JSON object'});
+      return null;
+    }
+    return decoded;
   }
 
   /// Reads the body, or returns null when it is over [maxBodyBytes].

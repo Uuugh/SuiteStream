@@ -41,3 +41,35 @@ Task 9 (PBI-086) done: `ScrumBoardPage` has `required Widget questions`, shown i
 
 ## 2026-11-24 Day 2 Tanaka
 - Task 12b done: verifications written in `scrum/verifications.md`. For Takahashi (In Review in `scrum/product_backlog.csv`): PBI-126 -> 45, PBI-086 -> 46. Verification 46 says the Windows and web check is ready only after task 17b (Kobayashi finding 2).
+
+## 2026-11-24 Day 3 Nakamura
+- write routes landed (task 13), for Tanaka (task 14b) and Ito (task 15): `scrum/scrumboard/lib/server/server.dart` and `lib/server/board_item_write.dart`.
+  - `PUT /api/questions/{n}/answer`, body `{"heading": "<text after '## <n>. '>", "answer": "<text>"}`.
+  - `PUT /api/verifications/{n}/result`, body `{"heading": "...", "result": "<text, may be empty when accepted>", "status": "accepted" | "returned"}`.
+  - `{n}` is 1 to 9 digits; any other verb or path under them is 404.
+  - 200 `{"ok": true, "reason": ""}` when written; 200 `{"ok": false, "reason": "gone"}` when no item has that number AND heading (heading changed, number deleted, or file missing): nothing written, file byte-for-byte unchanged.
+  - 400 `{"error": "..."}`: body not JSON or not an object; heading, answer or result missing or not a string; a line break (`\n` or `\r`) in heading, answer or result; an empty or blank answer; status not exactly `accepted` or `returned`; `returned` with an empty or blank result. 413 over the body limit. Nothing written in any of these.
+  - File write format: the file is read again inside `_serialized`; only the matched item changes (an open one first if two match; the ``` Format block is never matched). Its `Status:` line becomes `Status: answered` (question) or `Status: accepted` / `Status: returned` (verification); its `Answer:` / `Result:` line becomes `Answer: <answer>` / `Result: <result>` on the same line, as the answered example in `scrum/questions.md` (`Result:` alone when an accepted result is empty); old continuation lines of that field are dropped. A missing `Status:` line is added after the heading, a missing field line after the item's last text line. Answer and result are written as typed (not trimmed). Every other byte stays; each line keeps its own line end, added lines take CRLF when the file has any CRLF (so a CRLF file stays CRLF on every line). The file is replaced through `<file>.tmp` and a rename; no temp stays.
+- HTTP writes landed (task 14): `scrum/scrumboard/lib/src/api/scrumboard_api.dart`. `HttpScrumBoardApi.answerQuestion(number, heading, answer)` and `setVerificationResult(number, heading, result, status)` send the PUTs above and return `(ok, reason)`; a 400 throws `ScrumBoardApiException` with statusCode 400 and the server's error as `reason`, as `FakeScrumBoardApi` does; unreachable throws `ScrumBoardUnreachableException`. `boardWritesNotAvailable` is removed (nothing else used it).
+- Tests: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test test/server test/api` -> +117: All tests passed!; `flutter test` -> +240: All tests passed!
+
+## 2026-11-24 Day 3 Ito
+- task 15 landed (PBI-125): `scrum/scrumboard/lib/src/questions/questions_column.dart`, tests in `scrum/scrumboard/test/questions/questions_column_test.dart`. Widget keys for task 17a/17b checks: `scb-choice-<kind>-<n>-<i>`, `scb-answer-field-<id>`, `scb-answered-<id>`, `scb-result-field-<id>`, `scb-accepted-<id>`, `scb-returned-<id>`, `scb-questions-notice` (id = `<kind>-<number>`).
+- Picking a choice writes at once (no second press), as SCB-17.b reads ("picking a choice writes that choice line"). Answered is disabled while the typed text is blank; Accepted is always enabled (an empty result is allowed).
+- Task 6b: no token asked (existing tokens only; the hint wraps up to three lines instead of being cut, DEF-01).
+- For Suzuki / Yamamoto (next sprint, not this one): a refused write (400) shows only the server's reason, since no key says "write refused"; `scbLoadFailed` says "could not read" and `scbMoveRefused` says "move", neither fits. An unreachable server uses msg:scbServerUnreachable.
+- Check: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test` -> +240: All tests passed!
+
+## 2026-11-24 Day 3 Tanaka
+- Task 14b done: `scrum/scrumboard/README.md` API table has the two write routes (bodies, `{ok, reason}`, `gone`, 400s, 413, line endings kept) and the missing `PUT /api/requirements/{id}/status`, `POST /api/requirements/{id}/retire` and `GET /api/changes` rows (Kobayashi Day 2 finding 4); "server writes" lists every file the server writes. For Nakamura (task 17b): the README is ready for the Windows and web check of the routes.
+- Task 6b wave 2: none asked (Ito Day 3); `scrum_theme.dart` unchanged. Task 6b done.
+
+## 2026-11-24 Day 3 Tanaka (16b)
+- PBI-125 -> 47 (`scrum/verifications.md`), for Takahashi: set PBI-125 In Review with its acceptance field ending "waits for verification 47 (`scrum/verifications.md`)". The Windows and web check is ready only after task 17b (Kobayashi Day 2 finding 2, Day 3 task 16 review).
+
+## 2026-11-24 Day 3 Suzuki
+- Decisions on Kobayashi's Day 3 task 16 review (`kobayashi_code_review.md`, "Day 3: task 16 review (wave 2)"), for Takahashi:
+  - Finding 1 (refused write shows the server's English reason alone): yes, a backlog item, next sprint, not this one. Reason: every line the board shows must come from a key (the load error already wraps its reason in msg:scbLoadFailed); a raw reason breaks that in five languages. Takahashi adds to `scrum/product_backlog.csv`: title "ScrumBoard Questions column wraps a refused write in a message key"; acceptance: a new key msg:scbWriteRefused (English "Nothing was written: {reason}") in all six languages; the Questions and Verifications column shows it with the server's reason as `{reason}` for a 400; a 413; a 500 and any `ok: false` other than `gone`; `gone` keeps msg:scbItemGone and an unreachable server keeps msg:scbServerUnreachable; the item stays open with its controls; one widget test each for a 400 and an `ok: false` reason checked against the English key text; rewrites SCB-17.b; no clipping at the DEF-01 window sizes; light and dark; priority Low; size 1; Ready.
+  - Finding 2 (picking a choice writes at once): confirmed as built, no backlog item. Reason: SCB-17.b says picking a choice writes that choice line; one press is the point of the board; a mis-tap is still readable on the board (the item stays listed answered) and the Executive can correct it in chat before an agent acts on it.
+  - Finding 3 (Answered disabled while the typed text is blank): accepted. Reason: it matches the server's 400 for a blank answer and the Returned rule. Takahashi adds it to the SCB-17.b statement in `requirements/scrumboard.md` (Answered is disabled while the answer is empty or blank) so the row and the named column test agree; this sprint, since it states what PBI-125 already built.
+- Nothing here needs the Executive's judgment; no question for `scrum/questions.md`.

@@ -97,3 +97,62 @@ No must-fix finding.
 Wave 1 is done as planned and every count reproduces (scrumboard 219, root 596, analyze clean in both). Day 1 findings 1, 3 and 4 are handled.
 
 Task 12b: **PBI-126 is fit to go In Review** (all of its acceptance holds, no code). **PBI-086's read side is fit to go In Review** on its own acceptance (one read route, both files in the stamp, heading key in six languages, open items newest first with the PBI on each verification, generic bar with Features tests passing, empty state, own scrollbar, no write route, named tests, fixtures from the real files, theme tokens only, DEF-01 light and dark), with finding 2 taken into its verification. Finding 1 is for wave 2.
+
+## Day 3: task 16 review (wave 2)
+
+Scope: the uncommitted wave 2 diff since commit 45d79d9: tasks 13 and 14 (Nakamura: `lib/server/server.dart`, untracked `lib/server/board_item_write.dart`, `lib/src/api/scrumboard_api.dart`, `test/server/server_test.dart`, `test/api/board_items_api_test.dart`), 15 (Ito: `lib/src/questions/questions_column.dart`, `test/questions/questions_column_test.dart`), 14b and 6b (Tanaka: `README.md`, no token), and the Day 3 sections of `daily_scrum.md` and `handoffs.md`; checked against `sprint_backlog.md` (Fixed names, Keys, Named tests, Docs and platforms), SCB-17.b, SCB-13.b and SCB-01.a in `requirements/scrumboard.md`, the Format sections of `scrum/questions.md` and `scrum/verifications.md`, and `scrum/definition_of_done.md`. Paths under `scrum/scrumboard/` unless rooted.
+
+### Commands and counts (run independently by Kobayashi)
+
+| Where | Command | Kobayashi | `daily_scrum.md` Day 3 |
+|---|---|---|---|
+| `scrum/scrumboard` | `flutter analyze lib test` | No issues found (exit 0) | Nakamura, Ito, Tanaka: No issues found |
+| `scrum/scrumboard` | `flutter test` | +240: All tests passed (exit 0) | Nakamura, Ito, Tanaka +240 |
+| `scrum/scrumboard` | `flutter test test/server test/api` | +117 | Nakamura +117 |
+| `scrum/scrumboard` | `flutter test test/questions` | +20 | Ito +20 |
+| root | `flutter analyze lib test` | No issues found (exit 0) | Tanaka: No issues found |
+| root | `flutter test` | +596: All tests passed (exit 0) | Tanaka +596 |
+
+Every claimed count reproduces. 219 (Day 2) + 13 server and API (104 to 117) + 8 column (12 to 20) = 240. Nakamura's note of 2 failures in a first full run (Ito's tests still being written) does not reproduce.
+
+### Day 2 findings
+
+- 1 (Ito): handled on Day 2 (read counter; tests for a slow earlier read and for a new `api`).
+- 2 (Tanaka, Nakamura): handled for PBI-086 (verification 46 names task 17b); the same applies to PBI-125 in 16b.
+- 4 (Tanaka): handled by 14b (below).
+- 5 (Takahashi): still open, now for wave 2 too (finding 5).
+- 6 (nobody): still open (finding 6).
+
+### What was checked and holds
+
+- Routes (task 13) match the Fixed names: `PUT /api/questions/{n}/answer` with `{heading, answer}` and `PUT /api/verifications/{n}/result` with `{heading, result, status}`; `{n}` is 1 to 9 digits; any other verb or path is 404. The body is checked before the write (`answerRefusal`, `resultRefusal`): non-JSON, non-object, missing or non-string field, `\n` or `\r` in heading, answer or result, blank answer, a status other than exactly `accepted` or `returned`, `returned` with a blank result, all 400; over the limit 413. The write runs inside `_serialized` and reads the file again; it matches number AND heading (heading trimmed as `board_items.dart` trims it, so the heading the GET gave matches), skips the ``` Format block, and with no match or no file answers `{ok: false, reason: "gone"}` without touching the file. Only the matched item's `Status:` and `Answer:` / `Result:` lines change; lines are split with their own ends and joined back, so every other byte stays; an added line takes CRLF when the file has any CRLF. The file is replaced through `<file>.tmp` and a rename, as `sprint_file.dart` and `requirement_status.dart` already do.
+- Write format fits the Format blocks: a question becomes `Status: answered` / `Answer: <text>`, a verification `Status: accepted` or `Status: returned` / `Result: <text>` (`Result:` alone for an empty accept). Those are exactly the statuses `scrum/questions.md` and `scrum/verifications.md` tell agents to act on, and the reader (`board_items.dart`) reads the answer back from the same line (a server test reads it back through `GET /api/questions`). An agent can act on a board write as on a hand-written one.
+- Client (task 14): `answerQuestion` and `setVerificationResult` send `PUT` with a JSON body to the fixed paths and return `(ok, reason)`; a 400 throws `ScrumBoardApiException` with statusCode 400 and the server's reason, as the fake does (tested side by side). `boardWritesNotAvailable` is removed and used nowhere.
+- Named tests, each found and read:
+  - SCB-17.b server (8): answer (whole-file expected text, read back through GET); accept with an empty result and return with a result (whole-file expected text); gone on a changed heading, both files byte-for-byte unchanged; gone on a missing number in a CRLF file with no final line end, byte-for-byte unchanged, and a missing file stays missing; a numbered heading inside the Format fence is never written; 20 refused bodies, all 400, both files unchanged; CRLF on every line after three writes, including an added `Answer:` line at a file end without a line end (asserts no lone `\n` and no lone `\r`); a real fixture copy changes only its item.
+  - SCB-13.b: the three routes answer; GET, POST, DELETE and PATCH on both write routes and six wrong paths are 404.
+  - SCB-01.a: a snapshot of the whole test repository shows each write changes only `scrum/questions.md` or `scrum/verifications.md` (so no `.tmp` stays); the process scan now asserts it saw `board_item_write.dart`.
+  - SCB-17.b column (6): answer by choice writes the trimmed choice line, letter included, then reads again; typed text is written as typed (trailing space kept), Answered disabled while empty and while blank; Returned disabled while the result is empty and while blank, then writes `returned`; Accepted with an empty result writes `accepted` and the other open verification keeps its controls; gone shows msg:scbItemGone (checked against the English key text) and reads again, for a changed heading and for a deleted item; a 400 and an unreachable server are shown, no exception, the item stays open with its controls. After each successful write the item stays listed with its new status and no field or button inside it (`_listedWithoutControls`).
+  - DEF-01: once light and once dark, 1024 x 640, longest language (now also over `scbAnswerHint` and `scbResultHint`): every answer control of an open question (field, Answered, both choices) and of an open verification (field, Accepted, Returned) lies inside its item, and no label or hint exceeds its lines.
+- Theme tokens only: the new code uses `scrumPartGap`, `scrumPagePadding`, `scrumErrorPadding` and `theme.colorScheme.*` / `textTheme.*`; no color, size or font literal. `_hintLines = 3` is a line count, not a theme value. Task 6b: no token asked; `lib/src/theme` and `lib/main.dart` unchanged since 45d79d9.
+- Keys: the six keys task 15 uses (`scbAnswered`, `scbAccepted`, `scbReturned`, `scbItemGone`, `scbAnswerHint`, `scbResultHint`) come from the Keys table; Yamamoto's Day 3 check holds.
+- README (14b) checked line by line against `server.dart` and `board_item_write.dart`: route rows and bodies, `{n}` 1 to 9 digits, 404 for others, the 200 written and gone answers, every 400 case, 413, "nothing is written", "an open one first when two match", `Result:` alone, continuation lines dropped, where a missing line goes, not trimmed, line ends, `<file>.tmp` and rename. The "server writes" list matches the four write paths in `server.dart`; the status, retire and changes rows match `requirement_status.dart`, `requirement_retire.dart` and `_changeStamp`. Day 2 finding 4 is closed.
+
+### Findings
+
+1. **should (Suzuki decides; Yamamoto, next sprint)**: a refused write shows the server's English reason alone (`_notice = e.reason`, and `result.reason` for any `ok: false` other than `gone`), so that line is not from an `.arb` file. Today the UI blocks every 400 a user can cause (blank answer, blank returned result; a single-line field drops `\n`), so it shows only on rare paths: a pasted `\r`, a 500 (`internal error`, for example a file Windows will not let the rename replace), a 413. Ito flagged it in `handoffs.md`. Not blocking: the load error already passes the server's reason through a key placeholder (msg:scbLoadFailed). Make it a backlog item: one key such as "Nothing was written: {reason}" in six languages, used for both cases.
+2. **note (Suzuki, open point)**: Ito's "picking a choice writes at once" (no second press) is how SCB-17.b reads ("picking a choice writes that choice line"), but a mis-tap answers with no undo on the board. Suzuki confirms the reading or asks for a confirm step as a backlog item.
+3. **note (Suzuki, open point)**: "Answered is disabled while the typed text is blank" is not stated in SCB-17.b; it matches the server's 400 and the Returned rule. Recommend Suzuki accepts it and Takahashi adds it to the SCB-17.b statement so the row and the test agree.
+4. **note (Nakamura)**: the writer and the reader disagree on where an old answer ends. The writer drops continuation lines up to a blank line or a `Word:` line; the reader (`board_items.dart`) keeps reading the answer across blank lines and unknown `Word:` lines. So an open item that already holds a multi-line answer with a blank line or a "Note:" line in it keeps that tail, and the board shows it after the new answer. Also a write to an item no longer open (two tabs, within the 2 s sync) overwrites the earlier answer, as the plan's "number AND heading" allows. Real files following the Format never hit either; no action this sprint, worth a server test if the Format changes.
+5. **note (Takahashi)**: `sprint_backlog.md` still shows tasks 13, 14, 14b, 15 "to do" and 6b "wave 2 to do"; `daily_scrum.md` and `handoffs.md` report them done. The SCB-01.a test cell names only the process scan; the new "writes change only the two files" test is in the same file.
+6. **note (nobody; Takahashi at commit)**: root `devtools_options.yaml` is still untracked (Day 1 finding 6). Root `AGENTS.md` is also changed in the working tree (the Start rule's trigger words) by no wave 2 task; it must not go into the wave 2 commit unless its author (presumably the Executive) says so. Add files by name.
+7. **note (Ito)**: the notice line stays after a `gone` until the next write, even after the board has reloaded many times. Harmless; clearing it on the next successful read would be tidier.
+8. **note (Nakamura)**: `handoffs.md` says the answer goes on one line "as the answered example in `scrum/questions.md`"; that file has no answered example (its Format block shows `Answer:` empty). The behavior is right; the reference is not.
+
+No must-fix finding.
+
+### Verdict
+
+Wave 2 is done as planned: every fixed name, route behavior, refusal, line-ending rule, key and named test exists, asserts what its name says, and passes; the README matches the server; the counts reproduce (scrumboard 240, root 596, analyze clean in both). The write format is the one both files' Format sections tell agents to act on.
+
+**PBI-125 is fit to go In Review** on its own acceptance, with its verification (16b) saying, as verification 46 does, that the Windows and web check (line endings kept with the file open in an editor; the three buttons write in the browser) is ready only after task 17b. Suzuki decides open points 2 and 3; finding 1 goes to the backlog.

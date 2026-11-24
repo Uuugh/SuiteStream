@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scrumboard/server/board_items.dart';
 import 'package:scrumboard/src/api/reload_scope.dart';
@@ -100,7 +101,38 @@ class _GatedApi extends FakeScrumBoardApi {
   }
 }
 
+/// Every write throws [failure] (a 400 or an unreachable server); reads work.
+class _FailingWritesApi extends FakeScrumBoardApi {
+  _FailingWritesApi(this.failure, {super.questionList, super.verificationList});
+
+  final Exception failure;
+
+  @override
+  Future<({bool ok, String reason})> answerQuestion(int number, String heading, String answer) async => throw failure;
+
+  @override
+  Future<({bool ok, String reason})> setVerificationResult(int number, String heading, String result, String status) async =>
+      throw failure;
+}
+
 Finder _inColumn(Finder f) => find.descendant(of: find.byKey(_column), matching: f);
+
+Finder _k(String key) => find.byKey(ValueKey(key));
+
+bool _enabled(WidgetTester t, String key) => t.widget<ButtonStyleButton>(_k(key)).onPressed != null;
+
+String? _status(WidgetTester t, String id) => t.widget<Text>(_k('scb-item-status-$id')).data;
+
+/// SCB-17.b: the item is listed and has no answer controls.
+void _listedWithoutControls(String id) {
+  expect(_k('scb-item-$id'), findsOneWidget, reason: 'stays listed');
+  for (final k in ['answer-field', 'answered', 'result-field', 'accepted', 'returned']) {
+    expect(_k('scb-$k-$id'), findsNothing, reason: k);
+  }
+  expect(_k('scb-choice-$id-0'), findsNothing);
+  expect(find.descendant(of: _k('scb-item-$id'), matching: find.byType(TextField)), findsNothing);
+  expect(find.descendant(of: _k('scb-item-$id'), matching: find.byType(ButtonStyleButton)), findsNothing);
+}
 
 void main() {
   testWidgets('SCB-17 SCB-15.a the heading is msg:scbQuestions, text only, in the third column', (t) async {
@@ -275,7 +307,8 @@ void main() {
     expect(t.widget(find.byKey(const ValueKey('scb-questions-scrollbar'))), isA<Scrollbar>());
     final top = t.getRect(find.byKey(const ValueKey('scbRowTop')));
     final column = t.getRect(find.byKey(_column));
-    final position = t.state<ScrollableState>(find.descendant(of: list, matching: find.byType(Scrollable))).position;
+    // The list's own Scrollable comes first; the answer fields hold their own.
+    final position = t.state<ScrollableState>(find.descendant(of: list, matching: find.byType(Scrollable)).first).position;
     expect(position.maxScrollExtent, greaterThan(0), reason: 'more items than fit');
     await t.drag(list, const Offset(0, -300));
     await t.pumpAndSettle();
@@ -286,14 +319,150 @@ void main() {
     expect(find.byType(SingleChildScrollView), findsNothing);
   });
 
+  testWidgets('SCB-17.b answer by choice writes the choice line (trimmed, letter included); '
+      'the item stays listed, answered, with no answer controls', (t) async {
+    final question = _q(1, 'open', choices: ['  a) Yes, keep them. (recommended)  ', 'b) No.']);
+    final api = FakeScrumBoardApi(questionList: [question]);
+    await _pump(t, api);
+    const id = 'question-1';
+    expect(_k('scb-answer-field-$id'), findsOneWidget);
+    expect(find.descendant(of: _k('scb-answer-field-$id'), matching: find.text('Your answer')), findsOneWidget);
+    expect(find.descendant(of: _k('scb-answered-$id'), matching: find.text('Answered')), findsOneWidget);
+    final reads = api.calls['boardItems']!;
+    await t.tap(_k('scb-choice-$id-0'));
+    await t.pumpAndSettle();
+    expect(api.answerCalls.single, (number: 1, heading: question.heading, answer: 'a) Yes, keep them. (recommended)'));
+    expect(api.calls['boardItems'], reads + 1, reason: 'reads again after the write');
+    expect(_status(t, id), 'Answered');
+    expect(t.widget<Text>(_k('scb-item-answer-$id')).data, 'a) Yes, keep them. (recommended)');
+    _listedWithoutControls(id);
+    // The choice lines are still shown, as text.
+    expect(find.text('b) No.'), findsOneWidget);
+    expect(_k('scb-questions-notice'), findsNothing);
+  });
+
+  testWidgets('SCB-17.b typed text is written as typed with Answered; Answered waits for text', (t) async {
+    final question = _q(2, 'open', choices: ['a) Yes.', 'b) No.']);
+    final api = FakeScrumBoardApi(questionList: [question]);
+    await _pump(t, api);
+    const id = 'question-2';
+    expect(_enabled(t, 'scb-answered-$id'), isFalse, reason: 'empty');
+    await t.enterText(_k('scb-answer-field-$id'), '   ');
+    await t.pump();
+    expect(_enabled(t, 'scb-answered-$id'), isFalse, reason: 'blank');
+    await t.enterText(_k('scb-answer-field-$id'), 'b, but only after Sprint 016 ');
+    await t.pump();
+    expect(_enabled(t, 'scb-answered-$id'), isTrue);
+    await t.tap(_k('scb-answered-$id'));
+    await t.pumpAndSettle();
+    expect(api.answerCalls.single, (number: 2, heading: question.heading, answer: 'b, but only after Sprint 016 '));
+    expect(_status(t, id), 'Answered');
+    _listedWithoutControls(id);
+  });
+
+  testWidgets('SCB-17.b an open verification: Returned is disabled while the result is empty; '
+      'Returned writes the result and status returned', (t) async {
+    final verification = _v(7, 'PBI-125', 'open');
+    final api = FakeScrumBoardApi(verificationList: [verification]);
+    await _pump(t, api);
+    const id = 'verification-7';
+    expect(find.descendant(of: _k('scb-result-field-$id'), matching: find.text('Result (required to return)')), findsOneWidget);
+    expect(find.descendant(of: _k('scb-accepted-$id'), matching: find.text('Accepted')), findsOneWidget);
+    expect(find.descendant(of: _k('scb-returned-$id'), matching: find.text('Returned')), findsOneWidget);
+    expect(_enabled(t, 'scb-returned-$id'), isFalse, reason: 'empty result');
+    expect(_enabled(t, 'scb-accepted-$id'), isTrue);
+    await t.enterText(_k('scb-result-field-$id'), '  ');
+    await t.pump();
+    expect(_enabled(t, 'scb-returned-$id'), isFalse, reason: 'blank result');
+    await t.enterText(_k('scb-result-field-$id'), 'The badge still shows in dark');
+    await t.pump();
+    expect(_enabled(t, 'scb-returned-$id'), isTrue);
+    await t.tap(_k('scb-returned-$id'));
+    await t.pumpAndSettle();
+    expect(api.resultCalls.single,
+        (number: 7, heading: verification.heading, result: 'The badge still shows in dark', status: 'returned'));
+    expect(_status(t, id), 'Returned');
+    expect(t.widget<Text>(_k('scb-item-answer-$id')).data, 'The badge still shows in dark');
+    _listedWithoutControls(id);
+  });
+
+  testWidgets('SCB-17.b Accepted writes the result (may be empty) and status accepted; '
+      'the item stays listed with no controls', (t) async {
+    final verification = _v(8, 'PBI-086', 'open');
+    final other = _v(9, 'PBI-126', 'open');
+    final api = FakeScrumBoardApi(verificationList: [other, verification]);
+    await _pump(t, api);
+    await t.tap(_k('scb-accepted-verification-8'));
+    await t.pumpAndSettle();
+    expect(api.resultCalls.single, (number: 8, heading: verification.heading, result: '', status: 'accepted'));
+    expect(_status(t, 'verification-8'), 'Accepted');
+    _listedWithoutControls('verification-8');
+    // The other open verification keeps its controls.
+    expect(_k('scb-accepted-verification-9'), findsOneWidget);
+  });
+
+  testWidgets('SCB-17.b gone: the column says msg:scbItemGone and reads again', (t) async {
+    final question = _q(3, 'open');
+    final verification = _v(4, 'PBI-125', 'open');
+    final api = FakeScrumBoardApi(questionList: [question], verificationList: [verification]);
+    await _pump(t, api);
+    // An agent changes the question's heading under the same number.
+    const changed = BoardItem(
+        kind: BoardItem.question, number: 3, heading: 'Ito, Sprint 015 A new title', status: 'open', text: 'New text');
+    api.questionList = [changed];
+    await t.enterText(_k('scb-answer-field-question-3'), 'Yes');
+    await t.pump();
+    final reads = api.calls['boardItems']!;
+    await t.tap(_k('scb-answered-question-3'));
+    await t.pumpAndSettle();
+    expect(api.answerCalls.single.heading, question.heading, reason: 'sent the heading it showed');
+    expect(t.widget<Text>(_inColumn(_k('scb-questions-notice'))).data,
+        'An agent removed this item meanwhile; nothing was written');
+    expect(api.calls['boardItems'], reads + 1, reason: 'reads again');
+    expect(find.text('Ito, Sprint 015 A new title'), findsOneWidget);
+    expect(_status(t, 'question-3'), 'Open', reason: 'nothing was written');
+    // An agent deletes the verification.
+    api.verificationList = [];
+    await t.tap(_k('scb-accepted-verification-4'));
+    await t.pumpAndSettle();
+    expect(api.resultCalls.single.number, 4);
+    expect(find.text('An agent removed this item meanwhile; nothing was written'), findsOneWidget);
+    expect(_k('scb-item-verification-4'), findsNothing);
+  });
+
+  testWidgets('SCB-17.b a refused write (400) or an unreachable server is shown; nothing crashes, the item stays open',
+      (t) async {
+    final verification = _v(5, 'PBI-125', 'open');
+    final api = _FailingWritesApi(const ScrumBoardApiException('the result has a line break', statusCode: 400),
+        verificationList: [verification]);
+    await _pump(t, api);
+    await t.enterText(_k('scb-result-field-verification-5'), 'Fails');
+    await t.pump();
+    await t.tap(_k('scb-returned-verification-5'));
+    await t.pumpAndSettle();
+    expect(t.takeException(), isNull);
+    expect(t.widget<Text>(_k('scb-questions-notice')).data, 'the result has a line break');
+    expect(_status(t, 'verification-5'), 'Open');
+    expect(_enabled(t, 'scb-returned-verification-5'), isTrue, reason: 'controls back, text kept');
+
+    final question = _q(6, 'open', choices: ['a) Yes.']);
+    await _pump(t, _FailingWritesApi(const ScrumBoardUnreachableException('connection refused'), questionList: [question]));
+    await t.tap(_k('scb-choice-question-6-0'));
+    await t.pumpAndSettle();
+    expect(t.takeException(), isNull);
+    expect(t.widget<Text>(_k('scb-questions-notice')).data, 'The ScrumBoard server cannot be reached: connection refused');
+    expect(_k('scb-answer-field-question-6'), findsOneWidget);
+  });
+
   // DEF-01: the narrowest ScrumBoard window size; the language whose column
   // words are longest; light and dark.
   for (final b in Brightness.values) {
-    testWidgets('DEF-01 SCB-15.c an open question and an open verification do not clip at 1024 x 640 '
-        'in the longest language (${b.name})', (t) async {
+    testWidgets('DEF-01 SCB-15.c SCB-17.b an open question with its answer controls and an open verification '
+        '(result field, Accepted, Returned) do not clip at 1024 x 640 in the longest language (${b.name})', (t) async {
       const keys = [
         'scbQuestions', 'scbNoQuestions', 'scbKindQuestion', 'scbKindVerification', 'scbStatusOpen', //
         'scbAnswered', 'scbAccepted', 'scbReturned', 'scbFilterKind', 'scbFilterItem', 'scbFilterStatus',
+        'scbAnswerHint', 'scbResultHint',
       ];
       var longest = 'en';
       var most = 0;
@@ -341,6 +510,24 @@ void main() {
         }
         if (shown.pbi != null) {
           expect(t.getRect(find.byKey(ValueKey('scb-item-pbi-$id'))).right, lessThanOrEqualTo(item.right + 0.01));
+        }
+        // SCB-17.b: the answer controls sit inside the item, each fully.
+        final controls = shown.kind == BoardItem.question
+            ? ['scb-answer-field-$id', 'scb-answered-$id', 'scb-choice-$id-0', 'scb-choice-$id-1']
+            : ['scb-result-field-$id', 'scb-accepted-$id', 'scb-returned-$id'];
+        for (final k in controls) {
+          expect(find.byKey(ValueKey(k)), findsOneWidget, reason: k);
+          final r = t.getRect(find.byKey(ValueKey(k)));
+          expect(r.left, greaterThanOrEqualTo(item.left - 0.01), reason: k);
+          expect(r.right, lessThanOrEqualTo(item.right + 0.01), reason: k);
+          expect(r.bottom, lessThanOrEqualTo(item.bottom + 0.01), reason: k);
+          expect(r.width, greaterThan(0), reason: k);
+          // Each label and hint is laid out at its full width, not cut.
+          for (final text in find.descendant(of: find.byKey(ValueKey(k)), matching: find.byType(Text)).evaluate()) {
+            final p = text.renderObject! as RenderParagraph;
+            expect(p.didExceedMaxLines, isFalse, reason: '$k ${(text.widget as Text).data}');
+            expect(t.getRect(find.byWidget(text.widget)).right, lessThanOrEqualTo(r.right + 0.01), reason: k);
+          }
         }
         final heading = t.getRect(_inColumn(find.byKey(const ValueKey('scb-questions-heading'))));
         expect(heading.right, lessThanOrEqualTo(column.right + 0.01));

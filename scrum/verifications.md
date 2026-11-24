@@ -256,3 +256,8 @@ Result:
 Status: open
 Verify: On the board, light and dark, hard refresh, at the DEF-01 window sizes: the third column of the bottom row is headed Questions and Verifications (SCB-17, SCB-15.a); it lists open questions, then open verifications, then answered or closed items, newest first within each (SCB-17.c); each verification shows the PBI it waits for (SCB-17.a); the filter bar hides by kind, by number or PBI and by status (SCB-04); with no items it shows the empty state; with more items than fit, the column's own scrollbar scrolls and the page does not (SCB-17.d); a change to either file shows without a reload (SCB-22); nothing clips. The Windows and web check is ready only after task 17b (wave 3, web build and Windows server).
 Result:
+
+## 47. PBI-125 Questions and Verifications column writes
+Status: open
+Verify: On the board, light and dark, hard refresh, at the DEF-01 window sizes: answer an open question once by picking a choice and once by typed text (Answered disabled while the text is empty), accept one verification, and return one with a result (Returned disabled while the result is empty) (SCB-17.b); after each write the item stays listed with its new status and no answer controls; `scrum/questions.md` and `scrum/verifications.md` on disk show the item's `Status:` and `Answer:` or `Result:` lines, with every other line and the line endings unchanged (SCB-01.a, SCB-13.b); change or delete an item in the file, then write to it on the board: the board shows the item was removed meanwhile (msg:scbItemGone) and the file is not written; nothing clips. The Windows and web check is ready only after task 17b (wave 3, web build and Windows server).
+Result:

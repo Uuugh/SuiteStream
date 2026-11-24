@@ -96,10 +96,6 @@ abstract class ScrumBoardApi {
   );
 }
 
-/// The reason [HttpScrumBoardApi] gives for a write the server does not take
-/// yet (Sprint 015 task 14 adds the client side of the write routes).
-const String boardWritesNotAvailable = 'writes are not available yet';
-
 /// Talks to the server over HTTP. [baseUri] is the page's own origin in the
 /// browser (`Uri.base`), so no host or port is written in code.
 class HttpScrumBoardApi implements ScrumBoardApi {
@@ -193,13 +189,15 @@ class HttpScrumBoardApi implements ScrumBoardApi {
     return (questions: list('questions'), verifications: list('verifications'));
   }
 
-  // Until task 14 the client does not call the write routes.
   @override
   Future<({bool ok, String reason})> answerQuestion(
     int number,
     String heading,
     String answer,
-  ) async => (ok: false, reason: boardWritesNotAvailable);
+  ) => _write(
+    '/api/questions/$number/answer',
+    {'heading': heading, 'answer': answer},
+  );
 
   @override
   Future<({bool ok, String reason})> setVerificationResult(
@@ -207,7 +205,22 @@ class HttpScrumBoardApi implements ScrumBoardApi {
     String heading,
     String result,
     String status,
-  ) async => (ok: false, reason: boardWritesNotAvailable);
+  ) => _write(
+    '/api/verifications/$number/result',
+    {'heading': heading, 'result': result, 'status': status},
+  );
+
+  /// A `PUT` that answers `{ok, reason}` (SCB-17.b); a 400 throws
+  /// [ScrumBoardApiException] with statusCode 400.
+  Future<({bool ok, String reason})> _write(
+    String path,
+    Map<String, String> body,
+  ) async {
+    final json =
+        await _send('PUT', path, body: jsonEncode(body))
+            as Map<String, dynamic>;
+    return (ok: json['ok'] == true, reason: (json['reason'] ?? '').toString());
+  }
 
   Future<({bool ok, String output, String reason})> _script(String path) async {
     final json = await _send('GET', path) as Map<String, dynamic>;

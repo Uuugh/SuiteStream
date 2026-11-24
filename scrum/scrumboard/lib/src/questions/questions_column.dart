@@ -9,6 +9,13 @@ import 'package:scrumboard/src/theme/scrum_theme.dart';
 /// The status of an item that waits for the Executive (SCB-17.c).
 const String _open = 'open';
 
+/// SCB-17.b: the reason of a write whose item an agent changed or deleted.
+const String _gone = 'gone';
+
+/// DEF-01: a hint wraps rather than being cut in a narrow column or a long
+/// language.
+const int _hintLines = 3;
+
 String _itemKind(BoardItem i) => i.kind;
 
 /// Numbers repeat across the two files, so kind and number together identify
@@ -82,6 +89,16 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
 
   final ScrollController _scroll = ScrollController();
 
+  // SCB-17.b: the answer or result typed under each open item, by item id.
+  final Map<String, TextEditingController> _typed = {};
+
+  // SCB-17.b: the items whose write is on its way; their controls wait.
+  final Set<String> _writing = {};
+
+  // SCB-17.b: what the last write said when it wrote nothing
+  // (msg:scbItemGone, a refusal or an unreachable server).
+  String? _notice;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -103,6 +120,9 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
   @override
   void dispose() {
     _scroll.dispose();
+    for (final c in _typed.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -120,6 +140,7 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
         _all = questionColumnOrder(lists.questions, lists.verifications);
         _error = null;
         _loading = false;
+        _dropClosedFields();
       });
     } on ScrumBoardUnreachableException catch (e) {
       if (read == _reads) _fail(m('scbServerUnreachable', {'reason': e.reason}));
@@ -127,6 +148,61 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
       if (read == _reads) _fail(m('scbLoadFailed', {'reason': e.reason}));
     }
   }
+
+  /// Drops the typed text of every item that is no longer open (answered,
+  /// accepted, returned or gone).
+  void _dropClosedFields() {
+    final open = {for (final i in _all) if (i.status == _open) _itemId(i)};
+    _typed.removeWhere((id, c) {
+      if (open.contains(id)) return false;
+      c.dispose();
+      return true;
+    });
+  }
+
+  TextEditingController _field(String id) => _typed.putIfAbsent(id, TextEditingController.new);
+
+  /// SCB-17.b: writes one answer or result through [write]. `ok` reads the
+  /// column again, so the item stays listed with its new status; `gone`
+  /// says msg:scbItemGone and reads again; a refusal (400) or an unreachable
+  /// server is shown and nothing else changes.
+  Future<void> _write(BoardItem item, Future<({bool ok, String reason})> Function() write) async {
+    final m = context.msg;
+    final id = _itemId(item);
+    setState(() {
+      _writing.add(id);
+      _notice = null;
+    });
+    String? notice;
+    var reload = false;
+    try {
+      final result = await write();
+      if (result.ok) {
+        reload = true;
+      } else if (result.reason == _gone) {
+        notice = m('scbItemGone');
+        reload = true;
+      } else {
+        notice = result.reason;
+      }
+    } on ScrumBoardUnreachableException catch (e) {
+      notice = m('scbServerUnreachable', {'reason': e.reason});
+    } on ScrumBoardApiException catch (e) {
+      notice = e.reason;
+    }
+    if (!mounted) return;
+    setState(() {
+      _writing.remove(id);
+      _notice = notice;
+    });
+    if (reload) await _load();
+  }
+
+  void _answer(BoardItem item, String answer) =>
+      _write(item, () => widget.api.answerQuestion(item.number, item.heading, answer));
+
+  void _result(BoardItem item, String status) => _write(
+      item, () => widget.api.setVerificationResult(item.number, item.heading, _field(_itemId(item)).text, status));
 
   void _fail(String text) {
     if (!mounted) return;
@@ -155,6 +231,13 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
           hidden: _hidden,
           onChanged: (h) => setState(() => _hidden = h),
         ),
+        // SCB-17.b: what the last write said when it wrote nothing.
+        if (_notice != null)
+          Padding(
+            padding: const EdgeInsets.all(scrumErrorPadding),
+            child: Text(_notice!,
+                key: const ValueKey('scb-questions-notice'), style: TextStyle(color: theme.colorScheme.error)),
+          ),
         Expanded(child: _body(m, theme)),
       ],
     );
@@ -194,6 +277,10 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
   Widget _item(Messages m, ThemeData theme, BoardItem item) {
     final id = _itemId(item);
     final pbi = item.pbi;
+    // SCB-17.b: only an open item has answer controls; after a write it
+    // stays listed with its new status and none.
+    final open = item.status == _open;
+    final busy = _writing.contains(id);
     return Container(
       key: ValueKey('scb-item-$id'),
       padding: const EdgeInsets.all(scrumPagePadding),
@@ -229,10 +316,23 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
           ),
           Text(item.heading, style: theme.textTheme.labelMedium),
           if (item.text.isNotEmpty) Text(item.text, style: theme.textTheme.bodySmall),
-          for (final choice in item.choices)
+          for (final (n, choice) in item.choices.indexed)
             Padding(
               padding: const EdgeInsets.only(left: scrumPagePadding),
-              child: Text(choice, style: theme.textTheme.bodySmall),
+              child: open
+                  // SCB-17.b: picking a choice writes that choice line,
+                  // trimmed, its letter included.
+                  ? TextButton(
+                      key: ValueKey('scb-choice-$id-$n'),
+                      style: TextButton.styleFrom(
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(horizontal: scrumPartGap),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: busy ? null : () => _answer(item, choice.trim()),
+                      child: Text(choice, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary)),
+                    )
+                  : Text(choice, style: theme.textTheme.bodySmall),
             ),
           if (item.answer.isNotEmpty)
             Padding(
@@ -241,7 +341,82 @@ class _QuestionsColumnState extends State<QuestionsColumn> {
                   key: ValueKey('scb-item-answer-$id'),
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             ),
+          if (open && item.kind == BoardItem.question) _answerControls(m, item, id, busy),
+          if (open && item.kind == BoardItem.verification) _resultControls(m, item, id, busy),
         ],
+      ),
+    );
+  }
+
+  /// SCB-17.b: under an open question, the answer space (msg:scbAnswerHint)
+  /// with the Answered button (msg:scbAnswered) to its right; typed text is
+  /// written as typed. The button waits for some text.
+  Widget _answerControls(Messages m, BoardItem item, String id, bool busy) {
+    final typed = _field(id);
+    return Padding(
+      padding: const EdgeInsets.only(top: scrumPartGap),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: typed,
+        builder: (context, value, _) => Row(
+          children: [
+            Expanded(
+              child: TextField(
+                key: ValueKey('scb-answer-field-$id'),
+                controller: typed,
+                enabled: !busy,
+                decoration: InputDecoration(hintText: m('scbAnswerHint'), hintMaxLines: _hintLines, isDense: true),
+              ),
+            ),
+            const SizedBox(width: scrumPartGap),
+            FilledButton(
+              key: ValueKey('scb-answered-$id'),
+              onPressed: busy || value.text.trim().isEmpty ? null : () => _answer(item, value.text),
+              child: Text(m('scbAnswered')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// SCB-17.b: under an open verification, the result (msg:scbResultHint)
+  /// with Accepted (msg:scbAccepted) and Returned (msg:scbReturned);
+  /// Returned is disabled while the result is empty.
+  Widget _resultControls(Messages m, BoardItem item, String id, bool busy) {
+    final typed = _field(id);
+    return Padding(
+      padding: const EdgeInsets.only(top: scrumPartGap),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: typed,
+        builder: (context, value, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              key: ValueKey('scb-result-field-$id'),
+              controller: typed,
+              enabled: !busy,
+              decoration: InputDecoration(hintText: m('scbResultHint'), hintMaxLines: _hintLines, isDense: true),
+            ),
+            const SizedBox(height: scrumPartGap),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: scrumPartGap,
+              runSpacing: scrumPartGap,
+              children: [
+                FilledButton(
+                  key: ValueKey('scb-accepted-$id'),
+                  onPressed: busy ? null : () => _result(item, 'accepted'),
+                  child: Text(m('scbAccepted')),
+                ),
+                OutlinedButton(
+                  key: ValueKey('scb-returned-$id'),
+                  onPressed: busy || value.text.trim().isEmpty ? null : () => _result(item, 'returned'),
+                  child: Text(m('scbReturned')),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -180,6 +180,48 @@ void main() {
       }
     });
 
+    test('SCB-13.b the three question routes answer; other verbs and paths '
+        'on them are not found', () async {
+      File('${repo.path}/scrum/questions.md').writeAsStringSync(_questions);
+      File('${repo.path}/scrum/verifications.md')
+          .writeAsStringSync(_verifications);
+      expect((await raw(server, 'GET', '/api/questions')).status, 200);
+      expect(
+        (await raw(server, 'PUT', '/api/questions/1/answer',
+                body: jsonEncode({'heading': _q1, 'answer': 'x'})))
+            .status,
+        200,
+      );
+      expect(
+        (await raw(server, 'PUT', '/api/verifications/2/result',
+                body: jsonEncode(
+                    {'heading': _v2, 'result': '', 'status': 'accepted'})))
+            .status,
+        200,
+      );
+      for (final c in [
+        for (final verb in ['GET', 'POST', 'DELETE', 'PATCH']) ...[
+          (verb, '/api/questions/1/answer'),
+          (verb, '/api/verifications/2/result'),
+        ],
+        ('PUT', '/api/questions/1'),
+        ('PUT', '/api/questions/x/answer'),
+        ('PUT', '/api/questions/1/result'),
+        ('PUT', '/api/verifications/2/answer'),
+        ('PUT', '/api/verifications'),
+        ('GET', '/api/verifications'),
+      ]) {
+        final r = await raw(
+          server,
+          c.$1,
+          c.$2,
+          body: c.$1 == 'GET' ? null : '{}',
+        );
+        expect(r.status, 404, reason: '${c.$1} ${c.$2}');
+        expect(jsonDecode(r.body), {'error': isA<String>()});
+      }
+    });
+
     test('SCB-22 the stamp changes when a watched file changes', () async {
       Future<String> stamp() async => (jsonDecode(
             (await raw(server, 'GET', '/api/changes')).body,
@@ -326,6 +368,250 @@ void main() {
     });
   });
 
+  group('SCB-17.b', () {
+    File qFile() => File('${repo.path}/scrum/questions.md');
+    File vFile() => File('${repo.path}/scrum/verifications.md');
+    Future<({int status, Map<String, dynamic> body})> answer(
+      int n,
+      Object body,
+    ) async {
+      final r = await raw(server, 'PUT', '/api/questions/$n/answer',
+          body: body is String ? body : jsonEncode(body));
+      return (status: r.status, body: jsonDecode(r.body) as Map<String, dynamic>);
+    }
+
+    Future<({int status, Map<String, dynamic> body})> result(
+      int n,
+      Object body,
+    ) async {
+      final r = await raw(server, 'PUT', '/api/verifications/$n/result',
+          body: body is String ? body : jsonEncode(body));
+      return (status: r.status, body: jsonDecode(r.body) as Map<String, dynamic>);
+    }
+
+    setUp(() {
+      qFile().writeAsStringSync(_questions);
+      vFile().writeAsStringSync(_verifications);
+    });
+
+    test('SCB-17.b answer writes "Answer: <text>" and sets answered; only '
+        'that item changes', () async {
+      final r = await answer(1, {'heading': _q1, 'answer': 'a) Narrow. (x)'});
+      expect(r.status, 200);
+      expect(r.body, {'ok': true, 'reason': ''});
+      expect(
+        qFile().readAsStringSync(),
+        _questions.replaceFirst(
+          'Status: open\nQuestion: How wide?\n   a) Narrow. (x)\n'
+              '   b) Wide.\nAnswer:\n',
+          'Status: answered\nQuestion: How wide?\n   a) Narrow. (x)\n'
+              '   b) Wide.\nAnswer: a) Narrow. (x)\n',
+        ),
+      );
+      // Read back through the GET route.
+      final list = jsonDecode((await raw(server, 'GET', '/api/questions')).body)
+          as Map<String, dynamic>;
+      final q1 = (list['questions'] as List<dynamic>)
+          .cast<Map<String, dynamic>>()
+          .firstWhere((q) => q['number'] == 1);
+      expect(q1['status'], 'answered');
+      expect(q1['answer'], 'a) Narrow. (x)');
+    });
+
+    test('SCB-17.b accept (empty result) and return (with result) write '
+        'Result and Status', () async {
+      final a = await result(2, {
+        'heading': _v2,
+        'result': '',
+        'status': 'accepted',
+      });
+      expect(a.body, {'ok': true, 'reason': ''});
+      final r = await result(1, {
+        'heading': _v1,
+        'result': 'Still clips in dark.',
+        'status': 'returned',
+      });
+      expect(r.body, {'ok': true, 'reason': ''});
+      expect(
+        vFile().readAsStringSync(),
+        _verifications
+            .replaceFirst(
+              '## 2. $_v2\nStatus: open\n',
+              '## 2. $_v2\nStatus: accepted\n',
+            )
+            .replaceFirst(
+              '## 1. $_v1\nStatus: open\nVerify: Look.\nResult:\n',
+              '## 1. $_v1\nStatus: returned\nVerify: Look.\n'
+                  'Result: Still clips in dark.\n',
+            ),
+      );
+    });
+
+    test('SCB-17.b gone when the heading on disk changed under the same '
+        'number; the file is byte-for-byte unchanged', () async {
+      final qBefore = qFile().readAsBytesSync();
+      final vBefore = vFile().readAsBytesSync();
+      expect(
+        (await answer(1, {'heading': 'Ito, Sprint 015 Old title', 'answer': 'x'}))
+            .body,
+        {'ok': false, 'reason': 'gone'},
+      );
+      expect(
+        (await result(1, {
+          'heading': 'PBI-001 Old title',
+          'result': 'x',
+          'status': 'accepted',
+        }))
+            .body,
+        {'ok': false, 'reason': 'gone'},
+      );
+      expect(qFile().readAsBytesSync(), qBefore);
+      expect(vFile().readAsBytesSync(), vBefore);
+    });
+
+    test('SCB-17.b gone when the number is no longer in the file; the file '
+        'is byte-for-byte unchanged', () async {
+      // A CRLF file without a final line end, to be strict about bytes.
+      qFile().writeAsStringSync(
+          _questions.replaceAll('\n', '\r\n').trimRight());
+      final qBefore = qFile().readAsBytesSync();
+      final vBefore = vFile().readAsBytesSync();
+      expect((await answer(7, {'heading': _q1, 'answer': 'x'})).body,
+          {'ok': false, 'reason': 'gone'});
+      expect(
+        (await result(9, {'heading': _v1, 'result': '', 'status': 'accepted'}))
+            .body,
+        {'ok': false, 'reason': 'gone'},
+      );
+      expect(qFile().readAsBytesSync(), qBefore);
+      expect(vFile().readAsBytesSync(), vBefore);
+      // No file at all is gone too, and nothing is created.
+      vFile().deleteSync();
+      expect(
+        (await result(1, {'heading': _v1, 'result': '', 'status': 'accepted'}))
+            .body,
+        {'ok': false, 'reason': 'gone'},
+      );
+      expect(vFile().existsSync(), isFalse);
+    });
+
+    test('SCB-17.b a numbered heading inside the ``` Format block is never '
+        'written', () async {
+      qFile().writeAsStringSync(
+        '# Q\n\n```\n## 5. Inside the fence\nStatus: open\nAnswer:\n```\n',
+      );
+      final before = qFile().readAsBytesSync();
+      expect(
+        (await answer(5, {'heading': 'Inside the fence', 'answer': 'x'})).body,
+        {'ok': false, 'reason': 'gone'},
+      );
+      expect(qFile().readAsBytesSync(), before);
+    });
+
+    test('SCB-17.b refuses a line break, an empty answer, returned with no '
+        'result and a bad status (400); nothing is written', () async {
+      final qBefore = qFile().readAsBytesSync();
+      final vBefore = vFile().readAsBytesSync();
+      for (final body in <Object>[
+        {'heading': _q1, 'answer': 'a\nb'},
+        {'heading': _q1, 'answer': 'a\r\nStatus: answered'},
+        {'heading': _q1, 'answer': ''},
+        {'heading': _q1, 'answer': '   '},
+        {'heading': '$_q1\n## 9. x', 'answer': 'a'},
+        {'heading': _q1},
+        {'answer': 'a'},
+        {'heading': _q1, 'answer': 5},
+        'not json',
+        '["heading"]',
+      ]) {
+        final r = await answer(1, body);
+        expect(r.status, 400, reason: '$body');
+        expect(r.body, {'error': isA<String>()});
+      }
+      for (final body in <Object>[
+        {'heading': _v1, 'result': '', 'status': 'returned'},
+        {'heading': _v1, 'result': '  ', 'status': 'returned'},
+        {'heading': _v1, 'result': 'a\nb', 'status': 'accepted'},
+        {'heading': _v1, 'result': 'a\rb', 'status': 'returned'},
+        {'heading': _v1, 'result': 'x', 'status': 'open'},
+        {'heading': _v1, 'result': 'x', 'status': 'answered'},
+        {'heading': _v1, 'result': 'x', 'status': 'Accepted'},
+        {'heading': _v1, 'result': 'x'},
+        {'heading': _v1, 'status': 'accepted'},
+        {'result': 'x', 'status': 'accepted'},
+      ]) {
+        final r = await result(1, body);
+        expect(r.status, 400, reason: '$body');
+        expect(r.body, {'error': isA<String>()});
+      }
+      expect(qFile().readAsBytesSync(), qBefore);
+      expect(vFile().readAsBytesSync(), vBefore);
+    });
+
+    test('SCB-17.b a CRLF file stays CRLF on every line after a write, also '
+        'where a line is added', () async {
+      // Question 3 has no Answer line and no final line end: both are added.
+      qFile().writeAsStringSync(
+        '${_questions.replaceAll('\n', '\r\n')}\r\n'
+        '## 3. Ito, Sprint 015 No answer line\r\nStatus: open\r\n'
+        'Question: Which?',
+      );
+      vFile().writeAsStringSync(_verifications.replaceAll('\n', '\r\n'));
+      expect((await answer(1, {'heading': _q1, 'answer': 'b) Wide.'})).body,
+          {'ok': true, 'reason': ''});
+      expect(
+        (await answer(3, {
+          'heading': 'Ito, Sprint 015 No answer line',
+          'answer': 'Typed — as typed',
+        }))
+            .body,
+        {'ok': true, 'reason': ''},
+      );
+      expect(
+        (await result(2, {'heading': _v2, 'result': 'Ok', 'status': 'accepted'}))
+            .body,
+        {'ok': true, 'reason': ''},
+      );
+      for (final f in [qFile(), vFile()]) {
+        final text = f.readAsStringSync();
+        expect(RegExp(r'(?<!\r)\n').hasMatch(text), isFalse, reason: f.path);
+        expect(RegExp(r'\r(?!\n)').hasMatch(text), isFalse, reason: f.path);
+      }
+      final q = qFile().readAsStringSync();
+      expect(q, contains('Status: answered\r\nQuestion: How wide?'));
+      expect(q, contains('Answer: b) Wide.\r\n'));
+      expect(
+        q,
+        endsWith('Status: answered\r\nQuestion: Which?\r\n'
+            'Answer: Typed — as typed'),
+      );
+      expect(vFile().readAsStringSync(),
+          contains('## 2. $_v2\r\nStatus: accepted\r\nVerify: Check.\r\nResult: Ok\r\n'));
+    });
+
+    test('SCB-17.b answering a real file copy changes only that item',
+        () async {
+      final copy = File('test/server/fixtures/board_items/questions.md')
+          .readAsStringSync()
+          .replaceAll('\r\n', '\n');
+      qFile().writeAsStringSync(copy);
+      const heading = 'Tanaka, Sprint 015 Where the result goes';
+      const choice = 'a) Under "Result:" in the file. (recommended)';
+      expect((await answer(2, {'heading': heading, 'answer': choice})).body,
+          {'ok': true, 'reason': ''});
+      const before = '## 2. $heading\nStatus: open\n';
+      final at = copy.indexOf(before);
+      expect(at, greaterThan(0));
+      final answerAt = copy.indexOf('Answer:\n', at);
+      final expected = '${copy.substring(0, at)}'
+          '## 2. $heading\nStatus: answered\n'
+          '${copy.substring(at + before.length, answerAt)}'
+          'Answer: $choice\n'
+          '${copy.substring(answerAt + 'Answer:\n'.length)}';
+      expect(qFile().readAsStringSync(), expected);
+    });
+  });
+
   group('SCB-13.i', () {
     test('SCB-13.i answers in UTF-8 and keeps ’ — ›', () async {
       final r = await raw(server, 'GET', '/api/requirements');
@@ -366,10 +652,12 @@ void main() {
 
     test('SCB-01.a only usage_script.dart runs a process: bash with the configured script and estimate or trend',
         () {
+      final seen = <String>{};
       for (final f in Directory('lib/server')
           .listSync(recursive: true)
           .whereType<File>()) {
         final text = f.readAsStringSync();
+        seen.add(f.uri.pathSegments.last);
         final runner = f.uri.pathSegments.last == 'usage_script.dart';
         expect(text, isNot(contains('Process.run')), reason: f.path);
         expect(text, isNot(contains('Shell')), reason: f.path);
@@ -384,10 +672,39 @@ void main() {
         expect(text, contains("usageScriptModes = {'estimate', 'trend'}"));
         expect(text, contains('if (!usageScriptModes.contains(mode))'));
       }
+      // The Sprint 015 write routes' files are among those checked.
+      expect(seen, containsAll(['board_item_write.dart', 'board_items.dart']));
       // The server passes only the two fixed modes.
       final server = File('lib/server/server.dart').readAsStringSync();
       final modes = RegExp(r"_usageScript\('(\w+)'\)").allMatches(server).map((m) => m.group(1)).toSet();
       expect(modes, {'estimate', 'trend'});
+    });
+
+    test('SCB-01.a the question and verification writes change only '
+        'scrum/questions.md and scrum/verifications.md; no temp stays',
+        () async {
+      File('${repo.path}/scrum/questions.md').writeAsStringSync(_questions);
+      File('${repo.path}/scrum/verifications.md')
+          .writeAsStringSync(_verifications);
+      Set<String> changedBy(Map<String, String> before) {
+        final after = _snapshot(repo);
+        return {
+          for (final k in {...before.keys, ...after.keys})
+            if (before[k] != after[k]) k,
+        };
+      }
+
+      var before = _snapshot(repo);
+      final a = await raw(server, 'PUT', '/api/questions/1/answer',
+          body: jsonEncode({'heading': _q1, 'answer': 'Narrow.'}));
+      expect(jsonDecode(a.body), {'ok': true, 'reason': ''});
+      expect(changedBy(before), {'scrum/questions.md'});
+      before = _snapshot(repo);
+      final v = await raw(server, 'PUT', '/api/verifications/2/result',
+          body: jsonEncode(
+              {'heading': _v2, 'result': 'Fine.', 'status': 'accepted'}));
+      expect(jsonDecode(v.body), {'ok': true, 'reason': ''});
+      expect(changedBy(before), {'scrum/verifications.md'});
     });
 
     test('SCB-01.a a bad sprint body is a 400 and the file is not touched',
@@ -408,6 +725,57 @@ void main() {
     });
   });
 }
+
+/// A questions file in the format `scrum/questions.md` states (Format block
+/// kept, choices indented 3 spaces) with one open and one answered question.
+const _q1 = 'Ito, Sprint 015 Column width';
+const _questions = '# Questions for the Executive\n'
+    '\n'
+    '## Format\n'
+    '\n'
+    '```\n'
+    '## <number>. <asker, sprint> <short title>\n'
+    'Status: open\n'
+    'Question: ...\n'
+    '   Choices: ... (optional)\n'
+    'Answer:\n'
+    '```\n'
+    '\n'
+    '## 1. $_q1\n'
+    'Status: open\n'
+    'Question: How wide?\n'
+    '   a) Narrow. (x)\n'
+    '   b) Wide.\n'
+    'Answer:\n'
+    '\n'
+    '## 2. Suzuki, Sprint 015 Done one\n'
+    'Status: answered\n'
+    'Question: Still needed?\n'
+    'Answer: Yes.\n';
+
+/// A verifications file in the format `scrum/verifications.md` states.
+const _v1 = 'PBI-001 Board look';
+const _v2 = 'PBI-002 Board check';
+const _verifications = '# Verifications for the Executive\n'
+    '\n'
+    '## Format\n'
+    '\n'
+    '```\n'
+    '## <number>. <PBI id> <short title>\n'
+    'Status: open\n'
+    'Verify: ...\n'
+    'Result:\n'
+    '```\n'
+    '\n'
+    '## 1. $_v1\n'
+    'Status: open\n'
+    'Verify: Look.\n'
+    'Result:\n'
+    '\n'
+    '## 2. $_v2\n'
+    'Status: open\n'
+    'Verify: Check.\n'
+    'Result:\n';
 
 Map<String, String> _snapshot(Directory repo) {
   final out = <String, String>{};

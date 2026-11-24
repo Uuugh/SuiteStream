@@ -62,28 +62,109 @@ void main() {
     }
   });
 
-  test(
-    'SCB-17.b the HTTP writes answer ok: false until the write routes',
-    () async {
-      final api = HttpScrumBoardApi(
+  group('SCB-17.b HTTP writes', () {
+    final requests = <http.Request>[];
+    late ({int status, Map<String, Object?> body}) next;
+    late HttpScrumBoardApi api;
+
+    setUp(() {
+      requests.clear();
+      next = (status: 200, body: {'ok': true, 'reason': ''});
+      api = HttpScrumBoardApi(
         baseUri: base,
-        client: MockClient((_) async => fail('no request expected')),
+        client: MockClient((req) async {
+          requests.add(req);
+          return http.Response.bytes(
+            utf8.encode(jsonEncode(next.body)),
+            next.status,
+          );
+        }),
       );
-      expect(await api.answerQuestion(1, _question.heading, 'a'), (
+    });
+
+    test('answerQuestion PUTs {heading, answer} to the answer route', () async {
+      expect(
+        await api.answerQuestion(1, _question.heading, 'a) Narrow. (recommended)'),
+        (ok: true, reason: ''),
+      );
+      final req = requests.single;
+      expect(req.method, 'PUT');
+      expect(req.url.path, '/api/questions/1/answer');
+      expect(req.headers['content-type'], startsWith('application/json'));
+      expect(jsonDecode(utf8.decode(req.bodyBytes)), {
+        'heading': _question.heading,
+        'answer': 'a) Narrow. (recommended)',
+      });
+    });
+
+    test(
+      'setVerificationResult PUTs {heading, result, status} to the result '
+      'route',
+      () async {
+        expect(
+          await api.setVerificationResult(
+            44,
+            _verification.heading,
+            'Too narrow — again',
+            'returned',
+          ),
+          (ok: true, reason: ''),
+        );
+        final req = requests.single;
+        expect(req.method, 'PUT');
+        expect(req.url.path, '/api/verifications/44/result');
+        expect(jsonDecode(utf8.decode(req.bodyBytes)), {
+          'heading': _verification.heading,
+          'result': 'Too narrow — again',
+          'status': 'returned',
+        });
+      },
+    );
+
+    test('gone comes back as ok: false with reason gone', () async {
+      next = (status: 200, body: {'ok': false, 'reason': 'gone'});
+      expect(await api.answerQuestion(1, 'Changed', 'x'), (
         ok: false,
-        reason: boardWritesNotAvailable,
+        reason: 'gone',
       ));
       expect(
-        await api.setVerificationResult(
-          1,
-          _verification.heading,
-          '',
-          'accepted',
-        ),
-        (ok: false, reason: boardWritesNotAvailable),
+        await api.setVerificationResult(9, 'Gone', '', 'accepted'),
+        (ok: false, reason: 'gone'),
       );
-    },
-  );
+    });
+
+    test('a 400 throws ScrumBoardApiException with statusCode 400, as the '
+        'fake does', () async {
+      next = (status: 400, body: {'error': 'the answer is empty'});
+      final bad = throwsA(
+        isA<ScrumBoardApiException>()
+            .having((e) => e.statusCode, 'statusCode', 400)
+            .having((e) => e.reason, 'reason', 'the answer is empty'),
+      );
+      await expectLater(api.answerQuestion(1, _question.heading, ' '), bad);
+      await expectLater(
+        api.setVerificationResult(1, _verification.heading, '', 'returned'),
+        bad,
+      );
+      // The fake refuses the same calls the same way.
+      final fake = FakeScrumBoardApi(
+        questionList: [_question],
+        verificationList: [_verification],
+      );
+      final fakeBad = throwsA(
+        isA<ScrumBoardApiException>().having(
+          (e) => e.statusCode,
+          'statusCode',
+          400,
+        ),
+      );
+      await expectLater(fake.answerQuestion(1, _question.heading, ' '), fakeBad);
+      await expectLater(
+        fake.setVerificationResult(1, _verification.heading, '', 'returned'),
+        fakeBad,
+      );
+    });
+  });
 
   group('FakeScrumBoardApi', () {
     late FakeScrumBoardApi fake;
