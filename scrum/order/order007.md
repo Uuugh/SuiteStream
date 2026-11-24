@@ -7,7 +7,7 @@ The Executive's words, 2026-11-24, while Sprint 015 ran. They are input for Spri
 1. The Retire bin (SCB-19) is white now. It takes the built-in theme colors that SuiteStream already uses for reset and trash (`colorScheme.error`, as `lib/src/ui/reset_button.dart` does). The bin's function stays as SCB-19 specifies.
 2. The expand-all and collapse-all control (SCB-11.c; the Issues column's copy is SCB-11.i) becomes Material expand and collapse icons, in the right zone of each section's header (the column heading), not a switch on the filter row. The row triangle (SCB-11.b) is not changed; confirm that with the Executive if refinement doubts it.
 
-## Agent renames, after Sprint 015 is finished
+## Agent renames: ON HOLD (the Executive is reworking the roles, 2026-11-24; do not rename until the Executive says)
 
 Change these names everywhere (role files and their file names under `.github/agents`, skills, `AGENTS.md`, `scrum/`, requirements, the board's text):
 
