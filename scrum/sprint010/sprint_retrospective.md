@@ -57,3 +57,4 @@ Fixed: PBI-068 (Reset on its own side with a shared inline "Are you sure?" confi
 - The pair animation is for any paired buttons (UIC-27.g), including the Yes | No of the Reset confirm.
 - Button states vocabulary (Executive): enabled, disabled, pressed, hovered, focused, selected (dragged and error only where defined) are the words for every button, since the pair, toggle, icon button and confirm are built from stock buttons (UIC-49).
 - Elevated button (Executive): not used. The main side of a pair (Save, Yes) stays a stock contained (filled) button; no Main button style setting and no UIC-27.h.
+- Questions closed (Executive): the Reset confirm background is no longer relevant; the button-state inventory is covered by the matrix and UIC-49; the stricter rule test is the Sprint 011 run, in which a sub-agent plays the orchestrator. No open questions remain except approval of this retrospective.
