@@ -14,3 +14,7 @@ The Executive said on 2026-11-24, while Sprint 015 ran: the backlogged items tha
 ## Addition, 2026-11-24 (Executive)
 
 PBI-073's `setup.sh` is the CalendarStream installer (`CalendarStream/WORKING.d/CalendarStream.old/install.sh`, read only) with CalendarStream changed to SuiteStream, and it also installs the applications a Linux machine needs to run Dart and Flutter (the SDKs, and what they need), so that the ScrumBoard and the usage tooling run there. Refinement lists those applications from the Flutter and Dart Linux install documentation and names which are installed by the script and which are only checked for. Still to settle in refinement, not decided here: the Authentik container and its sign-in setup, the start message the script waits for, the released image and `.env.default`, and the download line (`curl | bash`) reviewed for security.
+
+## Constraint, 2026-11-24 (Executive)
+
+CalendarStream is not being worked on now; only the ScrumBoard is. What is built here (the ScrumBoard, the installer, the usage tooling, the Linux setup) is to be used for CalendarStream when its development resumes. So these are built to be reusable: the project name, repository URL, stack name, container prefix and paths are settings or arguments, not text written into the code, and nothing is made to work only for SuiteStream. Refinement writes this into the acceptance criteria of PBI-073, PBI-063, PBI-074 and the new items; it does not change any CalendarStream file.
