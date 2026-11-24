@@ -4,12 +4,12 @@ Sprint goal: the Executive sees every open question and every waiting verificati
 
 | PBI | Title | Points | Owners | Status |
 |---|---|---:|---|---|
-| PBI-126 | Every In Review PBI has its verification | 2 | Tanaka, Takahashi | In Review (verification 45); task 4 check passed again on Day 2: 46 In Review PBIs, one open verification each |
-| PBI-086 | ScrumBoard Questions and Verifications column lists both | 5 | Nakamura, Yamamoto, Ito, Tanaka | Read side built; In Review (verification 46; Windows and web check after task 17b) |
-| PBI-125 | ScrumBoard Questions and Verifications column writes answers and results | 3 | Nakamura, Ito, Tanaka | In Review (verification 47; Windows and web check after task 17b) |
+| PBI-126 | Every In Review PBI has its verification | 2 | Tanaka, Takahashi | In Review (verification 45); task 4 check passed again on Day 2: 46 In Review PBIs, one open verification each; again on Day 4: 47, one each |
+| PBI-086 | ScrumBoard Questions and Verifications column lists both | 5 | Nakamura, Yamamoto, Ito, Tanaka | Read side built; In Review (verification 46; task 17b checks on copies done, light only; the Executive's browser and dark mode check is ready) |
+| PBI-125 | ScrumBoard Questions and Verifications column writes answers and results | 3 | Nakamura, Ito, Tanaka | In Review (verification 47; task 17b curl checks on copies done, light only; the Executive's browser clicks and dark mode check is ready) |
 | PBI-113 | Zoom icon sizes and alpha from theme tokens | (1) | - | Stretch, only if early |
 
-Total: 10 points. Burndown (points not yet In Review): Day 0: 10; Day 1: 10 (wave 0 done, 27 of 61 task hours); Day 2: 3 (wave 1 done, PBI-126 and PBI-086 In Review; 38.5 of 61 task hours, 6b's wave 2 part still to do); Day 3: 0 (wave 2 done, PBI-125 In Review; 56 of 61 task hours). No new mark, seen state or count badge.
+Total: 10 points. Burndown (points not yet In Review): Day 0: 10; Day 1: 10 (wave 0 done, 27 of 61 task hours); Day 2: 3 (wave 1 done, PBI-126 and PBI-086 In Review; 38.5 of 61 task hours, 6b's wave 2 part still to do); Day 3: 0 (wave 2 done, PBI-125 In Review; 56 of 61 task hours); Day 4: 0 (wave 3 done; 61 of 61 task hours). No new mark, seen state or count badge.
 
 ## Tasks (61 h)
 
@@ -37,9 +37,9 @@ Total: 10 points. Burndown (points not yet In Review): Day 0: 10; Day 1: 10 (wav
 | 15 | 2 | Answer (choice or typed) and result UI; Returned disabled while empty; scbItemGone and reload; stays listed after a write; DEF-01 test; theme tokens only | 125 | 7 | Ito | done |
 | 16 | 2 | Kobayashi code review of wave 2 (IMP-003) | 125 | 2 | Takahashi (runs Kobayashi) | done |
 | 16b | 2 | Verification for PBI-125 | 125 | 1 | Tanaka | done |
-| 17a | 3 | Integration test with the real three columns on the fake (three `scb-shown-of`) | all | 1.5 | Tanaka | to do |
-| 17b | 3 | Web build; Windows server on copies; Windows and web checks (after 10, 10b) | all | 1.5 | Nakamura | to do |
-| 18 | 3 | Records, backlog, velocity | all | 2 | Takahashi | to do |
+| 17a | 3 | Integration test with the real three columns on the fake (three `scb-shown-of`) | all | 1.5 | Tanaka | done |
+| 17b | 3 | Web build; Windows server on copies; Windows and web checks (after 10, 10b) | all | 1.5 | Nakamura | done except browser clicks and dark mode, which are in verifications 46 and 47 (Suzuki Day 4) |
+| 18 | 3 | Records, backlog, velocity | all | 2 | Takahashi | done (velocity row at the sprint review) |
 
 Load: Nakamura 16.5 h, Tanaka 14.5, Ito 14, Takahashi 9, Yamamoto 7. Tanaka backs up Ito. PBI-126 is done before 12b puts PBI-086 In Review. Tasks 2 and 3 are tight (36 verifications); Tanaka reports at the first Daily Scrum. Suzuki and Kobayashi own no tasks. New tokens: Ito asks Tanaka in `handoffs.md` (task 6b); `board_tokens.dart` only aliases `scrum_theme.dart`.
 

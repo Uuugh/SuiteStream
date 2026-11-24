@@ -46,11 +46,11 @@ through a shell. A run that takes over 10 seconds is stopped.
 ```
 cd scrum/scrumboard
 flutter pub get
-tool/sync_messages.sh
+../../tool/sync_messages.sh
 flutter build web --release --no-web-resources-cdn
 ```
 
-`tool/sync_messages.sh` copies `requirements/messages/*.arb` into `assets/messages/`. Run it before every build.
+The repository's `tool/sync_messages.sh` (`../../tool/sync_messages.sh` from `scrum/scrumboard`) copies `requirements/messages/*.arb` into `assets/messages/`. Run it before every build.
 
 ## API
 
@@ -116,6 +116,9 @@ routes is 404. `heading` is the text after `## <n>. `, as `GET /api/questions` g
   over the limit. Nothing is written in any of these.
 - Line endings: every other byte of the file stays, and each line keeps its own line end. An added line takes CRLF
   when the file has any CRLF, else LF, so a CRLF file stays CRLF (Windows) and an LF file stays LF.
+- Known limitation (Windows): while another program holds `scrum/questions.md` or `scrum/verifications.md` open,
+  a write answers 500 `{"error": "internal error"}` (the rename is denied). The file is unchanged and no `.tmp`
+  stays; the same write succeeds once the file is closed.
 
 For the two usage-script requests, `ok` is true when the script exits with 0, and `output` is what it printed.
 Otherwise `ok` is false and `reason` says why: the script's own output for another exit code, or that bash or the

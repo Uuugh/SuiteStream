@@ -109,3 +109,47 @@
 - Impediments: none new. IMP-003 resolved and moved to `scrum/impediment_log_resolved.csv`: Day 3 ran with separate role agents and Kobayashi's task 16 review ran; both wave reviews (tasks 12 and 16) have now run, so its open action is met.
 - Tests: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test` -> +240: All tests passed!; root `flutter analyze lib test` -> No issues found!; root `flutter test` -> +596: All tests passed!
 - Remaining for Day 4: wave 3: tasks 17a (integration test, Tanaka), 17b (web build and Windows and web checks, Nakamura) and 18 (records, backlog, velocity, Takahashi).
+
+### 2026-11-24 Day 4 - Yamamoto
+- Yesterday: no wave 2 task; checked the six keys task 15 uses and the synced copies.
+- Today: no wave 3 task; no code changed. `cmp` of the six `scrum/scrumboard/assets/messages/app_*.arb` copies against `requirements/messages/app_*.arb`: all identical, so no sync was run.
+- Impediments: none
+- Tests: `cd scrum/scrumboard && flutter test test/features test/l10n` -> +29: All tests passed!
+
+### 2026-11-24 Day 4 - Ito
+- Yesterday: task 15 (PBI-125, answer and result UI, SCB-17.b) done; Kobayashi task 16 review: no must-fix for Ito; note 7 (notice stays after a `gone`) is a note, no action this sprint.
+- Today: no wave 3 task; available to Tanaka (17a) and Nakamura (17b) for the column's widget keys and behavior in `lib/src/questions/questions_column.dart`.
+- Impediments: none.
+- Tests: `cd scrum/scrumboard && flutter test test/questions` -> +20: All tests passed!
+
+### 2026-11-24 Day 4 - Tanaka
+- Yesterday: tasks 14b and 16b (verification 47, PBI-125) done; 6b wave 2: none asked.
+- Today: task 17a (all) done: `scrum/scrumboard/test/integration/app_test.dart` gets "SCB-04 SCB-17 SCB-15.a the real three columns each show their own bar count": `ScrumBoardApp` as `main.dart` builds it, on `FakeScrumBoardApi` with requirements and board items; three `scb-shown-of`, one each in `scbColumnFeatures`, `backlog-block` and `scbColumnQuestions` (`find.descendant`), each with its own count. No lib change. `scrum/verifications.md`: none accepted or returned.
+- Impediments: none.
+- Tests: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test` -> +241: All tests passed!; root `flutter analyze lib test` -> No issues found!; root `flutter test` -> +596: All tests passed!
+- Later: README sync path and the open-file limitation (Nakamura 17b).
+- Later: verifications 46 and 47 reworded per Suzuki Day 4 (17b done except browser clicks and dark mode).
+
+### 2026-11-24 Day 4 - Nakamura
+- Yesterday: tasks 13 (write routes) and 14 (HTTP client writes) done.
+- Today: task 17b (PBI-119 for PBI-086, PBI-125) done, on copies only (scratch `--root`, port 8099); the real `scrum/questions.md` and `scrum/verifications.md` are unchanged (`git diff --quiet`). Commands in `handoffs.md` Day 4 Nakamura.
+  - Web build: `flutter build web --release --no-web-resources-cdn` -> "√ Built build\web" (62.5 s); `build/web/main.dart.js` 2618990 bytes.
+  - GET `/api/questions` on a CRLF verifications copy: 2 questions (with choices), 47 verifications, Format block not an item, no `\r` in the JSON.
+  - PUT answer by choice and typed: 200 ok; `diff` shows only the item's `Status:` and `Answer:` lines; typed answer kept as typed (spaces).
+  - PUT accepted (empty and with text), PUT returned with a result: 200 ok; only `Status:` / `Result:` lines change; after each, 263 LF, 263 CRLF, 0 lone LF. A removed `Result:` line is added back with CRLF.
+  - Gone (heading changed on disk, number not in file): 200 `{"ok":false,"reason":"gone"}`, `cmp` unchanged. 400s (returned blank result, line break, missing result, bad status, not JSON, blank answer): 400, `cmp` unchanged. POST on the route: 404.
+  - File held open by another process (PowerShell `FileStream`, Read, share `ReadWrite` and also `ReadWrite, Delete`): the write FAILS: 500 `internal error`, log "PathAccessException: Cannot rename file ... (Access is denied, errno = 5)"; the file is unchanged and no `.tmp` stays; the same write after the handle closed: 200. Notepad not tried (I could not be sure to close only my own instance, not the Executive's).
+  - GET `/` equals `build/web/index.html` (`cmp`); `/main.dart.js` 200, 2618990 bytes.
+  - Headless Edge screenshot at 1024 x 640: the bottom-right column is headed Questions and Verifications, filter bar Kind, Number or PBI, Status, "49 of 49"; open verification 43 shows PBI-101, result field, Accepted enabled and Returned disabled; with an open question added, it shows first with its choices. `--force-dark-mode` did not change the page (light only). No clicks in a browser.
+- Impediments: none blocking. Findings for Takahashi: (1) a write while another program holds the file open answers 500 and the page shows the server's English reason (relates to PBI-129); (2) README Build says `tool/sync_messages.sh` from `scrum/scrumboard`, but the script is root `tool/sync_messages.sh` (`../../tool/sync_messages.sh`).
+- Tests: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test test/server test/api` -> +117: All tests passed!
+
+### 2026-11-24 Day 4 - Takahashi
+- Progress toward the goal: wave 3 is done: tasks 17a (integration test with the real three columns, three `scb-shown-of`), 17b (web build; Windows server on copies) and 18. Sprint work is complete; the sprint review is next.
+- Tasks done: 61 of 61 task hours (Day 3: 56; Day 4: tasks 17a (1.5), 17b (1.5), 18 (2)). 17b is done except the browser clicks and dark mode, which are the Executive's check in verifications 46 and 47 (Suzuki Day 4).
+- Burndown (points not yet In Review, of 10): Day 0: 10; Day 1: 10; Day 2: 3; Day 3: 0; Day 4: 0.
+- In Review: PBI-126 (verification 45), PBI-086 (verification 46) and PBI-125 (verification 47), each with its "waits for verification" note in `scrum/product_backlog.csv`; 46 and 47 are now ready for the Executive. Check rerun: 47 In Review PBIs, 47 open verifications, one each; every backlog row has 10 fields. None answered, accepted or returned in `scrum/questions.md` or `scrum/verifications.md`.
+- Kobayashi Day 4 review (`kobayashi_code_review.md`, "Day 4: wave 3 review"): wave 3 done as reported, every count reproduces (scrumboard 241, root 596), no must-fix (2 should, 3 notes). Handling (Suzuki, `handoffs.md` Day 4): 1 (17b "done" says more than was done): 17b recorded as done except browser clicks and dark mode; Tanaka reworded the last sentence of 46 and 47. 2 (a write while another program holds the file answers 500): backlog item PBI-130 (retries of the refused rename; Low, 1 point, Ready; owner suggestion Nakamura; related to PBI-129). 3 (Nakamura: line-end one-liner) and 4 (Tanaka: held handle, not an editor): notes for their owners, no action this sprint. 5: done here (17a, 17b, 18 statuses in `sprint_backlog.md`). Day 3 findings 6 (`AGENTS.md` and `devtools_options.yaml` left out of the commit) and 8 (note) still stand.
+- Velocity: the sprint015 row is added at the sprint review (`sprint-review` skill), not here.
+- Impediments: none new; `scrum/impediment_log.csv` has no open Sprint 015 item.
+- Tests: `cd scrum/scrumboard && flutter analyze lib test` -> No issues found!; `flutter test` -> +241: All tests passed!; root `flutter analyze lib test` -> No issues found!; root `flutter test` -> +596: All tests passed!

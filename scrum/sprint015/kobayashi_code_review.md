@@ -156,3 +156,83 @@ No must-fix finding.
 Wave 2 is done as planned: every fixed name, route behavior, refusal, line-ending rule, key and named test exists, asserts what its name says, and passes; the README matches the server; the counts reproduce (scrumboard 240, root 596, analyze clean in both). The write format is the one both files' Format sections tell agents to act on.
 
 **PBI-125 is fit to go In Review** on its own acceptance, with its verification (16b) saying, as verification 46 does, that the Windows and web check (line endings kept with the file open in an editor; the three buttons write in the browser) is ready only after task 17b. Suzuki decides open points 2 and 3; finding 1 goes to the backlog.
+
+## Day 4: wave 3 review
+
+Scope: the uncommitted wave 3 diff since commit a7a60f3: task 17a (Tanaka: `test/integration/app_test.dart`), task 17b (Nakamura: web build and Windows and web checks on copies; no code), Tanaka's README fixes (`README.md`: sync script path, Windows open-file limitation), and the Day 4 sections of `daily_scrum.md` and `handoffs.md`; checked against `sprint_backlog.md` (tasks 17a, 17b, Named tests "Integration", "Docs and platforms (PBI-119)"), verifications 46 and 47 and `scrum/definition_of_done.md`. Task 18 not reviewed. Paths under `scrum/scrumboard/` unless rooted.
+
+### Commands and counts (run independently by Kobayashi)
+
+| Where | Command | Kobayashi | `daily_scrum.md` Day 4 |
+|---|---|---|---|
+| `scrum/scrumboard` | `flutter analyze lib test` | No issues found | Tanaka, Nakamura: No issues found |
+| `scrum/scrumboard` | `flutter test` | +241: All tests passed | Tanaka +241 |
+| `scrum/scrumboard` | `flutter test test/server test/api` | +117 | Nakamura +117 |
+| `scrum/scrumboard` | `flutter test test/questions` | +20 | Ito +20 |
+| `scrum/scrumboard` | `flutter test test/features test/l10n` | +29 | Yamamoto +29 |
+| root | `flutter analyze lib test` | No issues found | Tanaka: No issues found |
+| root | `flutter test` | +596: All tests passed | Tanaka +596 |
+
+Every claimed count reproduces; 240 (Day 3) + 1 (17a) = 241. The six `assets/messages` copies equal their sources (`cmp`), as Yamamoto says.
+
+### Day 3 findings
+
+- 1 (refused write in English): now PBI-129 (Ready) in `scrum/product_backlog.csv`; closed as a backlog item.
+- 2 (choice writes at once): Suzuki confirmed as built (`handoffs.md` Day 3); closed.
+- 3 (Answered disabled while blank): now in the SCB-17.b statement in `requirements/scrumboard.md`; closed.
+- 4 (Nakamura, writer and reader) and 7 (Ito, notice after gone): notes; they still stand, no action this sprint.
+- 5 (Takahashi): wave 2 statuses are now done in `sprint_backlog.md`; 17a and 17b still say "to do" (task 18).
+- 6 (`devtools_options.yaml` untracked; root `AGENTS.md` changed by no task, now the Start trigger words "sprint" / "sprint N"): still open; add files by name at commit.
+- 8 (Nakamura, "answered example" in `handoffs.md` line 52): still there.
+
+No should-finding from earlier days is open: Day 2 findings 1 and 2 were handled, and Day 3 finding 1 is now PBI-129.
+
+### What was checked and holds
+
+- 17a: the test pumps `ScrumBoardApp`, the class `main.dart` runs, with the real Features column, backlog block and `QuestionsColumn(api: api)`, on `FakeScrumBoardApi`. It asserts exactly three `scb-shown-of`, one each under `scbColumnFeatures`, `backlog-block` and `scbColumnQuestions` (`find.descendant`, `findsOneWidget` each), and checks each text against msg:scbShownOf. The counts differ (2, 1, 3), so a bar that showed another column's count would fail. The test asserts what its name and the Named test "Integration" say. No lib change.
+- README: root `tool/sync_messages.sh` works out its paths from its own location, so `../../tool/sync_messages.sh` from `scrum/scrumboard` works; no `scrum/scrumboard/tool` exists, so the old line was wrong. The limitation paragraph matches what was measured (500 `internal error`, file unchanged, no `.tmp`, the write succeeds once the file is closed).
+- 17b, evidence reproduced:
+  - `build/web/main.dart.js` exists, 2618990 bytes, built at 18:11. That is after the last `lib` commit (18:07), and `lib` has not changed since; `build/` is git-ignored. Nakamura's `index.got` equals `build/web/index.html` (`cmp`).
+  - Scratch snapshots `v.orig`..`v.8` (CRLF copy): each has 263 LF and 263 CR (`v.5` has 262/262 because of the hand-removed `Result:` line). The diffs show:
+    - only `Status:` and `Result:` lines changing for accept (empty and with text) and return;
+    - the hand edits that set up the gone case (heading CHANGED, `Result:` removed);
+    - the removed `Result:` added back with CRLF;
+    - no change while the file was held (`v.6`..`v.7`), then the write after release (`v.8`).
+  - Other scratch files:
+    - `q.orig`..`q.2`: only `Status:` and `Answer:` lines change; the typed answer keeps its spaces.
+    - `get1.json`: 2 questions with choices, 47 verifications, no `\r`.
+    - `server.log`: two `PathAccessException ... Access is denied, errno = 5` rename failures.
+    - `hold.ps1`, `hold1.log`, `hold2.log`: the file was held with share `ReadWrite` and with `ReadWrite, Delete`.
+  - Screenshots (looked at):
+    - `shot1024.png`: the bottom-right column Questions and Verifications, bar Kind / Number or PBI / Status, "49 of 49", verification 43 with PBI-101, a result field, Accepted enabled and Returned disabled.
+    - `shot1024dark.png`: this is the one behind the open-question claim, taken one second after question 3 was added. It shows "50 of 50" and Question 3 first with choices a and b. The shot is light, as Nakamura says (`--force-dark-mode` does not reach the app's own theme).
+  - Own run, on a fresh copy in scratch `kob17b` with CRLF verifications and the server on port 8098:
+    - GET `/api/questions`: 200, 0 questions (the real file has none), 47 verifications, no `\r`.
+    - PUT verification 47 `returned` with a result: 200 `{"ok":true}`. The diff shows only its `Status:` and `Result:` lines; perl counts 263 CRLF, 0 lone LF and 0 lone CR.
+    - PUT with a changed heading, and PUT to number 999: `{"ok":false,"reason":"gone"}`; the file is byte-for-byte unchanged.
+    - The server (`dartvm.exe`, PID 21604) was stopped. No process with 8098 remains, and nothing listens on 8099.
+  - The real `scrum/questions.md` and `scrum/verifications.md` are unchanged (`git diff --quiet`).
+
+### Findings
+
+1. **should (Takahashi, task 18; Suzuki)**: `daily_scrum.md` says "task 17b ... done", but two of the plan's items for it under "Docs and platforms (PBI-119)" were not done:
+   - "web: the three buttons write": nothing was clicked in a browser; the writes were curl calls to the same routes.
+   - light and dark: only light was seen.
+
+   Nakamura says both openly in the details and in `handoffs.md` ("For the Executive"), so nothing is hidden, but the headline "done" says more than was done. Record 17b as done except those two, which move to verifications 46 and 47 (both already say the Windows and web check follows 17b). The column's widget tests (task 15) cover the presses on the fake.
+2. **should (Takahashi, task 18; Suzuki decides)**: a write while another program holds the file open fails with 500, because Windows denies the `<file>.tmp` rename. It fails visibly and leaves the file intact, so DoD "failures do not silently appear successful" holds, and the README now records it. But nothing in the backlog covers the cause: PBI-129 only changes the message. A short-lived handle (indexer, antivirus, sync client) would cause it too. Make it a backlog item (for example a few retries of the rename, Nakamura), or record Suzuki's decision that the README limitation is enough.
+3. **note (Nakamura)**: the line-end one-liner in `handoffs.md` (`od -An -c -v f | tr -s ' \n' ' ' | grep -o '\\r \\n' | wc -l`) gave 9 instead of 263 on a correct file in Kobayashi's shell; the same line inside `vcheck.sh` gives 263. The LF and CR byte counts and a perl count agree on 263. Use those, or say that the one-liner must run from a script.
+4. **note (Tanaka)**: the plan's "file open in an editor" (PBI-119) was tested with a PowerShell handle, not an editor. Common editors (Notepad, VS Code) read the file and close it, so the README's wording ("while another program holds ... open") describes the case that was actually tested. The Executive can try an editor in verification 47.
+5. **note (Takahashi, task 18)**: `sprint_backlog.md` still shows 17a and 17b "to do"; Day 3 findings 6 and 8 still stand (above).
+
+No must-fix finding.
+
+### Verdict
+
+Wave 3's two tasks are done as reported, except for what finding 1 names:
+- 17a's test exists, passes, and asserts what its name and the plan say.
+- 17b's claims hold: the build, every scratch snapshot, the logs and both screenshots match the daily scrum text, and Kobayashi's own run on port 8098 got the same GET, write, line-end and gone results.
+- The README fixes are correct.
+- The counts reproduce (scrumboard 241, root 596, analyze clean in both).
+
+PBI-086 and PBI-125 can stay In Review. The browser clicks and dark mode are now for the Executive to check in verifications 46 and 47. Takahashi records findings 1 and 2 in task 18.
