@@ -1240,7 +1240,6 @@
   "syncSignIn": "Sign in",
   "syncSignedInAs": "Signed in as {name}",
   "@syncSignedInAs": {"placeholders": {"name": {"type": "String"}}},
-  "scbReload": "Reload",
   "scbLoadFailed": "Could not read the data: {reason}",
   "@scbLoadFailed": {"placeholders": {"reason": {"type": "String"}}},
   "scbServerUnreachable": "The ScrumBoard server cannot be reached: {reason}",

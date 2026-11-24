@@ -1022,7 +1022,6 @@
   "syncOffline": "Não foi possível contactar o servidor. As configurações ficam neste dispositivo e serão enviadas mais tarde.",
   "syncSignIn": "Entrar",
   "syncSignedInAs": "Sessão iniciada como {name}",
-  "scbReload": "Recarregar",
   "scbLoadFailed": "Não foi possível ler os dados: {reason}",
   "scbServerUnreachable": "Não foi possível contactar o servidor do ScrumBoard: {reason}",
   "scbRequirements": "Requisitos",

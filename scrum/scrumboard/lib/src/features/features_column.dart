@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:scrumboard/src/api/reload_scope.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
+import 'package:scrumboard/src/board/sprint_assign.dart';
 import 'package:scrumboard/src/features/outline.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/features/scb_filter_bar.dart';
+import 'package:scrumboard/src/features/scb_status_menu.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
 import 'package:scrumboard/src/theme/scrum_theme.dart';
 
@@ -28,6 +30,10 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   String? _error;
   bool _loading = true;
 
+  // SCB-21: the stories the status menu offers, and the reason of a refusal.
+  List<({String id, String name})> _stories = const [];
+  String? _refused;
+
   // SCB-04: what the user chose to hide, kept in memory only.
   ScbHiddenFilters _hidden = const ScbHiddenFilters();
 
@@ -48,9 +54,16 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
     final m = context.msg;
     try {
       final list = await widget.api.requirements();
+      var stories = const <({String id, String name})>[];
+      try {
+        stories = upcomingStories(await widget.api.sprint());
+      } on Exception {
+        // The menu then offers no story; the requirements still show.
+      }
       if (!mounted) return;
       setState(() {
         _all = list;
+        _stories = stories;
         _error = null;
         _loading = false;
       });
@@ -59,6 +72,27 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
     } on ScrumBoardApiException catch (e) {
       _fail(m('scbLoadFailed', {'reason': e.reason}));
     }
+  }
+
+  /// SCB-21: a status chosen in the menu; a refusal shows msg:scbMoveRefused.
+  Future<void> _choose(Requirement r, String status, String? storyId) async {
+    final ({bool ok, String reason}) res;
+    try {
+      res = switch (status) {
+        'retired' => await widget.api.retire(r.id),
+        'planned' when storyId != null => await assignRequirementToSprint(widget.api, r.id, storyId),
+        _ => await widget.api.setStatus(r.id, status),
+      };
+    } on ScrumBoardApiException catch (e) {
+      if (mounted) setState(() => _refused = e.reason);
+      return;
+    } on ScrumBoardUnreachableException catch (e) {
+      if (mounted) setState(() => _refused = e.reason);
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _refused = res.ok ? null : res.reason);
+    if (res.ok) await _load();
   }
 
   void _fail(String text) {
@@ -81,7 +115,8 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   Widget build(BuildContext context) {
     final m = context.msg;
     final theme = Theme.of(context);
-    final listed = _hidden.apply(_all);
+    // SCB-19.c: a retired requirement is not listed.
+    final listed = _hidden.apply([for (final r in _all) if (r.status != 'retired') r]);
     final parents = parentIds(listed);
     final allExpanded = parents.isNotEmpty && parents.every(_expanded.contains);
     final rows = buildOutline(listed, _expanded);
@@ -89,7 +124,7 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(scrumPartGap),
           child: Text(m('scbFeaturesRequirements'), style: theme.textTheme.titleMedium),
         ),
         // SCB-04 and SCB-11.f: the shared filter bar; at the right end the switch.
@@ -119,15 +154,38 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   Widget _body(BuildContext context, Messages m, ThemeData theme, List<OutlineRow> rows) {
     if (_error != null) {
       return Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(scrumErrorPadding),
         child: Text(_error!,
             key: const ValueKey('scb-requirements-error'), style: TextStyle(color: theme.colorScheme.error)),
       );
     }
     if (_loading) return const Center(child: CircularProgressIndicator());
-    return ListView.builder(
-      itemCount: rows.length,
-      itemBuilder: (context, i) => _row(context, m, theme, rows[i]),
+    final refused = _refused;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (refused != null)
+          GestureDetector(
+            onTap: () => setState(() => _refused = null),
+            child: Material(
+              color: theme.colorScheme.errorContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(scrumPartGap),
+                child: Text(
+                  m('scbMoveRefused', {'reason': refused}),
+                  key: const ValueKey('move-refused'),
+                  style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                ),
+              ),
+            ),
+          ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: rows.length,
+            itemBuilder: (context, i) => _row(context, m, theme, rows[i]),
+          ),
+        ),
+      ],
     );
   }
 
@@ -136,7 +194,7 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
     final open = _expanded.contains(r.id);
     final content = Container(
       key: ValueKey('scb-row-${r.id}'),
-      padding: EdgeInsets.only(left: 8 + row.depth * subRequirementIndent, right: 8),
+      padding: EdgeInsets.only(left: scrumPartGap + row.depth * subRequirementIndent, right: scrumPartGap),
       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: theme.dividerColor))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,16 +216,22 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(vertical: scrumPartGap),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Wrap(
-                    spacing: 8,
+                    spacing: scrumPartGap,
                     children: [
                       Text(r.id, style: theme.textTheme.labelLarge),
-                      Text(_statusText(m, r.status),
-                          style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary)),
+                      ScbStatusMenu(
+                        key: ValueKey('scb-status-${r.id}'),
+                        status: r.status,
+                        stories: _stories,
+                        onSelected: (status, storyId) => _choose(r, status, storyId),
+                        child: Text(_statusText(m, r.status),
+                            style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary)),
+                      ),
                       Text(r.feature, style: theme.textTheme.labelMedium),
                     ],
                   ),

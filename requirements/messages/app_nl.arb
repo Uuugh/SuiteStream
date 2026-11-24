@@ -1022,7 +1022,6 @@
   "syncOffline": "De server is niet bereikbaar. De instellingen blijven op dit apparaat en worden later opnieuw verzonden.",
   "syncSignIn": "Inloggen",
   "syncSignedInAs": "Ingelogd als {name}",
-  "scbReload": "Opnieuw laden",
   "scbLoadFailed": "De gegevens konden niet worden gelezen: {reason}",
   "scbServerUnreachable": "De ScrumBoard-server is niet bereikbaar: {reason}",
   "scbRequirements": "Vereisten",

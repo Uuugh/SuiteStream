@@ -34,9 +34,9 @@ SCB-15.a and SCB-15.d (header replaces footer), SCB-19 to SCB-19.c (requirements
 | Yamamoto | `requirements/messages/*.arb` (six), root `tool/sync_messages.sh`, `assets/messages/*`, `lib/src/l10n/*`, `lib/src/features/*`, `test/l10n/*`, `test/features/*` |
 | Ito | `lib/src/board/*`, `test/board/*` |
 | Tanaka | `lib/main.dart` (taken from Nakamura for this sprint), `lib/src/app/*`, `lib/src/theme/*`, `lib/src/api/reload_scope.dart`, `test/app/*`, `test/api/reload_scope_test.dart` |
-| Takahashi | `scrum/sprint013/*`, backlog, velocity, usage, status and test cells of `requirements/scrumboard.md` |
+| Takahashi | `scrum/sprints/sprint013/*`, backlog, velocity, usage, status and test cells of `requirements/scrumboard.md` |
 
-Handoffs: `scrum/sprint013/handoffs.md`. Keys from anyone but Yamamoto go in `strings_<name>.md`.
+Handoffs: `scrum/sprints/sprint013/handoffs.md`. Keys from anyone but Yamamoto go in `strings_<name>.md`.
 
 Fixed names: `ScrumBoardApi.changeStamp()` returns `Future<String>` (Nakamura); `ScrumBoardApi.retire(String id)` returns `Future<({bool ok, String reason})>` (Nakamura); `ScbStatusMenu` (Yamamoto, `lib/src/features/scb_status_menu.dart`): `ScbStatusMenu({required String status, required List<String> upcomingSprints, required void Function(String status, String? sprint) onSelected, Widget child})`; `Future<void> assignRequirementToSprint(ScrumBoardApi api, String id, String blockId)` (Ito, `lib/src/board/sprint_assign.dart`); `ScrumBoardPage` takes `api` (Tanaka).
 

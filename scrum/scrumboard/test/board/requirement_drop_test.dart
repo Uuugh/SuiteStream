@@ -76,7 +76,7 @@ Finder get _backlog => find.byKey(const ValueKey('backlog-block'));
 Finder _inBacklog(String id) => find.descendant(of: _backlog, matching: find.byKey(ValueKey('item-$id')));
 Finder _inStory(String story, String id) =>
     find.descendant(of: find.byKey(ValueKey('block-$story')), matching: find.byKey(ValueKey('item-$id')));
-Finder get _backlogHeading => find.descendant(of: _backlog, matching: find.text('Backlog'));
+Finder get _backlogHeading => find.descendant(of: _backlog, matching: find.text('Backlog')).first;
 Finder get _refused => find.byKey(const ValueKey('move-refused'));
 
 Set<String> _rows(FakeScrumBoardApi api, String block) =>

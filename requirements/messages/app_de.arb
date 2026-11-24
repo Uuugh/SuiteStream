@@ -1022,7 +1022,6 @@
   "syncOffline": "Der Server ist nicht erreichbar. Die Einstellungen bleiben auf diesem Gerät und werden später erneut gesendet.",
   "syncSignIn": "Anmelden",
   "syncSignedInAs": "Angemeldet als {name}",
-  "scbReload": "Neu laden",
   "scbLoadFailed": "Die Daten konnten nicht gelesen werden: {reason}",
   "scbServerUnreachable": "Der ScrumBoard-Server ist nicht erreichbar: {reason}",
   "scbRequirements": "Anforderungen",

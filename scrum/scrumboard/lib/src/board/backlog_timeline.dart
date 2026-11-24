@@ -5,6 +5,7 @@ import 'package:scrumboard/src/board/board_tokens.dart';
 import 'package:scrumboard/src/board/sprint_assign.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/features/scb_filter_bar.dart';
+import 'package:scrumboard/src/features/scb_status_menu.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
 
 /// The board along the top (SCB-06): the Backlog block fixed at the left and
@@ -21,10 +22,16 @@ class BacklogTimeline extends StatefulWidget {
 
 typedef _DropHandler = void Function(RequirementDragData drag, String? storyId);
 
+/// A choice of the status menu (SCB-21): the requirement, its status, the new status and story.
+typedef _StatusHandler = void Function(String id, String status, String newStatus, String? storyId);
+
 class _Data {
   const _Data(this.requirements, this.sprint);
   final List<Requirement> requirements;
   final SprintFile sprint;
+
+  /// SCB-21: the story choices of the status menu.
+  List<({String id, String name})> get stories => upcomingStories(sprint);
 
   Map<String, Requirement> get byId => {for (final r in requirements) r.id: r};
 
@@ -90,6 +97,37 @@ class _BacklogTimelineState extends State<BacklogTimeline> {
     }
   }
 
+  /// SCB-21: a status-menu choice, handled as the drop handles it.
+  Future<void> _status(String id, String status, String newStatus, String? storyId) async {
+    final data = await _future;
+    if (data == null || !mounted) return;
+    setState(() => _refused = null);
+    ({bool ok, String reason}) r;
+    if (newStatus == 'retired') {
+      r = await widget.api.retire(id);
+    } else if (newStatus == 'planned' && storyId != null) {
+      r = await assignRequirementToSprint(widget.api, id, storyId);
+    } else if (newStatus == 'backlog') {
+      r = await moveRequirement(widget.api, id: id, status: status, sprint: data.sprint, storyId: null);
+    } else {
+      try {
+        r = await widget.api.setStatus(id, newStatus);
+      } on ScrumBoardApiException catch (e) {
+        r = (ok: false, reason: e.reason);
+      } on ScrumBoardUnreachableException catch (e) {
+        r = (ok: false, reason: e.reason);
+      }
+    }
+    if (!mounted) return;
+    if (!r.ok) {
+      setState(() => _refused = r.reason);
+      return;
+    }
+    setState(() {
+      _future = _load();
+    });
+  }
+
   @override
   void dispose() {
     _timeline.dispose();
@@ -111,6 +149,7 @@ class _BacklogTimelineState extends State<BacklogTimeline> {
           hidden: _hidden,
           onHidden: (h) => setState(() => _hidden = h),
           onDrop: _drop,
+          onStatus: _status,
         );
         final refused = _refused;
         if (refused == null) return board;
@@ -176,12 +215,14 @@ class _Board extends StatefulWidget {
     required this.hidden,
     required this.onHidden,
     required this.onDrop,
+    required this.onStatus,
   });
   final _Data data;
   final ScrollController controller;
   final ScbHiddenFilters hidden;
   final ValueChanged<ScbHiddenFilters> onHidden;
   final _DropHandler onDrop;
+  final _StatusHandler onStatus;
 
   @override
   State<_Board> createState() => _BoardState();
@@ -234,6 +275,7 @@ class _BoardState extends State<_Board> {
                           data: data,
                           trail: {b.id},
                           onDrop: widget.onDrop,
+                          onStatus: widget.onStatus,
                           topLevel: true,
                         ),
                       ),
@@ -253,6 +295,8 @@ class _BoardState extends State<_Board> {
             hidden: widget.hidden,
             onHidden: widget.onHidden,
             onDrop: widget.onDrop,
+            stories: data.stories,
+            onStatus: widget.onStatus,
           ),
         ),
       ],
@@ -299,7 +343,11 @@ class _BacklogBlock extends StatelessWidget {
     required this.hidden,
     required this.onHidden,
     required this.onDrop,
+    required this.stories,
+    required this.onStatus,
   });
+  final List<({String id, String name})> stories;
+  final _StatusHandler onStatus;
   final List<Requirement> backlog;
   final ScbHiddenFilters hidden;
   final ValueChanged<ScbHiddenFilters> onHidden;
@@ -338,7 +386,7 @@ class _BacklogBlock extends StatelessWidget {
                 padding: const EdgeInsets.only(top: BoardTokens.gap),
                 child: Text(e.key, style: t.labelLarge),
               ),
-              for (final r in e.value) _ItemRow(id: r.id, title: r.statement, status: r.status),
+              for (final r in e.value) _ItemRow(id: r.id, title: r.statement, status: r.status, stories: stories, onStatus: onStatus),
             ],
           ],
         ),
@@ -362,6 +410,7 @@ class _BlockCard extends StatelessWidget {
     required this.data,
     required this.trail,
     required this.onDrop,
+    required this.onStatus,
     this.topLevel = false,
   });
 
@@ -371,6 +420,7 @@ class _BlockCard extends StatelessWidget {
   /// Block IDs on the way down, so a loop in the parents cannot recurse forever.
   final Set<String> trail;
   final _DropHandler onDrop;
+  final _StatusHandler onStatus;
   final bool topLevel;
 
   @override
@@ -388,11 +438,17 @@ class _BlockCard extends StatelessWidget {
     final body = [
       // SCB-06.d: each member with its ID and title.
       for (final m in data.membersOf(block.id))
-        _ItemRow(id: m.item, title: byId[m.item]?.statement, status: byId[m.item]?.status),
+        _ItemRow(
+          id: m.item,
+          title: byId[m.item]?.statement,
+          status: byId[m.item]?.status,
+          stories: data.stories,
+          onStatus: onStatus,
+        ),
       for (final c in data.childrenOf(block.id, trail))
         Padding(
           padding: const EdgeInsets.only(top: BoardTokens.nestGap),
-          child: _BlockCard(block: c, data: data, trail: {...trail, c.id}, onDrop: onDrop),
+          child: _BlockCard(block: c, data: data, trail: {...trail, c.id}, onDrop: onDrop, onStatus: onStatus),
         ),
     ];
     // SCB-07.c: only a story (and the Backlog block) takes a dropped requirement.
@@ -430,10 +486,27 @@ class _BlockCard extends StatelessWidget {
 /// One requirement or issue with its ID (or number) and title (SCB-06.d). A
 /// requirement ([status] set) can be dragged (SCB-07); an issue cannot.
 class _ItemRow extends StatelessWidget {
-  const _ItemRow({required this.id, required this.title, this.status});
+  const _ItemRow({
+    required this.id,
+    required this.title,
+    this.status,
+    this.stories = const [],
+    this.onStatus,
+  });
   final String id;
   final String? title;
   final String? status;
+  final List<({String id, String name})> stories;
+  final _StatusHandler? onStatus;
+
+  String _statusText(BuildContext context, String status) => switch (status) {
+        'proposed' => context.msg('scbStatusProposed'),
+        'backlog' => context.msg('scbStatusBacklog'),
+        'planned' => context.msg('scbStatusPlanned'),
+        'done' => context.msg('scbStatusDone'),
+        'retired' => context.msg('scbStatusRetired'),
+        _ => status,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -446,12 +519,35 @@ class _ItemRow extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(BoardTokens.nestGap),
-        child: Text.rich(
-          TextSpan(children: [
-            TextSpan(text: id, style: t.labelMedium?.copyWith(color: cs.onSurfaceVariant)),
-            if (title != null) TextSpan(text: '  $title', style: t.bodyMedium),
-          ]),
-          key: ValueKey('item-$id'),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(text: id, style: t.labelMedium?.copyWith(color: cs.onSurfaceVariant)),
+                  if (title != null) TextSpan(text: '  $title', style: t.bodyMedium),
+                ]),
+                key: ValueKey('item-$id'),
+              ),
+            ),
+            // SCB-21: the status token opens the status menu.
+            if (status != null)
+              ScbStatusMenu(
+                key: ValueKey('status-menu-$id'),
+                status: status!,
+                stories: stories,
+                onSelected: (n, storyId) => onStatus?.call(id, status!, n, storyId),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: BoardTokens.nestGap),
+                  child: Text(
+                    _statusText(context, status!),
+                    key: ValueKey('status-$id'),
+                    style: t.labelMedium?.copyWith(color: cs.primary),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
