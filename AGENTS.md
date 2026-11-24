@@ -24,4 +24,4 @@ Open questions first, in a numbered "Needs you" block; the rest short. Use the p
 
 ## Safety
 
-Work only in this repository. Never read or commit `scrum/XO`. Add files to git by name. If a step is denied, stop and say which; never work around it. Do not restate a requirement row. Measured numbers beat remembered ones. Keep no private rules: write them here. Change a rule where it already lives; never state it a second time.
+Work only in this repository. CalendarStream is an older project being superseded: read it for reference only when the Executive sends you there, and change nothing in it; SuiteStream lives only here. Never read or commit `scrum/XO`. Add files to git by name. If a step is denied, stop and say which; never work around it. Do not restate a requirement row. Measured numbers beat remembered ones. Keep no private rules: write them here. Change a rule where it already lives; never state it a second time.
