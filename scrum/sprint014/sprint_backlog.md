@@ -4,14 +4,14 @@ Sprint goal: the ScrumBoard fixes from the Executive's look at Sprint 013 (one z
 
 | PBI | Title | Points | Owner | Status |
 |---|---|---:|---|---|
-| PBI-107 | ScrumBoard sees a change in its first 2 seconds | 1 | Tanaka | Built Day 1; tests pass |
-| PBI-102 | ScrumBoard zoom is one icon | 1 | Tanaka | Built Day 1; tests pass |
-| PBI-103 | ScrumBoard status token at the end of the row | 1 | Yamamoto | To do (wave 1) |
-| PBI-108 | One status choice helper for the column and the Backlog block | 1 | Ito, Yamamoto | Helper and Backlog block built Day 1; column use to do (wave 1) |
-| PBI-109 | ScrumBoard block width from a theme token | 1 | Tanaka, Ito | Token built Day 1; `BoardTokens` use to do (wave 1) |
-| PBI-104 | ScrumBoard remembers its theme and zoom between starts | 1 | Tanaka | Built Day 1; tests pass |
-| PBI-106 | ScrumBoard runs usage.sh for estimate and trend | 3 | Nakamura | Built Day 1; tests pass |
+| PBI-107 | ScrumBoard sees a change in its first 2 seconds | 1 | Tanaka | Built; In Review |
+| PBI-102 | ScrumBoard zoom is one icon | 1 | Tanaka | Built; In Review |
+| PBI-103 | ScrumBoard status token at the end of the row | 1 | Yamamoto | Built Day 2; In Review |
+| PBI-108 | One status choice helper for the column and the Backlog block | 1 | Ito, Yamamoto | Helper Day 1, column use Day 2; In Review |
+| PBI-109 | ScrumBoard block width from a theme token | 1 | Tanaka, Ito | Token Day 1, `BoardTokens` use Day 2; In Review |
+| PBI-104 | ScrumBoard remembers its theme and zoom between starts | 1 | Tanaka | Built; In Review |
+| PBI-106 | ScrumBoard runs usage.sh for estimate and trend | 3 | Nakamura | Built; In Review |
 
-Burndown (points not built): Day 0: 9; Day 1: 3. Wave 2 (integration run, web build, server check) and the Kobayashi review of wave 0 are still to do.
+Burndown (points not built): Day 0: 9; Day 1: 3; Day 2: 0. Waves 0 to 2 are done; "In Review" waits for the Executive's browser checks (`sprint_planning.md`, Done). The independent Kobayashi review has not run (daily_scrum.md, Day 2).
 
 Total: 9 points. PBI-108 is counted once (Ito's helper and Yamamoto's column use); it changes one behaviour: the Features column's 'backlog' choice now also removes the requirement from its story (SCB-07.f). PBI-106 ends at the server, API, fake and tests; its two chart clauses moved to PBI-084.

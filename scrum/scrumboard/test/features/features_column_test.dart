@@ -6,6 +6,7 @@ import 'package:scrumboard/src/features/outline.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/features/scb_filter_bar.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
+import 'package:scrumboard/src/theme/scrum_theme.dart';
 
 Requirement _r(String id, String status, {String feature = 'a'}) =>
     Requirement(id: id, status: status, statement: 'S $id', feature: feature, file: 'requirements/$feature.md');
@@ -18,12 +19,18 @@ final _reqs = [
   _r('BBB-05.a', 'backlog', feature: 'b'), // parent BBB-05 not listed (SCB-11.e)
 ];
 
-Future<void> _pump(WidgetTester t, ScrumBoardApi api) async {
+Future<void> _pump(WidgetTester t, ScrumBoardApi api, {double width = 600, ThemeData? theme}) async {
   final m = (await t.runAsync(() => Messages.load('en')))!;
   await t.pumpWidget(MaterialApp(
+    theme: theme,
     home: MessagesScope(
       messages: m,
-      child: Scaffold(body: SizedBox(width: 600, height: 600, child: FeaturesColumn(api: api))),
+      child: Scaffold(
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(width: width, height: 600, child: FeaturesColumn(api: api)),
+        ),
+      ),
     ),
   ));
   await t.pumpAndSettle();
@@ -184,6 +191,56 @@ void main() {
     expect(find.textContaining('wrong order'), findsOneWidget);
     expect(find.byKey(const ValueKey('move-refused')), findsOneWidget);
   });
+
+  testWidgets('SCB-21 SCB-07.f choosing backlog for a planned story member removes its Members row', (t) async {
+    final api = FakeScrumBoardApi(
+      requirementList: [_r('AAA-04', 'planned'), _r('AAA-05', 'planned')],
+      sprintFile: const SprintFile(
+        exists: true,
+        blocks: [SprintBlock(id: 'S1', kind: 'story', name: 'First story')],
+        members: [SprintMember(block: 'S1', item: 'AAA-04'), SprintMember(block: 'S1', item: 'AAA-05')],
+      ),
+    );
+    await _pump(t, api);
+    await choose(t, 'AAA-04', 'scbStatusMenu.backlog');
+    expect(api.statusCalls, [(id: 'AAA-04', status: 'backlog')]);
+    expect(api.sprintFile.members.where((m) => m.item == 'AAA-04'), isEmpty);
+    expect(api.sprintFile.members.map((m) => m.item), ['AAA-05'], reason: 'other members stay');
+    expect(find.byKey(const ValueKey('move-refused')), findsNothing);
+  });
+
+  // SCB-23: about a third of the narrowest DEF-01 window (1024), the width the
+  // page gives the column there (SCB-15.a), in light and dark (SCB-15.c).
+  for (final dark in [false, true]) {
+    testWidgets('SCB-23 SCB-15.c the status token is right-aligned on the first line, sub-rows too '
+        '(${dark ? 'dark' : 'light'})', (t) async {
+      final reqs = [
+        _r('AAA-01', 'done', feature: 'a-rather-long-feature-name-that-wraps'),
+        _r('AAA-01.a', 'backlog'),
+        _r('AAA-02', 'proposed'),
+      ];
+      await _pump(t, _api(reqs),
+          width: 320, theme: ThemeData(brightness: dark ? Brightness.dark : Brightness.light));
+      await t.tap(find.byKey(const ValueKey('scb-toggle-AAA-01')));
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull);
+      double? tokenRight;
+      for (final id in ['AAA-01', 'AAA-01.a', 'AAA-02']) {
+        final row = t.getRect(find.byKey(ValueKey('scb-row-$id')));
+        final token = t.getRect(find.byKey(ValueKey('scb-status-$id')));
+        final idText = t.getRect(find.text(id));
+        final statement = t.getRect(find.text('S $id'));
+        // At the end of the row: only the row's right padding follows it.
+        expect(row.right - token.right, closeTo(scrumPartGap, 0.01), reason: id);
+        expect(token.left, greaterThan(idText.right), reason: id);
+        // On the first line, above the statement.
+        expect(token.top, closeTo(idText.top, 4), reason: id);
+        expect(token.bottom, lessThanOrEqualTo(statement.top + 0.01), reason: id);
+        tokenRight ??= token.right;
+        expect(token.right, closeTo(tokenRight, 0.01), reason: '$id lines up with the others');
+      }
+    });
+  }
 
   testWidgets('SCB-04 the column uses the shared ScbFilterBar', (t) async {
     await _pump(t, _api());

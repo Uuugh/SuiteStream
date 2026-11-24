@@ -18,3 +18,11 @@
 - Fake scripts: `scrum/scrumboard/test/server/fixtures/usage_ok.sh`, `usage_fail.sh`, `usage_sleep.sh`.
 - `FakeScrumBoardApi.estimateAnswer` and `trendAnswer` set what the fake answers (for PBI-084 later).
 - Checked once against the real `scrum/usage/usage.sh` on this machine (server on port 8099): both routes answered `ok: true` with the script's output. The Executive's own test row stays in the review.
+
+## Yamamoto (Day 2)
+
+- `features_column.dart`: `_choose` calls `applyStatusChoice`; the first line of a row is a `Row` with the ID and feature in an `Expanded` `Wrap` and the status token (`scb-status-<id>`) last, so the token ends `scrumPartGap` from the row's right edge (SCB-23). For PBI-082: the Issues column can use the same layout.
+
+## Ito (Day 2)
+
+- `BoardTokens.blockWidth` is `scrumBlockWidth`; `backlog_timeline_test.dart` checks the width against `scrumBlockWidth`.

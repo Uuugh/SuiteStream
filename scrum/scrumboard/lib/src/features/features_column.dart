@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:scrumboard/src/api/reload_scope.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/board/sprint_assign.dart';
+import 'package:scrumboard/src/board/status_choice.dart';
 import 'package:scrumboard/src/features/outline.dart';
 import 'package:scrumboard/src/features/requirement_drag_data.dart';
 import 'package:scrumboard/src/features/scb_filter_bar.dart';
@@ -75,21 +76,10 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   }
 
   /// SCB-21: a status chosen in the menu; a refusal shows msg:scbMoveRefused.
+  /// The shared helper (PBI-108) maps the choice to server calls, so 'backlog'
+  /// also removes the requirement from its story (SCB-07.f).
   Future<void> _choose(Requirement r, String status, String? storyId) async {
-    final ({bool ok, String reason}) res;
-    try {
-      res = switch (status) {
-        'retired' => await widget.api.retire(r.id),
-        'planned' when storyId != null => await assignRequirementToSprint(widget.api, r.id, storyId),
-        _ => await widget.api.setStatus(r.id, status),
-      };
-    } on ScrumBoardApiException catch (e) {
-      if (mounted) setState(() => _refused = e.reason);
-      return;
-    } on ScrumBoardUnreachableException catch (e) {
-      if (mounted) setState(() => _refused = e.reason);
-      return;
-    }
+    final res = await applyStatusChoice(widget.api, id: r.id, choice: status, storyId: storyId);
     if (!mounted) return;
     setState(() => _refused = res.ok ? null : res.reason);
     if (res.ok) await _load();
@@ -220,10 +210,21 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Wrap(
-                    spacing: scrumPartGap,
+                  // SCB-23: the status token is right-aligned at the end of
+                  // the first line; the ID and the feature wrap before it.
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(r.id, style: theme.textTheme.labelLarge),
+                      Expanded(
+                        child: Wrap(
+                          spacing: scrumPartGap,
+                          children: [
+                            Text(r.id, style: theme.textTheme.labelLarge),
+                            Text(r.feature, style: theme.textTheme.labelMedium),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: scrumPartGap),
                       ScbStatusMenu(
                         key: ValueKey('scb-status-${r.id}'),
                         status: r.status,
@@ -232,7 +233,6 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
                         child: Text(_statusText(m, r.status),
                             style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary)),
                       ),
-                      Text(r.feature, style: theme.textTheme.labelMedium),
                     ],
                   ),
                   Text(r.statement, style: theme.textTheme.bodySmall),
