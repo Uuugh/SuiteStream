@@ -16,10 +16,12 @@ const _states = [
 ];
 const _cols = [
   ('Text button', 175.0), ('Outlined button', 125.0), ('Contained button', 135.0),
-  ('Toggle', 300.0), ('Icon button', 80.0), ('Cancel | Save (proposed)', 200.0),
+  ('Toggle', 300.0), ('Icon button', 80.0), ('Cancel | Save (proposed)', 240.0),
   ('Reset', 125.0), ('Confirm', 215.0), ('Back / header icon', 85.0),
   ('Stepper arrows', 80.0), ('Checkbox', 70.0), ('Resize handle', 100.0),
+  ('Elevated button', 125.0),
 ];
+const _order = [0, 1, 2, 12, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const _labelW = 105.0;
 const _rowH = 92.0;
 
@@ -134,6 +136,10 @@ Widget _cell0(BuildContext context, int col, int r) {
       return plainNa() ??
           w((c) => OutlinedButton(
               statesController: c, onPressed: tap(), child: const Text('Outlined')));
+    case 12:
+      return plainNa() ??
+          w((c) => ElevatedButton(
+              statesController: c, onPressed: tap(), child: const Text('Elevated')));
     case 2:
       return plainNa() ??
           w((c) => FilledButton(
@@ -178,10 +184,16 @@ Widget _cell0(BuildContext context, int col, int r) {
           icon: Icon(col == 4 ? SuiteIcons.edit : SuiteIcons.arrowBack)));
     case 5:
       return plainNa() ??
-          w((c) => Row(mainAxisSize: MainAxisSize.min, children: [
-                TextButton(statesController: c, onPressed: tap(), child: const Text('Cancel')),
-                const SizedBox(width: 4),
-                FilledButton(onPressed: tap(), child: const Text('Save')),
+          w((c) => Column(mainAxisSize: MainAxisSize.min, children: [
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  TextButton(statesController: c, onPressed: tap(), child: const Text("Cancel")),
+                  const SizedBox(width: 4),
+                  FilledButton(onPressed: tap(), child: const Text("Save")),
+                ]),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  const Text("or ", style: TextStyle(fontSize: 10, color: Color(0xFF8A8A8A))),
+                  ElevatedButton(onPressed: tap(), child: const Text("Save as elevated")),
+                ]),
               ]));
     case 6:
       if (r == 5) return _na(_noSel);
@@ -196,7 +208,7 @@ Widget _cell0(BuildContext context, int col, int r) {
           statesController: c,
           style: style,
           onPressed: tap(),
-          icon: const Icon(SuiteIcons.close, size: 18),
+          icon: const Icon(SuiteIcons.restartAlt, size: 18),
           label: const Text('Reset')));
     case 7:
       return plainNa() ??
@@ -284,6 +296,7 @@ class _Grip extends CustomPainter {
 }
 
 const _notes = [
+  'Elevated: stock ElevatedButton; the main side of a pair could be Contained or Elevated (UIC-27.h).',
   'COMBINED: Icon button and Back / header icon are one stock IconButton (same look, different icon). '
       'Reset is a TextButton plus the error role (error and errorContainer). '
       'Cancel | Save is proposed as two stock buttons (TextButton and FilledButton) in a Row; today it is a custom widget with its own slide and pulse. '
@@ -305,7 +318,7 @@ void main() {
   });
 
   testWidgets('button states matrix', (tester) async {
-    tester.view.physicalSize = const Size(1900, 940);
+    tester.view.physicalSize = const Size(2000, 960);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     FocusManager.instance.highlightStrategy = FocusHighlightStrategy.alwaysTraditional;
@@ -332,7 +345,7 @@ void main() {
                   const SizedBox(height: 8),
                   Row(children: [
                     const SizedBox(width: _labelW),
-                    for (final c in _cols)
+                    for (final c in _order.map((i) => _cols[i]))
                       Container(
                         width: c.$2,
                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
@@ -350,7 +363,7 @@ void main() {
                         decoration: BoxDecoration(border: Border.all(color: line, width: .5)),
                         child: Text(_states[r], style: small),
                       ),
-                      for (var c = 0; c < _cols.length; c++)
+                      for (final c in _order)
                         Container(
                           width: _cols[c].$2,
                           height: _rowH,
@@ -363,7 +376,7 @@ void main() {
                   const SizedBox(height: 12),
                   for (final n in _notes)
                     SizedBox(
-                      width: 1850,
+                      width: 1950,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Text(n, style: const TextStyle(fontSize: 12, height: 1.35)),
@@ -377,7 +390,7 @@ void main() {
       ),
     ));
     await tester.pump();
-    for (final c in [0, 1, 2, 4, 5, 6, 7, 8, 9]) {
+    for (final c in [0, 1, 2, 12, 4, 5, 6, 7, 8, 9]) {
       for (final r in [2, 3]) {
         final target = find
             .descendant(
