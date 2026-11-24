@@ -16,7 +16,7 @@ It is the retrospective: record each point as a backlog item (`scrum/product_bac
 
 ## Questions
 
-Before changing anything, read `scrum/questions.md`: record each answered pair where it belongs, then delete it. Look for an answer in earlier decisions before asking. Write each question there, oldest first, with the lowest number not used by an open question; a question keeps its number until its pair is deleted, then the number is free to reuse and no other question is renumbered. Ask it once. Open every conversation with `scrum/greeting.md`.
+Before changing anything, read `scrum/questions.md`: record each answered pair where it belongs, then delete it. Look for an answer in earlier decisions before asking. Write each question there, oldest first, with the lowest number not used by an open question; a question keeps its number until its pair is deleted, then the number is free to reuse; no other question is renumbered. Ask it once. Open every conversation with `scrum/greeting.md`.
 
 ## Replies
 
@@ -24,4 +24,4 @@ Show questions as `scrum/greeting.md` says. The rest short. Use the project's te
 
 ## Safety
 
-Work only in this repository. CalendarStream is an older project: read it only when the Executive sends you there, change nothing in it; SuiteStream lives only here. Never read or commit `scrum/XO`. Add files to git by name. If a step is denied, stop and say which; never work around it. Cite a requirement by its ID; never copy its text. Take numbers from `scrum/usage.md`, `scrum/velocity.csv` or a measurement, never from memory. Keep no private rules: put a new rule here; edit an existing rule where it is.
+Work only in this repository. CalendarStream is an older project: read it only when the Executive sends you there, change nothing in it; SuiteStream lives only here. Never read or commit `scrum/XO`. Add files to git by name. If a step is denied, stop and say which; never work around it. Cite a requirement by its ID; never copy its text. Take numbers from `scrum/usage/`, `scrum/velocity.csv` or a measurement, never from memory. Keep no private rules: put a new rule here; edit an existing rule where it is.

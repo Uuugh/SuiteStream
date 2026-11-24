@@ -21,7 +21,7 @@ Options:
 |---|---|---|
 | `--port <n>` | 8081 | Port to listen on |
 | `--progress <dir>` | none | Folder of agent progress files, each named by the agent's label and holding `done/total`. It must exist |
-| `--root <dir>` | `../..` | The repository. The server reads `requirements/`, `scrum/sprint.md` and `scrum/usage.md` there and refuses any path outside it |
+| `--root <dir>` | `../..` | The repository. The server reads `requirements/`, `scrum/sprint.md` and `scrum/usage/usage.log` there and refuses any path outside it |
 | `--web <dir>` | `build/web` | The built page |
 
 The server writes one file only: `scrum/sprint.md` (`PUT /api/sprint`). It runs no shell and no process, and holds

@@ -189,12 +189,12 @@ void main() {
       final files = [
         '${repo.path}/requirements/demo.md',
         '${repo.path}/scrum/sprint.md',
-        '${repo.path}/scrum/usage.md',
+        '${repo.path}/scrum/usage/usage.log',
         '${repo.path}/progress/Nakamura',
       ];
       var previous = first;
       for (final f in files) {
-        final file = File(f);
+        final file = File(f)..parent.createSync(recursive: true);
         file.writeAsStringSync(
           '${file.existsSync() ? file.readAsStringSync() : ''}x',
         );

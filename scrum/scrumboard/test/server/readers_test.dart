@@ -259,20 +259,18 @@ Retro text.
       expect(readUsage(repo), {'exists': false, 'rows': <Object>[]});
     });
 
-    test('SCB-14.g a usage file with no Usage table gives no rows', () {
-      put('scrum/usage.md',
-          '| Sprint | Story | Date |\n|---|---|---|\n| s1 | a | b |\n');
+    test('SCB-14.g a usage log with no row of the model gives no rows', () {
+      put('scrum/usage/usage.log',
+          '# header\n2026-11-22|ChatGPT|?|15|?|?|2|?|-|n|auto|?|?\n');
       expect(readUsage(repo), {'exists': true, 'rows': <Object>[]});
     });
 
-    test('SCB-14.a reads the first table with the seven usage columns', () {
+    test('SCB-14.a reads the rows of the model from the usage log', () {
       put(
-        'scrum/usage.md',
-        '| Sprint | Story |\n|---|---|\n| s | t |\n\n'
-        '| Block | Estimate session % | Estimate weekly % | Before session % '
-        '| Before weekly % | After session % | After weekly % |\n'
-        '|---|---|---|---|---|---|---|\n'
-        '| S1 | 5 | 2 | 10 | 20 | 16 | – |\n',
+        'scrum/usage/usage.log',
+        '# header\n'
+        '2026-11-22|ChatGPT|?|15|?|?|2|?|-|chat|auto|?|?\n'
+        '2026-11-23|Sonnet 5.5|10|16|6|20|?|?|3|S1|auto|5|2\n',
       );
       final u = readUsage(repo);
       expect(u['exists'], isTrue);
@@ -285,6 +283,20 @@ Retro text.
         'afterSession': 16,
         'afterWeekly': null,
       });
+    });
+
+    test('SCB-14.a an estimate of ? becomes null', () {
+      put('scrum/usage/usage.log',
+          '2026-11-23|Sonnet 5.5|10|16|6|20|22|2|3|S1|auto|?|?\n');
+      final row = (readUsage(repo)['rows'] as List<dynamic>).single as Map;
+      expect(row['estimateSession'], isNull);
+      expect(row['estimateWeekly'], isNull);
+    });
+
+    test('SCB-14.a a row with fewer than 13 columns is skipped', () {
+      put('scrum/usage/usage.log',
+          '2026-11-23|Sonnet 5.5|10|16|6|20|22|2|3|S1|auto|5\n');
+      expect(readUsage(repo), {'exists': true, 'rows': <Object>[]});
     });
   });
 }

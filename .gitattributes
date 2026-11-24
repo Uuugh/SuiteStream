@@ -1,0 +1,2 @@
+*.sh text eol=lf
+scrum/usage/usage.log text eol=lf

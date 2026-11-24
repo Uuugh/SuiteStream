@@ -216,7 +216,7 @@ class ScrumBoardServer {
 
     walk(Directory(resolveInside(root, 'requirements')), onlyMd: true);
     add(File(resolveInside(root, 'scrum/sprint.md')));
-    add(File(resolveInside(root, 'scrum/usage.md')));
+    add(File(resolveInside(root, 'scrum/usage/usage.log')));
     final progress = progressDir;
     if (progress != null) walk(progress, onlyMd: false);
     var hash = 0xcbf29ce484222325 & 0x7fffffffffffffff;

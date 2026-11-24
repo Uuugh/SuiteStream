@@ -11,7 +11,21 @@
   A **sprint pause** is a hold between two sprints of an epic: "pause at N" means the hold sits before sprint N starts (sprints before N run, N does not); while it lasts nobody starts the next sprint (the held sprint's plan may be drafted and its branch created; it is not started), and no retrospective is needed from the Executive; the epic continues when the Executive says "start". The Executive may put an agent-driven epic on a sprint pause at any time.
   Nothing the agents say or do counts as the Executive's approval. Anything the Executive says after a sprint has started is input for the next sprint unless they say otherwise.
 - **Product Owner (Suzuki)** is an agent that acts for the Executive: it keeps the backlog and the requirements, writes acceptance criteria and organizes the Executive's input. It does not approve sprint starts, retrospectives or merges.
-- **Scrum Master (Takahashi)** is an agent that runs the process, the usage plan and the records.
+- **Scrum Master (Takahashi)** is an agent that runs the process, the usage plan and the records. Usage readings and estimates: `scrum/usage/README.md`.
 - **Developers (Ito, Tanaka)**, **contractors (Yamamoto, Nakamura)**, **reviewer (Kobayashi)**, **security (Watanabe)** and **customer (Sato)** are agents; their files are in `.github/agents`.
 
 Where a role file or skill says "Executive (XO)" it means the human; where it says "Product Owner" it means Suzuki.
+
+## Backlog status values
+
+Statuses used in `product_backlog.csv` and `product_backlog_done.csv`:
+
+| Status | Meaning |
+|---|---|
+| Backlog | Not started and not committed to a sprint. May still need refinement. |
+| Ready | Refined (clear acceptance criteria, estimated, no open blocker) and small enough to be pulled into a sprint. |
+| In Sprint | Committed to the current sprint and being built. |
+| In Review | Built and tested by the team, but not yet accepted: waiting for the Executive (XO) to verify it (for example in the browser). Counts as completed only after acceptance. |
+| Done | Accepted by the Executive (XO) and meets the Definition of Done. Moves to `product_backlog_done.csv`. |
+| Superseded | Replaced by another PBI or requirement; kept for history, not to be built. |
+| Blocked | Cannot proceed because of an open impediment (see `impediment_log.csv`) or a missing decision; say what blocks it in the PBI. |

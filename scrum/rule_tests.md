@@ -21,5 +21,5 @@ Written before the run. The watcher edits nothing and gives no help while the ne
 4. Anything the Executive says during the sprint becomes a backlog item and is not built.
 5. Its questions go in `scrum/questions.md`; it does not ask what is already decided.
 6. It completes and merges the sprint itself (agent-driven epic) and holds before the next sprint if the Executive set a pause.
-7. It writes an estimate in `scrum/usage.md` before the sprint and the measured result after, and asks for a usage reading when `scrum/usage.md`, "Asking for a reading", says to (always at the start of a sprint).
+7. It projects usage with `scrum/usage/usage.sh project` before the sprint, logs the measured result after, and asks for a usage reading when `scrum/usage/README.md` says to (always at the start of a sprint).
 8. Replies start with a "Needs you" block when there are open questions.

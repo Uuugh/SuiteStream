@@ -1,0 +1,8 @@
+# time|model|session_before|session_after|session_delta|week_before|week_after|week_delta|points|note|used|est_session|est_week  (append-only; used=auto: usage.sh decides each run which rows enter the estimate; est_* = the estimate as it stood after that row; backfilled from the old scrum/usage table and scrum/velocity.csv; one log for all models and tools, estimated per model, never mixed; ? or - = unknown or not applicable)
+# Omitted: sprint001, sprint003, sprint008-010 and the first sprint011 row, because points are not stated, no real reading exists or the delta spans a window reset.
+2026-11-21|Sonnet 5.5|9|20|11|90|92|2|15|sprint002|auto|0.733|0.133
+2026-11-23|Sonnet 5.5|27|58|31|30|34|4|8|sprint011|auto|2.304|0.317
+2026-11-23T23:18|Sonnet 5.5|0|17|17|37|40|3|8|sprint012 (window reset 10:50 PM; before-reading 0 after the reset)|auto|2.125|0.375
+2026-11-23T23:36|Sonnet 5.5|17|37|20|40|42|2|10|sprint013|auto|2.062|0.287
+2026-11-22|ChatGPT|?|15|?|?|2|?|-|Sprint 005 planning awaiting approval; used = 100 - remaining; 5-hour reset in 3h 33m; weekly reset in 6d 22h; no points|auto|?|?
+2026-11-22|Copilot Fusion|-|-|-|-|-|-|-|inline suggestions used 27%; included credits used 96%; not session/week; no points|auto|?|?
