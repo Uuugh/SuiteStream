@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/theme/tokens.dart';
 
@@ -38,6 +39,10 @@ class SuiteAnimationScope extends InheritedWidget {
 const double suiteControlRadius = 8;
 const double suitePanelRadius = 12;
 const double suiteControlHeight = 34;
+
+/// Square box of a compact icon-only button next to a field (the duplicate
+/// button in the event dialog).
+const double suiteCompactIconBox = 26;
 const double suiteCompactControlHeight = 28;
 const double suitePartGap = 5;
 const double suiteStackedZoneGap = 6;
@@ -70,9 +75,6 @@ const double suiteColorPickerWidth = 7 * suiteSwatchSize + 6 * suiteSwatchGap;
 const double suiteLocalCalendarsDialogWidth = 440;
 const double suiteDefaultAvatarRadius = 6;
 const Size suiteResizeBarSize = Size(29, 8);
-const double suiteListColorBarWidth = 4;
-const double suiteListColorBarHeight = 18;
-const double suiteListColorBarGap = 8;
 /// Header sizes (Nakamura, UIC-14): room a short title keeps before the zones stack, the
 /// clock badge text and padding, the app bar height and the logo.
 const double suiteHeaderShortTitleWidth = 160;
@@ -202,4 +204,18 @@ ThemeData buildSuiteTheme(Brightness brightness) {
     ),
     extensions: <ThemeExtension<dynamic>>[t],
   );
+}
+
+/// DEF-01, SET-03.m: how long the word of a pressed Cancel | Save pair (Saved,
+/// Cancelled) is held. Without a scope, [defaultStatusWordTime] applies.
+class SuiteStatusWordScope extends InheritedWidget {
+  const SuiteStatusWordScope({super.key, required this.duration, required super.child});
+
+  final Duration duration;
+
+  static Duration of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SuiteStatusWordScope>()?.duration ?? defaultStatusWordTime;
+
+  @override
+  bool updateShouldNotify(SuiteStatusWordScope old) => duration != old.duration;
 }

@@ -9,7 +9,8 @@ import 'package:suitestream/src/theme/suite_theme.dart';
 ///
 /// A row that is too narrow stacks its zones: left on top, then center, then
 /// right. [leftMinWidth], [centerMinWidth] and [rightMinWidth] say how much room
-/// each zone needs to be on the one line.
+/// each zone needs to be on the one line. A zone that still does not fit clips at
+/// its edge and ends its text with a triple dot; it never scrolls (step 3).
 class ZonedRow extends StatelessWidget {
   const ZonedRow({
     super.key,
@@ -40,20 +41,21 @@ class ZonedRow extends StatelessWidget {
     bool reverseScroll = false,
   }) => LayoutBuilder(
     builder: (context, box) {
-      final row = Row(
-        textDirection: TextDirection.ltr,
-        mainAxisSize: MainAxisSize.min,
-        children: children,
+      // UIC-14 step 3: a control zone never scrolls. Its text ends in a triple dot at
+      // the zone's edge; whatever else does not fit is clipped there.
+      final wrapped = [for (final child in children) child is Text ? Flexible(child: child) : child];
+      final row = DefaultTextStyle.merge(
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
+        child: Row(textDirection: TextDirection.ltr, mainAxisSize: MainAxisSize.min, children: wrapped),
       );
-      final needsFlex = children.any((child) => child is Flexible);
-      // Give flexible labels a real width so their ellipsis can take effect.
-      final compressedWidth = minWidth * 0.8;
-      final width = box.maxWidth < compressedWidth
-          ? compressedWidth
-          : box.maxWidth;
+      final needsFlex = wrapped.any((child) => child is Flexible);
+      final width = box.maxWidth;
       return SingleChildScrollView(
         key: key,
         scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
         reverse: reverseScroll,
         child: needsFlex && width.isFinite
             ? ConstrainedBox(

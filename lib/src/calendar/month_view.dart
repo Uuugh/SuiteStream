@@ -205,7 +205,7 @@ class _EventLine extends StatelessWidget {
     final color = c.colorOf(event);
     final muted = event.deleted || event.hiddenFromGoogle;
     final base = muted ? t.muted : Color(color ?? defaultEventColor);
-    final chipFill = Color.alphaBlend(base.withValues(alpha: 0.18), t.scheme.surface);
+    final chipFill = base; // EVT-03.b: the chip fills with the event's own color
     return DragMovable(
       key: ValueKey('event-${event.id}'),
       longPress: c.longPress,

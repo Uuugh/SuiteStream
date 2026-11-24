@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_initializing_formals
+// ignore_for_file: prefer_initializing_formals -- the constructor takes public named parameters (prefs:, localZone:, timeFormat:) for private fields, which an initializing formal cannot do.
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/theme/suite_theme.dart' show defaultAnimationDuration;
 import 'package:suitestream/src/theme/event_colors.dart' show nextCalendarColor;
 import 'package:suitestream/src/time/length_input.dart';

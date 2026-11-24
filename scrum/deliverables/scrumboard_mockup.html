@@ -1,0 +1,233 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ScrumBoard mockup v2</title>
+<style>
+:root{--bg:#121318;--card:#1b1b21;--soft:#34343a;--line:#44464f;--text:#e3e2e9;--muted:#c5c6d0;--accent:#b0c6ff;--onacc:#162e60;--ok:#bfc6dc;--okbg:#3f4759;--runbg:#2f4578;--warn:#e2bbdb;--warnbg:#5a3d55;--bad:#ffb4ab}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font:400 14px "IBM Plex Sans","Segoe UI",system-ui,sans-serif}
+.page{width:1600px;height:1000px;padding:12px;display:grid;grid-template-rows:2fr 1fr 2fr;gap:12px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:0;min-width:0;display:flex;flex-direction:column;position:relative}
+.ph{display:flex;align-items:center;gap:8px;padding:8px 12px;min-height:50px;flex:none}
+.ph h2{margin:0;font-size:15px;font-weight:700;flex:none}
+.note{font-size:13px;color:var(--muted)}
+.sp{flex:1}
+.btn{height:34px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--accent);font-family:inherit;font-weight:600;font-size:14px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;flex:none}
+.btn.fill{background:var(--accent);color:var(--onacc);border-color:var(--accent)}
+.btn.sq{width:34px;padding:0;justify-content:center;font-size:20px;font-weight:500}
+.sel{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;flex:none}
+.sel:after{content:"\25BE"}
+.chip{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:2px 8px;flex:none}
+.c-backlog{background:var(--soft);color:var(--muted)}.c-planned{background:var(--runbg);color:var(--accent)}.c-done{background:var(--okbg);color:var(--ok)}
+.mono{font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px;color:var(--muted);flex:none}
+.scroll{overflow-y:auto;min-height:0;flex:1;padding:0 12px 10px}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+/* board */
+.bwrap{position:relative;flex:1;min-height:0;margin:0 12px 0;overflow:hidden}
+.backlog{position:absolute;left:0;top:0;bottom:22px;width:380px;z-index:3;box-shadow:8px 0 14px rgba(0,0,0,.55)}
+.tl{position:absolute;left:190px;top:0;bottom:22px;display:flex;gap:10px;z-index:1}
+.blk{background:var(--bg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:0;flex:none;width:380px}
+.backlog{background:var(--bg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:0}
+.bh{padding:9px 10px 5px;display:flex;align-items:center;gap:8px}
+.bh b{font-size:14px}
+.sm{width:70px;height:8px;border-radius:4px;background:var(--soft);position:relative;overflow:hidden;flex:none}
+.sm i{position:absolute;left:0;top:0;bottom:0;background:var(--accent)}
+.sm.warn i{background:var(--warn)}
+.bd{overflow-y:auto;padding:2px 10px 10px;display:flex;flex-direction:column;gap:6px;min-height:0;flex:1}
+.story{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;flex:none}
+.story .t{font-weight:600}
+.it{color:var(--muted);margin-top:3px;display:flex;gap:6px;align-items:baseline}
+.meter{height:8px;border-radius:4px;background:var(--soft);position:relative;overflow:hidden}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
+.meter.warn i{background:var(--warn)}
+.mrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:5px}
+.mrow .meter{flex:1}
+.epic{border:1px dashed var(--line);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:6px;flex:none}
+.eh{font-weight:600;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.acc{height:28px;font-size:12px;padding:0 10px}
+.hsb{position:absolute;left:0;right:0;bottom:2px;height:12px;background:var(--soft);border-radius:6px;z-index:4}
+.hsb i{position:absolute;left:12%;width:52%;top:2px;bottom:2px;background:var(--line);border-radius:4px;background:#6b6d78}
+.hsb:before{content:"\25C0";position:absolute;left:3px;top:-2px;font-size:8px;color:var(--muted)}
+.hsb:after{content:"\25B6";position:absolute;right:3px;top:-2px;font-size:8px;color:var(--muted)}
+.fi{display:flex;gap:8px;align-items:baseline;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:5px 9px;flex:none}
+.fi .s{flex:1}
+.fh2{font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;padding-top:2px}
+/* usage */
+.meters{padding:0 12px 0;display:flex;flex-direction:column;gap:0;flex:1;min-height:0}
+.mt{display:grid;grid-template-columns:62px 1fr;align-items:center;gap:8px;font-size:13px;height:50px}
+.axis{position:relative;height:46px;margin-right:34px}
+.track{position:absolute;left:0;right:0;top:15px;height:16px;background:var(--soft);border-radius:4px}
+.seg{position:absolute;top:15px;height:16px;border-radius:3px}
+.bar{background:var(--accent)}.est{background:rgba(176,198,255,.32);border:1px solid rgba(176,198,255,.55)}
+.proj{background:repeating-linear-gradient(90deg,rgba(226,187,219,.45) 0 6px,rgba(226,187,219,.2) 6px 12px);border-right:3px solid var(--warn);border-radius:3px 0 0 3px}
+.line100{position:absolute;right:0;top:9px;height:28px;border-right:2px solid var(--muted)}
+.tri{position:absolute;left:100%;top:12px;margin-left:4px;width:0;height:0;border-top:11px solid transparent;border-bottom:11px solid transparent;border-left:14px solid var(--warn)}
+.lab{position:absolute;font-size:11px;color:var(--muted);white-space:nowrap;top:-2px}
+.tick{position:absolute;top:34px;font-size:10px;color:var(--muted);transform:translateX(-50%)}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);padding:2px 12px 8px;align-items:center;flex:none}
+.legend s{display:inline-block;width:14px;height:8px;margin-right:5px;border-radius:2px;text-decoration:none}
+.ag{display:grid;grid-template-columns:90px 1fr 44px;align-items:center;gap:10px;padding:2px 0;font-size:13px}
+.ag .meter{height:10px}.ag .n{text-align:right;font-weight:600}
+/* bottom */
+.bot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-height:0}
+.frow{display:flex;gap:8px;padding:0 12px 8px;align-items:center;flex:none}
+.feat{padding:6px 0;border-bottom:1px solid var(--line)}
+.fh{display:flex;align-items:center;gap:8px;font-weight:600}
+.tg{color:var(--muted);width:12px;font-size:11px;flex:none}
+.req{display:flex;align-items:baseline;gap:8px;padding:4px 0 2px 20px;font-size:13px}
+.req.sub{padding-left:42px}.req .s{flex:1}
+.iss{display:grid;grid-template-columns:40px 1fr auto;gap:2px 8px;padding:5px 0 5px 20px;font-size:13px}
+.iss .t{font-weight:600}.iss .m{grid-column:2/4;color:var(--muted);font-size:12px;display:flex;gap:10px}
+.badge{background:var(--bad);color:#690005;border-radius:10px;font-size:12px;font-weight:700;padding:1px 8px}
+.q{border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:9px;background:var(--bg)}
+.q .a{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.q p{margin:4px 0 5px}
+.ch{display:flex;flex-direction:column;gap:3px;margin-bottom:7px;font-size:13px}
+.ch span:before{content:"";display:inline-block;width:12px;height:12px;border:2px solid var(--muted);border-radius:50%;vertical-align:-2px;margin-right:8px}
+.ch span.on:before{border-color:var(--accent);background:radial-gradient(var(--accent) 40%,transparent 45%)}
+.arow{display:flex;gap:8px;align-items:center}
+.ans{flex:1;border:1px solid var(--line);border-radius:8px;height:34px;padding:7px 10px;color:var(--muted);font-size:13px}
+.new{background:var(--accent);color:var(--onacc);font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px}
+</style></head><body>
+<div class="page">
+
+<!-- ROW 1: BOARD (40%) -->
+<div class="panel">
+ <div class="ph"><h2>Board</h2><span class="note">Sprint 010 current &middot; older sprints to the left</span><span class="sp"></span><button class="btn">Reload</button><button class="btn sq" title="Add block">+</button></div>
+ <div class="bwrap">
+  <div class="tl">
+   <!-- Sprint 009 peeks in from behind the Backlog -->
+   <div class="blk"><div class="bh"><b>Sprint 009</b><span class="chip c-done">accepted</span><span class="sp"></span><span class="note">64 / 70</span><div class="sm"><i style="width:91%"></i></div></div>
+    <div class="bd">
+     <div class="story"><div class="t">Theme seed and palettes</div><div class="it"><span class="mono">THM-02</span><span>Light and dark from one seed</span></div></div>
+     <div class="story"><div class="t">Popup shadow</div><div class="it"><span class="mono">THM-10</span><span>Depth setting</span></div></div>
+    </div></div>
+   <div class="blk" style="border-color:var(--accent)"><div class="bh"><b>Sprint 010</b><span class="chip c-planned">current</span><span class="sp"></span><span class="note">62 / 80</span><div class="sm"><i style="width:77%"></i></div><button class="btn fill acc">Accept</button></div>
+    <div class="bd">
+     <div class="story"><div class="t">Settings: animation time</div>
+       <div class="it"><span class="mono">SET-03.c</span><span>Animation slider with reduced motion</span></div>
+       <div class="it"><span class="mono">#38</span><span>Slider jumps at 2 s</span></div>
+       <div class="mrow"><span>21 / 25</span><div class="meter"><i style="width:84%"></i></div></div></div>
+     <div class="story"><div class="t">Header layout</div>
+       <div class="it"><span class="mono">UIC-14</span><span>Short title keeps its room</span></div>
+       <div class="it"><span class="mono">#44</span><span>Header stacks too early</span></div>
+       <div class="mrow"><span>30 / 25</span><div class="meter warn"><i style="width:100%"></i></div></div></div>
+     <div class="story"><div class="t">ScrumBoard shell</div>
+       <div class="it"><span class="mono">SCB-06</span><span>Board with Backlog block</span></div>
+       <div class="mrow"><span>11 / 30</span><div class="meter"><i style="width:37%"></i></div></div></div>
+    </div></div>
+   <div class="blk"><div class="bh"><b>Sprint 011</b><span class="chip c-backlog">planned</span><span class="sp"></span><span class="note">0 / 70</span><div class="sm"><i style="width:0"></i></div><button class="btn acc" style="opacity:.5">Accept</button></div>
+    <div class="bd">
+     <div class="epic"><div class="eh"><span>Epic: Connections</span><span class="note">0 / 45</span></div>
+      <div class="story"><div class="t">Twitch sign-in</div><div class="it"><span class="mono">CON-02</span><span>Device-code login</span></div><div class="mrow"><span>0 / 25</span><div class="meter"><i style="width:0"></i></div></div></div>
+      <div class="story"><div class="t">Token refresh</div><div class="it"><span class="mono">CON-05</span><span>Refresh before expiry</span></div><div class="mrow"><span>0 / 20</span><div class="meter"><i style="width:0"></i></div></div></div>
+     </div>
+     <div class="story"><div class="t">Chat overlay</div><div class="it"><span class="mono">CHT-01</span><span>Pop-out chat window</span></div><div class="mrow"><span>0 / 25</span><div class="meter"><i style="width:0"></i></div></div></div>
+    </div></div>
+   <div class="blk"><div class="bh"><b>Sprint 012</b><span class="chip c-backlog">planned</span><span class="sp"></span><span class="note">0 / 60</span><div class="sm"><i style="width:0"></i></div><button class="btn acc" style="opacity:.5">Accept</button></div>
+    <div class="bd"><div class="story"><div class="t">Calendar week numbers</div><div class="it"><span class="mono">CAL-14</span><span>ISO week in header</span></div></div></div></div>
+  </div>
+  <div class="backlog">
+   <div class="bh"><b>Backlog</b><span class="chip c-backlog">9</span></div>
+   <div class="bd">
+    <div class="fh2"><span class="tg">&#9662;</span>Calendar</div>
+    <div class="fi"><span class="mono">CAL-14</span><span class="s">Week numbers in the header</span></div>
+    <div class="fi"><span class="mono">#35</span><span class="s">Event dialog loses focus</span></div>
+    <div class="fh2"><span class="tg">&#9662;</span>Theme</div>
+    <div class="fi"><span class="mono">#41</span><span class="s">Dark clock badge too faint</span></div>
+    <div class="fh2"><span class="tg">&#9662;</span>Settings</div>
+    <div class="fi"><span class="mono">SET-05</span><span class="s">Reset all settings</span></div>
+    <div class="fh2"><span class="tg">&#9654;</span>Connections</div>
+   </div></div>
+  <div class="hsb"><i></i></div>
+ </div>
+</div>
+
+<!-- ROW 2 (20%) -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0">
+ <div class="panel">
+  <div class="ph" style="min-height:40px;padding-bottom:0"><h2>Usage chart</h2><span class="note">% of limit, 0 to 100</span></div>
+  <div class="meters">
+   <div class="mt"><b>Session<br><span class="note" style="font-weight:400">5 hours</span></b>
+    <div class="axis"><div class="track"></div><div class="line100"></div>
+     <div class="seg est" style="left:18%;width:30%"></div><div class="seg bar" style="left:18%;width:24%"></div>
+     <div class="lab" style="left:18%">Sprint 010 &middot; 18 &rarr; 42</div>
+     <div class="seg proj" style="left:42%;width:22%"></div>
+     <div class="lab" style="left:60%">Sprint 011 projected 64</div>
+     <div class="tick" style="left:0">0</div><div class="tick" style="left:50%">50</div><div class="tick" style="left:100%">100</div></div></div>
+   <div class="mt"><b>Week<br><span class="note" style="font-weight:400">7 days</span></b>
+    <div class="axis"><div class="track"></div><div class="line100"></div>
+     <div class="seg est" style="left:31%;width:26%"></div><div class="seg bar" style="left:31%;width:21%"></div>
+     <div class="lab" style="left:31%">Sprint 010 &middot; 31 &rarr; 52</div>
+     <div class="seg proj" style="left:52%;width:48%;border-right:0"></div><div class="tri"></div>
+     <div class="lab" style="left:68%;color:var(--warn)">Sprint 011 projected 112 (above 100)</div>
+     <div class="tick" style="left:0">0</div><div class="tick" style="left:50%">50</div><div class="tick" style="left:100%">100</div></div></div>
+  </div>
+  <div class="legend"><span><s style="background:var(--accent)"></s>before to after</span><span><s style="background:rgba(176,198,255,.32);border:1px solid rgba(176,198,255,.55)"></s>estimate band</span><span><s style="background:var(--warn)"></s>projection, ends in a mark</span><span><s style="background:transparent;border-left:8px solid var(--warn);border-top:5px solid transparent;border-bottom:5px solid transparent;width:0;height:0"></s>above 100</span></div>
+ </div>
+ <div class="panel">
+  <div class="ph" style="min-height:40px"><h2>Agent progress</h2><span class="sp"></span><span class="note">updated 12 s ago</span></div>
+  <div class="scroll" style="display:grid;grid-template-columns:1fr 1fr;column-gap:24px;align-content:start;grid-template-rows:repeat(4,auto) auto;grid-auto-flow:column">
+   <div class="ag"><span>Takahashi</span><div class="meter"><i style="width:70%"></i></div><span class="n">7/10</span></div>
+   <div class="ag"><span>Nakamura</span><div class="meter"><i style="width:100%"></i></div><span class="n">4/4</span></div>
+   <div class="ag"><span>Ito</span><div class="meter"><i style="width:40%"></i></div><span class="n">4/10</span></div>
+   <div class="ag"><span>Kobayashi</span><div class="meter"><i style="width:25%"></i></div><span class="n">2/8</span></div>
+   <div class="ag"><span>Tanaka</span><div class="meter"><i style="width:90%"></i></div><span class="n">9/10</span></div>
+   <div class="ag"><span>Suzuki</span><div class="meter"><i style="width:50%"></i></div><span class="n">3/6</span></div>
+   <div class="ag"><span>Yamamoto</span><div class="meter"><i style="width:60%"></i></div><span class="n">3/5</span></div>
+   <div class="ag" style="grid-column:1/3;grid-row:5;border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><b>Sprint 010 points</b><div class="meter" style="height:12px"><i style="width:58%"></i></div><span class="n">29/50</span></div>
+  </div>
+ </div>
+</div>
+
+<!-- ROW 3 (40%) -->
+<div class="bot">
+ <div class="panel">
+  <div class="ph"><h2>Features</h2><span class="note">38 of 212</span><span class="sp"></span><button class="btn sq" title="New requirement">+</button></div>
+  <div class="frow"><span class="sel">Feature</span><span class="sel">Requirement</span><span class="sel">Status</span><span class="sp"></span><span class="sel" style="color:var(--text)">Expand all</span></div>
+  <div class="scroll">
+   <div class="feat"><div class="fh"><span class="tg">&#9662;</span>Calendar <span class="note" style="font-weight:400">CAL</span></div>
+    <div class="req"><span class="tg">&#9654;</span><span class="mono">CAL-01</span><span class="s">Month grid shows seven columns</span><span class="chip c-done">done</span></div>
+    <div class="req"><span class="tg">&#9662;</span><span class="mono">CAL-14</span><span class="s">Week numbers in the header</span><span class="chip c-backlog">backlog</span></div>
+    <div class="req sub"><span class="mono">CAL-14.a</span><span class="s">ISO weeks, Monday first</span><span class="chip c-backlog">backlog</span></div>
+    <div class="req sub"><span class="mono">CAL-14.b</span><span class="s">Hidden on phone width</span><span class="chip c-planned">planned</span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9662;</span>Settings <span class="note" style="font-weight:400">SET</span></div>
+    <div class="req"><span class="tg">&#9654;</span><span class="mono">SET-03</span><span class="s">Animation time and popup shadow</span><span class="chip c-planned">planned</span></div>
+    <div class="req"><span class="tg"></span><span class="mono">SET-05</span><span class="s">Reset all settings</span><span class="chip c-backlog">backlog</span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9662;</span>Theme <span class="note" style="font-weight:400">THM</span></div>
+    <div class="req"><span class="tg"></span><span class="mono">THM-02</span><span class="s">One seed makes light and dark</span><span class="chip c-done">done</span></div>
+    <div class="req"><span class="tg"></span><span class="mono">THM-10</span><span class="s">Popup shadow depth</span><span class="chip c-done">done</span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9654;</span>Connections <span class="note" style="font-weight:400">CON</span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9654;</span>ScrumBoard <span class="note" style="font-weight:400">SCB</span></div></div>
+  </div>
+ </div>
+ <div class="panel">
+  <div class="ph"><h2>Issues</h2><span class="note">6 of 41</span><span class="sp"></span><button class="btn sq" title="New issue">+</button></div>
+  <div class="frow"><span class="sel">Feature</span><span class="sel">Requirement</span><span class="sel">Status</span><span class="sp"></span><span class="sel" style="color:var(--text)">Expand all</span></div>
+  <div class="scroll">
+   <div class="feat"><div class="fh"><span class="tg">&#9662;</span>Calendar <span class="note" style="font-weight:400">2</span></div>
+    <div class="iss"><span class="mono">#35</span><span class="t">Event dialog loses focus</span><span class="chip c-planned">planned</span><span class="m"><span>&mdash;</span><span>Tanaka</span></span></div>
+    <div class="iss"><span class="mono">#31</span><span class="t">Color picker wraps on phone</span><span class="chip c-done">done</span><span class="m"><span>UIC-10</span><span>Kobayashi</span></span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9662;</span>Header <span class="note" style="font-weight:400">1</span></div>
+    <div class="iss"><span class="mono">#44</span><span class="t">Header stacks too early</span><span class="chip c-backlog">backlog</span><span class="m"><span>UIC-14</span><span>Nakamura</span></span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9662;</span>Settings <span class="note" style="font-weight:400">1</span></div>
+    <div class="iss"><span class="mono">#38</span><span class="t">Slider jumps at 2 s</span><span class="chip c-planned">planned</span><span class="m"><span>SET-03.c</span><span>Ito</span></span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9654;</span>Theme <span class="note" style="font-weight:400">1</span></div></div>
+   <div class="feat"><div class="fh"><span class="tg">&#9654;</span>Connections <span class="note" style="font-weight:400">3</span></div></div>
+   <div class="iss" style="padding-left:0"><span class="mono">#29</span><span class="t">Typo in startup message</span><span class="chip c-backlog">backlog</span><span class="m"><span>&mdash;</span><span>&mdash;</span></span></div>
+  </div>
+ </div>
+ <div class="panel">
+  <div class="ph"><h2>Questions</h2><span class="badge">2</span></div>
+  <div class="scroll">
+   <div class="q"><div class="a"><b style="color:var(--text)">Ito</b><span>Sprint 010</span><span class="new">new</span></div>
+    <p>Should a disabled Save button keep its fill or turn to the outline style?</p>
+    <div class="ch"><span class="on">Keep the fill, dim it</span><span>Outline style</span><span>Hide it until the title is filled</span></div>
+    <div class="arow"><div class="ans">Answer text&hellip;</div><button class="btn fill">Answered</button></div></div>
+   <div class="q"><div class="a"><b style="color:var(--text)">Tanaka</b><span>Sprint 010</span><span class="new">new</span></div>
+    <p>May the sprint's Accept also close the story's issues in the tracker?</p>
+    <div class="ch"><span>Yes</span><span>No, status label only</span></div>
+    <div class="arow"><div class="ans"></div><button class="btn fill">Answered</button></div></div>
+  </div>
+ </div>
+</div>
+
+</div></body></html>

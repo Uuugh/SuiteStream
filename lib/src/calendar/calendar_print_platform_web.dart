@@ -30,11 +30,11 @@ extension type _PrintWindow(JSObject _) implements JSObject {
 
 _PrintFrame? _activeFrame;
 
-void printCalendarHtml(String html) {
+void printCalendarHtml(String html, String title) {
   _activeFrame?.remove();
   final frame = _document.createElement('iframe');
   _activeFrame = frame;
-  frame.setAttribute('title', 'Calendar print');
+  frame.setAttribute('title', title);
   frame.setAttribute('aria-hidden', 'true');
   frame.setAttribute('tabindex', '-1');
   frame.setAttribute(

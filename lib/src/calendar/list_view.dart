@@ -34,7 +34,7 @@ class AgendaView extends StatelessWidget {
         onTap: () => openEventDialog(context, c, day: day),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+          padding: const EdgeInsets.fromLTRB(suitePagePadding, 10, suitePagePadding, 4),
           child: Text(
             dayTitle(locale, day),
             style: SuiteText.label(t).copyWith(color: isToday ? t.accent : t.text),
@@ -47,26 +47,30 @@ class AgendaView extends StatelessWidget {
         final when = e.allDay
             ? context.msg('allDay')
             : multiDayLabel(start: s, end: en, day: day, format: c.timeFormat, cont: context.msg('cont')) ??
-                '${formatTimeOfDay(s.hour, s.minute, c.timeFormat)} – ${formatTimeOfDay(en.hour, en.minute, c.timeFormat)}';
+                formatTimeOfDay(s.hour, s.minute, c.timeFormat); // CAL-09.c: the start only
         final color = c.colorOf(e);
+        final fill = Color(color ?? defaultEventColor);
+        final ink = eventTextColorOn(fill, Theme.of(context).brightness);
         rows.add(InkWell(
           key: ValueKey('event-${e.id}'),
           onTap: () => c.selectEvent(e.id), // EVT-07
-          child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-          child: Row(
-            children: [
-              Container(width: suiteListColorBarWidth, height: suiteListColorBarHeight, margin: const EdgeInsets.only(right: suiteListColorBarGap), color: Color(color ?? defaultEventColor)),
-              SizedBox(width: 120, child: Text(when, style: SuiteText.note(t))),
-              Expanded(
-                child: Text(
-                  e.title,
-                  overflow: TextOverflow.ellipsis,
-                  style: SuiteText.body(t).copyWith(decoration: e.deleted ? TextDecoration.lineThrough : null),
+          // EVT-03.b: the row fills with the event's own color; text readable on it (THM-10.h).
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: suitePagePadding, vertical: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: suiteLabelGap),
+            color: fill,
+            child: Row(
+              children: [
+                SizedBox(width: 120, child: Text(when, style: SuiteText.note(t).copyWith(color: ink))),
+                Expanded(
+                  child: Text(
+                    e.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: SuiteText.body(t).copyWith(color: ink, decoration: e.deleted ? TextDecoration.lineThrough : null),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         ));
       }

@@ -139,4 +139,46 @@ void main() {
     await tester.pumpAndSettle();
     expect(opacityOf(tester, text), 1);
   });
+
+  testWidgets('UIC-47: the info popup closes with the transition, and at once with reduced motion', (tester) async {
+    await tester.pumpWidget(
+      host(const InfoPopoverButton(text: 'Hello popup'), time: const Duration(milliseconds: 400)),
+    );
+    await tester.tap(find.byType(IconButton));
+    await tester.pumpAndSettle();
+    final text = find.text('Hello popup');
+    expect(opacityOf(tester, text), 1);
+
+    await tester.tapAt(const Offset(700, 500)); // outside closes it
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(text, findsOneWidget); // closing, not gone yet
+    final mid = opacityOf(tester, text);
+    expect(mid, greaterThan(0));
+    expect(mid, lessThan(1));
+    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pumpAndSettle();
+    expect(text, findsNothing);
+
+    // The button toggles it, too.
+    await tester.tap(find.byType(IconButton));
+    await tester.pumpAndSettle();
+    expect(text, findsOneWidget);
+    await tester.tap(find.byType(IconButton));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(text, findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(text, findsNothing);
+  });
+
+  testWidgets('UIC-47: the info popup goes at once with reduced motion', (tester) async {
+    await tester.pumpWidget(host(const InfoPopoverButton(text: 'Hello popup'), reduced: true));
+    await tester.tap(find.byType(IconButton));
+    await tester.pump();
+    expect(opacityOf(tester, find.text('Hello popup')), 1);
+    await tester.tapAt(const Offset(700, 500));
+    await tester.pump();
+    expect(find.text('Hello popup'), findsNothing);
+  });
 }

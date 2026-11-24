@@ -59,4 +59,34 @@ void main() {
     expect(text.overflow, TextOverflow.ellipsis);
     expect(tester.getSize(find.text(_long)).width, lessThanOrEqualTo(320));
   });
+
+  testWidgets('UIC-14 step 3: a control zone never scrolls; plain text ends in a triple dot', (tester) async {
+    tester.view.physicalSize = const Size(240, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildSuiteTheme(Brightness.light),
+        home: Scaffold(
+          body: ZonedRow(
+            leftMinWidth: 400,
+            left: const [Text(_long)],
+            right: [for (var i = 0; i < 12; i++) IconButton(onPressed: () {}, icon: const Icon(Icons.settings))],
+            rightMinWidth: 400,
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    final text = tester.widget<Text>(find.text(_long));
+    expect(text.overflow, isNull); // the zone's default style gives it the triple dot
+    expect(tester.getSize(find.text(_long)).width, lessThanOrEqualTo(240));
+    expect(tester.widget<DefaultTextStyle>(find.descendant(of: find.byKey(const ValueKey('zone-left')), matching: find.byType(DefaultTextStyle)).first).overflow, TextOverflow.ellipsis);
+    for (final key in ['zone-left', 'zone-right']) {
+      final scrollable = tester.widget<Scrollable>(find.descendant(of: find.byKey(ValueKey(key)), matching: find.byType(Scrollable)));
+      expect(scrollable.physics, isA<NeverScrollableScrollPhysics>(), reason: key);
+    }
+    final right = tester.getRect(find.byKey(const ValueKey('zone-right')));
+    expect(right.right, lessThanOrEqualTo(240.01));
+  });
 }

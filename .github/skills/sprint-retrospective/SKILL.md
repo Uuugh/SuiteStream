@@ -17,7 +17,7 @@ Use each sub-agent started in "Preparation" according to the instructions below 
 Yamamoto and Nakamura cannot participate in the retrospective due to contractual constraints. Proceed on the assumption that any feedback will be provided through Tanaka and Ito.
 
 ## Target Sprint
-Target the latest sprintXXX in the scrum folder (XXX is sequential).
+Target the latest sprintXXX in the scrum folder (XXX is sequential; the running sprint is `scrum/sprintXXX`, finished ones are in `scrum/sprints`).
 
 ## Pre-check
 1. Read `scrum/${sprint_number}/sprint_backlog.md` and review sprint results.
@@ -87,12 +87,13 @@ Based on the Scrum Guide, have the Suzuki, Ito, and Tanaka agents reflect on the
 
 ## Commit and merge on approval
 
-Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill). When the Product Owner approves the retrospective:
+Every sprint works on its own branch (`sprintNNN`, see the sprint-planning skill). When the Executive (XO) approves the retrospective:
 run `flutter analyze` and the full test suite first (continue only if they pass; otherwise report the failures and stop);
 commit everything for the sprint (except stray or generated files) on the sprint branch with a message like
 "Complete Sprint NNN <short summary>"; push the sprint branch; merge it into `main` and push `main`.
-The next sprint starts on a new branch from the updated `main`.
+Archive the finished sprint in the same commit, before the merge: move `scrum/sprintNNN` to `scrum/sprints/sprintNNN` (`git mv`) and change the path in any record that points at the sprint folder.
+The next sprint's branch is created from the updated `main` and the sprint is planned; it runs only when the Executive (XO) says "start" (except the next sprint of a usage-split epic).
 
 ## Automatic completion inside a usage epic
 
-If this sprint is part of an epic that was split to fit usage (see the Epics section of the `backlog-refinement` skill), the retrospective is recorded and the sprint is completed automatically (commit, push, merge, new branch) without waiting for approval. Tests and analysis must pass. The next sprint of the epic starts at once. The Product Owner reviews after the epic's last sprint.
+If this sprint is part of an epic that was split to fit usage (see the Epics section of the `backlog-refinement` skill), the retrospective is recorded and the sprint is completed automatically (commit, push, merge, new branch) without waiting for approval. Tests and analysis must pass. The next sprint of the epic starts at once. The Executive (XO) reviews after the epic's last sprint.

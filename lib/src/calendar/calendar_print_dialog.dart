@@ -113,7 +113,7 @@ class _PrintPreview extends StatelessWidget {
           saveLabel: messages('calendarPrint'),
           onCancel: () => Navigator.of(context).pop(),
           saveEnabled: calendarPrintingAvailable,
-          onSave: () => printCalendarHtml(sheet.html(messages)),
+          onSave: () => printCalendarHtml(sheet.html(messages), messages('calendarPrint')),
         ),
       ],
     );
@@ -254,8 +254,7 @@ class _PrintSheet {
                           format: calendar.timeFormat,
                           cont: messages('cont'),
                         ) ??
-                        '${_eventTime(event.startIn(location), calendar.timeFormat)} – '
-                            '${_eventTime(event.endIn(location), calendar.timeFormat)}',
+                        _eventTime(event.startIn(location), calendar.timeFormat),
               Color(calendar.colorOf(event) ?? defaultEventColor),
               event.deleted || event.hiddenFromGoogle,
               event.allDay

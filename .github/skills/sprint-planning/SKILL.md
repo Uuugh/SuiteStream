@@ -32,6 +32,7 @@ Kobayashi owns the plan review: Kobayashi reviews every sprint plan before the s
 Create `scrum/sprintXXX` for the sprint being planned.
 XXX must be the smallest unused sequential number that does not conflict with an existing sprint folder.
 Example: If `scrum/sprint001` already exists, this sprint is `scrum/sprint002`.
+The running sprint lives in `scrum/sprintXXX`; finished sprints are archived in `scrum/sprints/sprintXXX` (see the sprint-retrospective skill), so check both folders when choosing XXX.
 
 ## Topic 1: Why is this sprint valuable? (Why)
 - Have the Suzuki agent provide the sprint value proposal from the Product Owner's perspective.

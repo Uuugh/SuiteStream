@@ -20,9 +20,9 @@ String formatTimeOfDay(int hour, int minute, TimeFormat format) {
   }
 }
 
-/// CAL-09.c: the label of a timed event that spans dates, on [day]: "18:00-" (start time and
+/// CAL-09.c, CAL-09.g: the label of a timed event that spans midnight in the shown zone, on [day]: "18:00-" (start time and
 /// a hyphen) on its first day, "-04:00" (a hyphen and the end time) on its last day, and
-/// [cont] on the days between. Null when the event lies within one date (it keeps its
+/// [cont] on the days between. Null when the event lies within one date there (it keeps its
 /// ordinary label). An event that ends at exactly 00:00 ends on the day before.
 /// [start] and [end] must be in the zone the page shows.
 String? multiDayLabel({

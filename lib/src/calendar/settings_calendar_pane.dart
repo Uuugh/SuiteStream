@@ -142,6 +142,7 @@ class _CalendarFormState extends State<_CalendarForm> {
     widget.controller.localZone = fixed == null
         ? LocalZone.system(system)
         : LocalZone.fixed(fixed, systemZone: system);
+    pushSettingsSync(context);
   }
 
   /// The notes show as soon as a typed value is not valid.

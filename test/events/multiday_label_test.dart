@@ -148,4 +148,60 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.descendant(of: find.byType(AlertDialog), matching: find.text('-04:00 am Trip', findRichText: true)), findsOneWidget);
   });
+
+  group('CAL-09.g: the dash follows the displayed zone', () {
+    const tokyo = 'Asia/Tokyo';
+
+    /// Counts the dash labels among the shown event texts in the 'Trip' event chips.
+    List<String> labels(WidgetTester tester) => [
+          for (final t in tester.widgetList<Text>(find.textContaining('Trip')))
+            if (t.data != null) t.data!,
+        ];
+
+    testWidgets('a stored multi-day event appears within one day when the zone moves, and the dash goes', (tester) async {
+      useWindow(tester);
+      // New York 21:00 on 14 July to 01:00 on 15 July: spans midnight there.
+      final c = makeController(events: [_trip(hour: 21, hours: 4)], view: CalendarView.month);
+      addTearDown(c.dispose);
+      await tester.pumpWidget(appFor(CalendarPage(controller: c)));
+      expect(find.text('09:00 pm- Trip'), findsOneWidget);
+      expect(find.text('-01:00 am Trip'), findsOneWidget);
+      // Tokyo is 13 hours ahead: 15 July 10:00 to 14:00, one date.
+      c.viewZone = tokyo;
+      await tester.pump();
+      expect(labels(tester), ['10:00 am Trip']);
+      c.viewZone = null;
+      await tester.pump();
+      expect(find.text('09:00 pm- Trip'), findsOneWidget);
+    });
+
+    testWidgets('a single-day event gets the dash when the zone moves it across midnight', (tester) async {
+      useWindow(tester);
+      // New York 10:00 to 14:00 on 14 July.
+      final c = makeController(events: [_trip(hour: 10, hours: 4)], view: CalendarView.month);
+      addTearDown(c.dispose);
+      await tester.pumpWidget(appFor(CalendarPage(controller: c)));
+      expect(labels(tester), ['10:00 am Trip']);
+      // Tokyo: 14 July 23:00 to 15 July 03:00.
+      c.viewZone = tokyo;
+      await tester.pump();
+      expect(find.text('11:00 pm- Trip'), findsOneWidget);
+      expect(find.text('-03:00 am Trip'), findsOneWidget);
+    });
+
+    testWidgets('Week and List follow the zone the same way; a single-day List row shows the start only', (tester) async {
+      useWindow(tester);
+      final c = makeController(events: [_trip(hour: 21, hours: 4)], view: CalendarView.week);
+      addTearDown(c.dispose);
+      await tester.pumpWidget(appFor(CalendarPage(controller: c)));
+      expect(find.text('09:00 pm- Trip'), findsOneWidget);
+      c.viewZone = tokyo;
+      await tester.pump();
+      expect(labels(tester), ['10:00 am Trip']);
+      c.view = CalendarView.list;
+      await tester.pump();
+      expect(find.text('10:00 am'), findsOneWidget);
+      expect(find.textContaining('–'), findsNothing);
+    });
+  });
 }

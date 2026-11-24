@@ -6,7 +6,7 @@ The event pop-up, linked events, hiding and reverting.
 |---|---|---|---|
 | EVT-01 | backlog | The user adds, edits and removes events of their own, in a dialog. | — |
 | EVT-01.a | planned | Clicking a day in Month, a day's title in List, or an empty spot in Week, 5-day or Day (an empty all-day cell for an all-day event), or the + button, opens the new-event dialog for that date; in Week, 5-day and Day the start time is where the click occurred. The dialog follows the shared dialog rules (UIC-01, UIC-02). | test/calendar/ux_test.dart |
-| EVT-01.b | planned | A new event defaults to the device's time zone preference (SET-02.a), or to the calendar's time zone when the calendar has one selected. It can be saved into any calendar chosen in the source selector. With none chosen it goes to the default Local calendar (CLCL-03). A custom event appears on its calendar page. | test/events/event_dialog_test.dart |
+| EVT-01.b | planned | A new event defaults to the time zone of the Time Zones setting (SET-02.a), or to the calendar's time zone when the calendar has one selected. It can be saved into any calendar chosen in the source selector. With none chosen it goes to the default Local calendar (CLCL-03). A custom event appears on its calendar page. | test/events/event_dialog_test.dart |
 | EVT-01.c | backlog | Title, start date and end date are required. A start or end time left empty is filled in (EVT-02.n). | — |
 | EVT-01.d | backlog | The confirmation after saving an event names the event. | — |
 | EVT-01.e | planned | A custom event is deleted (asking first, UIC-06) and leaves its calendar; cancelling leaves it.\ | test/events/event_dialog_test.dart |
@@ -22,7 +22,7 @@ The event pop-up, linked events, hiding and reverting.
 | EVT-02.e | planned | An all-day event (TIM-04) is entered without times. | test/events/event_dialog_test.dart |
 | EVT-03 | backlog | An event has a place, a color, reminders and an online meeting address. | — |
 | EVT-03.a | planned | The location field updates a map link whose address is the URL-encoded location; the map action opens the location in Google Maps. | test/events/event_logic_test.dart |
-| EVT-03.b | planned | An event color is one of the shared palette colors (UIC-10, UIC-20); the chosen color shows on the event in every view (Month, Week, 5-day, Day and List), in print and on the edit page. | test/events/event_dialog_test.dart, test/events/event_color_views_test.dart |
+| EVT-03.b | planned | An event color is one of the shared palette colors (UIC-10, UIC-20); an event fills with its chosen color (never a gray or pale fill with a color bar), with its text pure black or pure white as THM-10.h says, in every view (Month, Week, 5-day, Day and List), in print and on the edit page. | test/events/event_dialog_test.dart, test/events/event_color_views_test.dart |
 | EVT-03.c | backlog | An event's own color beats its source color and any rule tag; changing an imported event's color keeps it and marks the event edited, not stale. | — |
 | EVT-03.d | planned | The default color follows the chosen calendar until a color is picked; a picked color survives a later calendar choice. | test/events/event_dialog_test.dart |
 | EVT-03.e | planned | An event's reminders are rows of a method (Notification), a number and a unit (minutes, hours, days or weeks), each from the event start back to the longest lead in DEF-01; at most the number in DEF-01 can be set, only valid ones are stored (15, 60 and 20,000 minutes stores 15, 60), and none stores nothing. | test/events/event_dialog_test.dart |

@@ -60,7 +60,7 @@ Future<void> _leave(WidgetTester tester, _Leave how) async {
     case _Leave.pageChange:
       await tester.tap(find.byKey(const ValueKey('settings-sources')));
     case _Leave.close:
-      await tester.tap(find.byKey(const ValueKey('settings-close')));
+      await tester.tap(find.byKey(const ValueKey('settings-back')));
     case _Leave.back:
       await tester.tap(find.byKey(const ValueKey('settings-back')));
   }
@@ -104,18 +104,22 @@ void main() {
   );
 
   for (final how in _Leave.values) {
-    testWidgets('UIC-45, SET-03.b: Theme stores the press delay at once and keeps it on ${how.name}', (
-      tester,
-    ) async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final c = await _open(tester, prefs, 'settings-theme');
-      await _type(tester, 'setting-press-delay', '0.8');
-      expect(c.longPress, const Duration(milliseconds: 800)); // applied at once
-      await _leave(tester, how);
-      expect(c.longPress, const Duration(milliseconds: 800));
-      expect(_controller(prefs).longPress, const Duration(milliseconds: 800));
-    });
+    testWidgets(
+      'UIC-45, SET-03.b: Theme stores the press delay at once and keeps it on ${how.name}',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final c = await _open(tester, prefs, 'settings-theme');
+        await _type(tester, 'setting-press-delay', '0.8');
+        expect(
+          c.longPress,
+          const Duration(milliseconds: 800),
+        ); // applied at once
+        await _leave(tester, how);
+        expect(c.longPress, const Duration(milliseconds: 800));
+        expect(_controller(prefs).longPress, const Duration(milliseconds: 800));
+      },
+    );
 
     testWidgets(
       'UIC-45, SET-03.b: Theme does not store an invalid press delay on ${how.name} and showed its note',
@@ -126,8 +130,8 @@ void main() {
         await _type(tester, 'setting-press-delay', '9');
         expect(find.text('Use a number from 0.2 to 1.5.'), findsOneWidget);
         await _leave(tester, how);
-        expect(c.longPress, const Duration(milliseconds: 300));
-        expect(_controller(prefs).longPress, const Duration(milliseconds: 300));
+        expect(c.longPress, const Duration(milliseconds: 200));
+        expect(_controller(prefs).longPress, const Duration(milliseconds: 200));
       },
     );
 

@@ -9,11 +9,6 @@ import 'package:suitestream/src/theme/suite_theme.dart';
 const double pairWidth = 130;
 const double pairHeight = suiteControlHeight;
 
-/// DEF-01: "Saved or Cancelled shown": how long the pressed word is held
-/// before the callback runs. It counts from the press, so it includes the
-/// slide; when the animation time is longer than the hold, the hold lasts until
-/// the slide has finished.
-const Duration savedCancelledHold = Duration(seconds: 3);
 
 /// UIC-27: the Cancel | Save pair: two joined buttons that sit at the bottom of
 /// what they save. The same pair carries a question's answers, No | Yes
@@ -42,11 +37,13 @@ class CancelSavePair extends StatefulWidget {
     this.cancelledWord,
   });
 
-  /// Test hook: when set, replaces the DEF-01 hold for every pair.
+  /// Test hook: when set, replaces the DEF-01 hold for every pair. It stays here because the
+  /// pair is built deep inside dialogs that tests cannot pass a hold to; `test/flutter_test_config.dart`
+  /// sets it to zero for the whole test run (a scope or constructor option would need every caller to forward it).
   @visibleForTesting
   static Duration? debugHold;
 
-  /// Overrides the hold (default: DEF-01, [savedCancelledHold]).
+  /// Overrides the hold (default: the Settings Status word time, [SuiteStatusWordScope], DEF-01).
   final Duration? holdDuration;
 
   /// Word shown after Save is pressed. Default: "Saved" when the side is
@@ -141,7 +138,7 @@ class _CancelSavePairState extends State<CancelSavePair> with TickerProviderStat
       _cover.forward(from: 0);
     }
     final given = CancelSavePair.debugHold;
-    var hold = given ?? widget.holdDuration ?? savedCancelledHold;
+    var hold = given ?? widget.holdDuration ?? SuiteStatusWordScope.of(context);
     if (given == null && hold < _time) hold = _time;
     _hold = Timer(hold, () {
       _hold = null;

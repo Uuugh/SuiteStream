@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:suitestream/src/time/length_input.dart';
@@ -82,3 +83,66 @@ Duration stepLengthIn(Duration d, LengthUnit unit, int dir) =>
 
 /// The same length, shown in the larger unit when it is a whole number of hours.
 LengthUnit unitFor(Duration d) => d.inMinutes % 60 == 0 ? LengthUnit.hours : LengthUnit.minutes;
+
+/// DEF-01 (Long-press time): press-and-hold starts after 0.2 seconds by default,
+/// within 0.2 to 1.5 seconds. A Settings > Theme value (SET-03.b).
+const Duration defaultLongPress = Duration(milliseconds: 200);
+const Duration minLongPress = Duration(milliseconds: 200);
+const Duration maxLongPress = Duration(milliseconds: 1500);
+
+/// CAL-03.d: the long-press time stays within the limits in DEF-01.
+Duration clampLongPress(Duration d) => d < minLongPress ? minLongPress : (d > maxLongPress ? maxLongPress : d);
+
+/// DEF-01 (Saved or Cancelled shown): the pressed word of Cancel | Save shows
+/// for 1 second by default, within 0.5 to 10 seconds. A Settings > Theme value (SET-03.m).
+const Duration defaultStatusWordTime = Duration(seconds: 1);
+const Duration minStatusWordTime = Duration(milliseconds: 500);
+const Duration maxStatusWordTime = Duration(seconds: 10);
+
+Duration clampStatusWordTime(Duration d) =>
+    d < minStatusWordTime ? minStatusWordTime : (d > maxStatusWordTime ? maxStatusWordTime : d);
+
+/// SET-03.m: the Saved or Cancelled shown time. Held here next to the other settings
+/// values; kept on the device for now (the database comes with PBI-037). Listeners (the
+/// app's `SuiteStatusWordScope`) hear every change.
+class TimingSettings extends ChangeNotifier {
+  TimingSettings({SharedPreferences? prefs}) : _prefs = prefs {
+    final ms = prefs?.getInt(statusWordKey);
+    if (ms != null) _statusWordTime = clampStatusWordTime(Duration(milliseconds: ms));
+  }
+
+  static const statusWordKey = 'timing.statusWordMs';
+
+  final SharedPreferences? _prefs;
+  Duration _statusWordTime = defaultStatusWordTime;
+
+  /// How long the word of a pressed Cancel | Save pair stays shown; always within
+  /// [minStatusWordTime] to [maxStatusWordTime].
+  Duration get statusWordTime => _statusWordTime;
+
+  set statusWordTime(Duration v) {
+    final next = clampStatusWordTime(v);
+    if (next == _statusWordTime) return;
+    _statusWordTime = next;
+    _prefs?.setInt(statusWordKey, next.inMilliseconds);
+    notifyListeners();
+  }
+
+  /// Reset restores the DEF-01 default (and forgets the saved value).
+  void reset() {
+    _statusWordTime = defaultStatusWordTime;
+    _prefs?.remove(statusWordKey);
+    notifyListeners();
+  }
+
+  bool get isDefault => _statusWordTime == defaultStatusWordTime;
+}
+
+/// Makes the [TimingSettings] in effect reachable from Settings; the app wraps it above
+/// everything (and wraps `SuiteStatusWordScope` from the same object).
+class TimingSettingsScope extends InheritedNotifier<TimingSettings> {
+  const TimingSettingsScope({super.key, required TimingSettings settings, required super.child}) : super(notifier: settings);
+
+  static TimingSettings? maybeOf(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<TimingSettingsScope>()?.notifier;
+}

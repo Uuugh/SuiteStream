@@ -42,6 +42,7 @@ abstract final class SuiteIcons {
   static const map = IconData(0xe55b, fontFamily: fontFamily);
   static const moreHoriz = IconData(0xe5d3, fontFamily: fontFamily);
   static const openInFull = IconData(0xf1ce, fontFamily: fontFamily);
+  static const restartAlt = IconData(0xf053, fontFamily: fontFamily);
   static const print = IconData(0xe8ad, fontFamily: fontFamily);
   static const public = IconData(0xe80b, fontFamily: fontFamily);
   static const schedule = IconData(0xefd6, fontFamily: fontFamily);

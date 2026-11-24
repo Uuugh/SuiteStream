@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suitestream/src/calendar/calendar_defaults.dart';
 import 'package:suitestream/src/calendar/calendar_controller.dart';
-import 'package:suitestream/src/calendar/event_drag.dart';
 import 'package:suitestream/src/calendar/settings_dialog.dart';
 import 'package:suitestream/src/l10n/messages.dart';
 import 'package:suitestream/src/theme/suite_theme.dart';
-import 'package:suitestream/src/ui/reset_button.dart';
 import 'package:suitestream/src/theme/theme_mode_controller.dart';
 import 'package:suitestream/src/theme/theme_settings.dart';
 import 'package:suitestream/src/theme/tokens.dart';
@@ -38,6 +38,14 @@ String _plainSeconds(Duration d) => _formatPercent(d.inMilliseconds / 1000);
 String _percentText(double v) => '${_formatPercent(v)} %';
 String _secondsText(Duration d) => '${formatPressDelay(d)} s';
 
+/// What a setting reads and writes: the calendar controller (animation time, press-and-hold
+/// delay) and the timing settings (Saved or Cancelled shown).
+class _Env {
+  const _Env(this.controller, this.timing);
+  final CalendarController controller;
+  final TimingSettings timing;
+}
+
 /// One control of the pane: a number with its range, how to read and show it, and where it goes.
 class _Setting {
   const _Setting({
@@ -56,13 +64,13 @@ class _Setting {
   final String labelKey;
 
   /// Applies a typed text; false when the text is not valid.
-  final bool Function(ThemeSettings s, CalendarController c, String text) apply;
+  final bool Function(ThemeSettings s, _Env c, String text) apply;
 
   /// The current value as the field shows it.
-  final String Function(ThemeSettings s, CalendarController c) show;
+  final String Function(ThemeSettings s, _Env c) show;
 
   /// The text after one arrow press (dir is 1 or -1) from the typed text.
-  final String Function(ThemeSettings s, CalendarController c, String text, int dir) step;
+  final String Function(ThemeSettings s, _Env c, String text, int dir) step;
   final String rangeMin;
   final String rangeMax;
 }
@@ -99,8 +107,8 @@ _Setting _seconds(
   String labelKey,
   Duration min,
   Duration max,
-  Duration Function(ThemeSettings, CalendarController) get,
-  void Function(ThemeSettings, CalendarController, Duration) set,
+  Duration Function(ThemeSettings, _Env) get,
+  void Function(ThemeSettings, _Env, Duration) set,
 ) => _Setting(
   id: id,
   group: _Group.times,
@@ -124,13 +132,13 @@ _Setting _seconds(
 final List<_Setting> _settings = [
   _seconds('animation', 'themeSettingAnimationTime', Duration.zero, ThemeSettingsLimits.animationMax, (s, c) => s.animationTime, (s, c, v) {
     s.animationTime = v;
-    c.animationDuration = v; // the animation scope of the calendar reads the controller (SET-03.g)
+    c.controller.animationDuration = v; // the animation scope of the calendar reads the controller (SET-03.g)
   }),
   // SET-03.b: the press-and-hold delay is kept by the controller, on the device (DEF-01).
-  _seconds('press-delay', 'themeSettingPressDelay', minLongPress, maxLongPress, (s, c) => c.longPress, (s, c, v) => c.longPress = v),
-  _seconds('status-chip', 'themeSettingStatusChipTime', ThemeSettingsLimits.statusChipMin, ThemeSettingsLimits.statusChipMax, (s, c) => s.statusChipTime, (s, c, v) => s.statusChipTime = v),
+  _seconds('press-delay', 'themeSettingPressDelay', minLongPress, maxLongPress, (s, c) => c.controller.longPress, (s, c, v) => c.controller.longPress = v),
+  // SET-03.m: how long the word of a pressed Cancel | Save pair stays shown (DEF-01).
+  _seconds('status-word', 'themeSettingStatusWordTime', minStatusWordTime, maxStatusWordTime, (s, c) => c.timing.statusWordTime, (s, c, v) => c.timing.statusWordTime = v),
   _percent('popup-shadow', 'themeSettingPopupShadow', ThemeSettingsLimits.popupShadowMin, ThemeSettingsLimits.popupShadowMax, (s) => s.popupShadow, (s, v) => s.popupShadow = v),
-  _percent('resize-bar', 'themeSettingResizeBar', ThemeSettingsLimits.resizeBarMin, ThemeSettingsLimits.resizeBarMax, (s) => s.resizeBar, (s, v) => s.resizeBar = v),
   _percent('dropdown-text', 'themeSettingDropdownText', ThemeSettingsLimits.dropdownTextMin, ThemeSettingsLimits.dropdownTextMax, (s) => s.dropdownText, (s, v) => s.dropdownText = v),
   _percent('date-picker', 'themeSettingDatePicker', ThemeSettingsLimits.datePickerMin, ThemeSettingsLimits.datePickerMax, (s) => s.datePicker, (s, v) => s.datePicker = v),
 ];
@@ -141,9 +149,15 @@ final List<_Setting> _settings = [
 /// columns when the pane is wider than [settingsThemeTwoColumnWidth] and in one column otherwise (PBI-051).
 /// Every change takes effect at once (UIC-13); an invalid text shows its range and changes nothing.
 class SettingsThemePane extends StatefulWidget {
-  const SettingsThemePane({super.key, required this.controller});
+  const SettingsThemePane({super.key, required this.controller, this.prefs, this.resetHook});
 
   final CalendarController controller;
+
+  /// Where the Saved or Cancelled shown time is kept when no [TimingSettingsScope] is above.
+  final SharedPreferences? prefs;
+
+  /// SET-01.g: Reset sits beside Close in the dialog; the pane hands its action to the dialog here.
+  final SettingsResetHook? resetHook;
 
   @override
   State<SettingsThemePane> createState() => _SettingsThemePaneState();
@@ -158,18 +172,33 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
   ThemeSettings get _theme =>
       context.getInheritedWidgetOfExactType<ThemeSettingsScope>()?.notifier ?? (_own ??= ThemeSettings());
 
+  TimingSettings? _ownTiming;
+
+  /// The timing settings in effect (the scope above the app), or a private set when there is none.
+  TimingSettings get _timing => TimingSettingsScope.maybeOf(context) ?? (_ownTiming ??= TimingSettings(prefs: widget.prefs));
+
+  _Env get _env => _Env(widget.controller, _timing);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.resetHook?.set(_reset);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // The controller owns the animation time the app reads; the model follows it.
     if (_fields.isEmpty) _theme.animationTime = widget.controller.animationDuration;
     for (final s in _settings) {
-      _fields.putIfAbsent(s.id, () => TextEditingController(text: s.show(_theme, widget.controller)));
+      _fields.putIfAbsent(s.id, () => TextEditingController(text: s.show(_theme, _env)));
     }
   }
 
   @override
   void dispose() {
+    widget.resetHook?.clear(_reset);
+    _ownTiming?.dispose();
     for (final f in _fields.values) {
       f.dispose();
     }
@@ -179,13 +208,14 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
 
   void _typed(_Setting s) {
     final m = context.msg;
-    final ok = s.apply(_theme, widget.controller, _fields[s.id]!.text);
+    final ok = s.apply(_theme, _env, _fields[s.id]!.text);
     setState(() => _errors[s.id] = ok ? null : m('rangeInvalid', {'min': s.rangeMin, 'max': s.rangeMax}));
+    if (ok) pushSettingsSync(context);
   }
 
   void _step(_Setting s, int dir) {
     final field = _fields[s.id]!;
-    field.text = s.step(_theme, widget.controller, field.text, dir);
+    field.text = s.step(_theme, _env, field.text, dir);
     _typed(s);
   }
 
@@ -193,9 +223,12 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
     _theme.reset();
     widget.controller.animationDuration = ThemeSettingsLimits.animationDefault;
     widget.controller.longPress = defaultLongPress;
+    _timing.reset();
+    pushSettingsSync(context);
+    if (!mounted) return;
     setState(() {
       for (final s in _settings) {
-        _fields[s.id]!.text = s.show(_theme, widget.controller);
+        _fields[s.id]!.text = s.show(_theme, _env);
         _errors[s.id] = null;
       }
     });
@@ -233,7 +266,10 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
               avatar: Icon(ThemeModeIcons.of(value), size: 18),
               label: Text(m(label)),
               selected: mode.mode == value,
-              onSelected: (_) => mode.mode = value,
+              onSelected: (_) {
+                mode.mode = value;
+                pushSettingsSync(context);
+              },
             ),
         ],
       ),
@@ -294,14 +330,6 @@ class _SettingsThemePaneState extends State<SettingsThemePane> {
                 ),
               );
             },
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ResetButton(
-            key: const ValueKey('setting-theme-reset'),
-            onPressed: _reset,
-            label: m('themeSettingsReset'),
           ),
         ),
       ],

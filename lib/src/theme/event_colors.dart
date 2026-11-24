@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart' show Brightness, Color;
 
 /// One named palette color (UIC-10): [key] names it in tests and keys, [messageKey]
-/// is its arb key, [name] its English fallback, [argb] its opaque color.
+/// is its arb key (the shown name), [argb] its opaque color.
 class PaletteColor {
-  const PaletteColor(this.key, this.messageKey, this.name, this.argb);
+  const PaletteColor(this.key, this.messageKey, this.argb);
   final String key;
   final String messageKey;
-  final String name;
+  /// Diagnostic label for test output only; the shown name comes from [messageKey].
+  String get name => key;
   final int argb;
 }
 
@@ -15,23 +16,19 @@ const int defaultEventColor = 0xFF1D4ED8;
 
 /// THM-09.a: Google Calendar's eleven event colors.
 const List<PaletteColor> eventPalette = [
-  PaletteColor('tomato', 'eventColorTomato', 'Tomato', 0xFFD50000),
-  PaletteColor('flamingo', 'eventColorFlamingo', 'Flamingo', 0xFFE67C73),
-  PaletteColor('tangerine', 'eventColorTangerine', 'Tangerine', 0xFFF4511E),
-  PaletteColor('banana', 'eventColorBanana', 'Banana', 0xFFF6BF26),
-  PaletteColor('sage', 'eventColorSage', 'Sage', 0xFF33B679),
-  PaletteColor('basil', 'eventColorBasil', 'Basil', 0xFF0B8043),
-  PaletteColor('peacock', 'eventColorPeacock', 'Peacock', 0xFF039BE5),
-  PaletteColor('blueberry', 'eventColorBlueberry', 'Blueberry', 0xFF3F51B5),
-  PaletteColor('lavender', 'eventColorLavender', 'Lavender', 0xFF7986CB),
-  PaletteColor('grape', 'eventColorGrape', 'Grape', 0xFF8E24AA),
-  PaletteColor('graphite', 'eventColorGraphite', 'Graphite', 0xFF616161),
+  PaletteColor('tomato', 'eventColorTomato', 0xFFD50000),
+  PaletteColor('flamingo', 'eventColorFlamingo', 0xFFE67C73),
+  PaletteColor('tangerine', 'eventColorTangerine', 0xFFF4511E),
+  PaletteColor('banana', 'eventColorBanana', 0xFFF6BF26),
+  PaletteColor('sage', 'eventColorSage', 0xFF33B679),
+  PaletteColor('basil', 'eventColorBasil', 0xFF0B8043),
+  PaletteColor('peacock', 'eventColorPeacock', 0xFF039BE5),
+  PaletteColor('blueberry', 'eventColorBlueberry', 0xFF3F51B5),
+  PaletteColor('lavender', 'eventColorLavender', 0xFF7986CB),
+  PaletteColor('grape', 'eventColorGrape', 0xFF8E24AA),
+  PaletteColor('graphite', 'eventColorGraphite', 0xFF616161),
 ];
 
-const _calendarNames = [
-  'Cocoa', 'Rose clay', 'Red', 'Vermilion', 'Orange', 'Amber', 'Mint', 'Green', 'Lime', 'Pistachio', 'Butter', 'Gold',
-  'Seafoam', 'Aqua', 'Sky', 'Blue', 'Periwinkle', 'Lilac', 'Silver', 'Dust', 'Mauve', 'Pink', 'Orchid', 'Violet',
-];
 
 const _calendarValues = [
   0xFFAC725E, 0xFFD06B64, 0xFFF83A22, 0xFFFA573C, 0xFFFF7537, 0xFFFFAD46, 0xFF42D692, 0xFF16A765, 0xFF7BD148,
@@ -42,7 +39,7 @@ const _calendarValues = [
 /// DEF-01: Google's twenty-four calendar colors, numbered 1 to 24.
 final List<PaletteColor> calendarPalette = List.unmodifiable([
   for (var i = 0; i < _calendarValues.length; i++)
-    PaletteColor('cal${i + 1}', 'calendarColor${(i + 1).toString().padLeft(2, '0')}', _calendarNames[i], _calendarValues[i]),
+    PaletteColor('cal${i + 1}', 'calendarColor${(i + 1).toString().padLeft(2, '0')}', _calendarValues[i]),
 ]);
 
 /// UIC-20: the palette color with the least squared difference in red, green and
@@ -94,22 +91,13 @@ double eventContrastRatio(Color a, Color b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-/// THM-10.h: the text color for an event chip or bar filled with [fill] (opaque; blend
-/// a translucent fill over its surface first). The text is the fill's own hue moved
-/// toward black (light [brightness]: dark text on pale fills) or toward white (dark
-/// [brightness]) in the fewest steps that reach 4.5:1; when that direction cannot
-/// reach it, it moves the other way.
+/// THM-10.h: the text color for an event chip or bar filled with [fill] (opaque; blend a
+/// translucent fill over its surface first): pure black or pure white, whichever has the
+/// higher contrast against the fill, in light and dark alike; never a blend. [brightness]
+/// does not change the result.
 Color eventTextColorOn(Color fill, Brightness brightness) {
   final opaque = fill.withValues(alpha: 1);
-  final light = brightness == Brightness.light;
-  final first = Color(light ? 0xFF000000 : 0xFFFFFFFF);
-  final second = Color(light ? 0xFFFFFFFF : 0xFF000000);
-  for (final target in [first, second]) {
-    if (eventContrastRatio(opaque, target) < eventTextMinContrast) continue;
-    for (var i = 0; i <= 100; i++) {
-      final candidate = Color.lerp(opaque, target, i / 100)!;
-      if (eventContrastRatio(opaque, candidate) >= eventTextMinContrast) return candidate;
-    }
-  }
-  return eventContrastRatio(opaque, first) >= eventContrastRatio(opaque, second) ? first : second;
+  const black = Color(0xFF000000); // THM-10.h: pure black
+  const white = Color(0xFFFFFFFF); // THM-10.h: pure white
+  return eventContrastRatio(opaque, black) >= eventContrastRatio(opaque, white) ? black : white;
 }

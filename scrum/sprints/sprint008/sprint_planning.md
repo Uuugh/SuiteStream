@@ -22,7 +22,7 @@ Event text is readable on every palette color, Settings saves automatically and 
 Split to fit usage, not for size. The PBI rows are marked "Part of the Sprint 008-009 usage epic" in `product_backlog.csv`.
 
 - Sprint 008 (this slice): PBI-052, PBI-050, PBI-048 options.
-- Sprint 009 (starts automatically after the session window resets at 11:50 AM): PBI-051, PBI-046, PBI-053, PBI-054, PBI-047, the PBI-048 lint fixes and the Sprint 007 findings still open. See `scrum/sprint009/`.
+- Sprint 009 (starts automatically after the session window resets at 11:50 AM): PBI-051, PBI-046, PBI-053, PBI-054, PBI-047, the PBI-048 lint fixes and the Sprint 007 findings still open. See `scrum/sprints/sprint009/`.
 - PBI-040 is now an epic (children PBI-054, PBI-055, PBI-056; PBI-055 and PBI-056 stay in the backlog). PBI-045 stays a story of the epic PBI-039 (6 points); PBI-053 is also a story of PBI-039.
 - Usage-epic rules: at the end of each sprint in it, analyze and test, commit, push, merge into `main`, push `main`, create the next branch from the updated `main`, and start. A failing analyze or test run stops the run. Rows stay `planned` until the Product Owner verifies after the epic.
 
@@ -58,7 +58,7 @@ Per `scrum/definition_of_done.md`:
 | Nakamura | `calendar_page.dart` (header hook), `settings_admin_pane.dart` (Admin pane auto-save and leave), `main.dart`, `lib/src/app/*` and his other files |
 | Takahashi | everything under `scrum/`; the skills and the Kobayashi role file (PBI-047, Sprint 009) |
 
-Arb files: Yamamoto only; others send keys in `scrum/sprint008/strings_<name>.md` by day 1 hour 2. No `orElse` fallbacks or `TODO(arb)` shims.
+Arb files: Yamamoto only; others send keys in `scrum/sprints/sprint008/strings_<name>.md` by day 1 hour 2. No `orElse` fallbacks or `TODO(arb)` shims.
 
 ## How
 

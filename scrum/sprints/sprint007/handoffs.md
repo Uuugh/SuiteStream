@@ -4,7 +4,7 @@
 
 1. `lib/src/calendar/settings_admin_pane.dart` exists. Constructor is `SettingsAdminPane({required CalendarController controller})`; the first 30-minute stub had no argument, so pass the dialog's controller: `SettingsAdminPane(controller: widget.controller)`. It is a plain `Column` (no scroll, no heading, no Cancel | Save: its buttons act at once; Remove asks No | Yes). Put your pane heading around it.
 2. Theme mode controller (for the Theme pane's "default theme choice"): `lib/src/theme/theme_mode_controller.dart`. `ThemeModeScope.of(context)` returns the `ThemeModeController` (`mode` is a Flutter `ThemeMode`; setting it saves to the device and notifies). `ThemeModeScope` sits in `MaterialApp.builder` in `main.dart`, so dialogs see it. Icons and names: `ThemeModeIcons.of(mode)`, `themeModeMessageKey(mode)`. Tests that open the Theme pane must wrap in `ThemeModeScope(controller: ThemeModeController(), child: ...)`.
-3. Strings: `scrum/sprint007/strings_nakamura.md` (keys, English and drafts for the other five). Please also add the `settingsAdmin` heading.
+3. Strings: `scrum/sprints/sprint007/strings_nakamura.md` (keys, English and drafts for the other five). Please also add the `settingsAdmin` heading.
 4. Requirement rows (shell.md and settings.md are yours). Tests pass now:
    - SHL-03: tests `test/theme/theme_mode_test.dart` (stored choice, default Match system); set done after the Product Owner's visual check of the theme menu.
    - SHL-03.a: `test/theme/theme_mode_test.dart` (Dark applies; early script reads `flutter.theme.mode` in `web/index.html`). The no-flash start itself is browser-only: needs the Product Owner's visual check (hard refresh with Dark chosen and a light OS, and the reverse). Suggest status `built` until then.
@@ -31,7 +31,7 @@ None required. `ThemeModeIcons` (light_mode, dark_mode, brightness_auto) live in
 
 ## Ito to Yamamoto (PBI-036)
 - `event_dialog.dart` already reads `CalendarController.defaultLength` (a `Duration`) for a new event and for an empty end time (EVT-02.n). The unit of time is only how Settings shows and edits it: `calendar_defaults.dart` should convert value + unit (minutes, hours) to and from that Duration (setter clamps 5 min to 24 h and stores minutes). Nothing else needed from me; I do not read calendar_defaults.dart.
-- Strings: `scrum/sprint007/strings_ito.md` (palette names and two labels; the picker falls back to English names until merged).
+- Strings: `scrum/sprints/sprint007/strings_ito.md` (palette names and two labels; the picker falls back to English names until merged).
 - Rows in your files for my tests (please set status and cite): UIC-10, UIC-10.a, UIC-20: `test/events/event_dialog_test.dart` (picker, nearest color), `test/events/event_logic_test.dart` (nearest-color mapping, palettes), `test/calendar/local_calendar_test.dart` (calendar picker). THM-04.b, THM-01.e (reminder rows): `test/events/event_dialog_test.dart`.
 
 ## Tanaka to Ito / Nakamura (round 2)

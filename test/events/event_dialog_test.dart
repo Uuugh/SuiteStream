@@ -365,7 +365,7 @@ void main() {
     expect(find.text('Online Meeting is a link starting with https://'), findsOneWidget);
     expect(c.events, isEmpty);
     await typeIn(tester, 'event-meeting', 'https://meet.example.com/abc');
-    expect(tester.widget<IconButton>(find.byKey(const ValueKey('event-open-meeting'))).onPressed, isNotNull);
+    expect(tester.widget<IconButton>(find.byKey(const ValueKey('event-open-meeting'))).onPressed, isA<void Function()>());
     await save(tester);
     expect(c.events.single.meetingUrl, 'https://meet.example.com/abc');
   });
@@ -415,8 +415,7 @@ void main() {
     await save(tester);
     expect(c.events.single.color, 0xFF8E24AA);
     final chip = find.byKey(ValueKey('event-${c.events.single.id}'));
-    final surface = Theme.of(tester.element(chip)).colorScheme.surface;
-    final tint = Color.alphaBlend(const Color(0xFF8E24AA).withValues(alpha: 0.18), surface);
+    final tint = const Color(0xFF8E24AA);
     final bar = find.descendant(
       of: chip,
       matching: find.byWidgetPredicate((w) => w is Container && w.decoration is BoxDecoration && (w.decoration! as BoxDecoration).color == tint),
@@ -761,7 +760,7 @@ void reminderTests() {
     await tester.tap(find.byKey(const ValueKey('reminder-remove-1')));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('reminder-row-4')), findsNothing);
-    expect(tester.widget<TextButton>(find.byKey(const ValueKey('reminder-add'))).onPressed, isNotNull);
+    expect(tester.widget<TextButton>(find.byKey(const ValueKey('reminder-add'))).onPressed, isA<void Function()>());
     await save(tester);
     expect(c.events.single.reminders, [5, 15, 20, 25]);
   });
