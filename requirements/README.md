@@ -27,7 +27,7 @@ These apply to every row in `requirements/`.
 - **Feature**: an area of the app (Calendar, Sources, Account). One file: `requirements/<feature>.md`.
 - **Requirement**: one checkable rule of a feature's behavior with an ID (ACC-06), a status and a definitive statement of what to build. A requirement has a matching test. Other files link to the requirement, not to a sub-requirement.
 - **Sub-requirement**: one checkable rule that further clarifies a requirement, with a sub-ID (ACC-06.a), a status and a definitive statement of what to build. A sub-requirement has a matching sub-test.
-- **Issue**: a component not meeting a requirement. It lives in GitHub issues, not here.
+- **Issue**: a component not meeting a requirement. It lives in the issue database, not here.
 - **Process**: how work is done here (the old process notes, moved with the old app).
 - **Question (?)**: a request for a suggestion; the Product Owner decides.
 - **Shared requirements** (`common.md`): behavior several features use, written once and referenced: time (TIM), shared UI (UI), what an origin allows (CAP), defaults and limits (DEF).
