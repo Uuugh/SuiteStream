@@ -22,3 +22,9 @@ Answer:
 
 
 
+
+## Orchestrator, Sprint 010: Main button style default
+Status: open
+Question: Save (and Yes) can be a contained or an elevated stock button, chosen by a new Theme setting (UIC-27.h). Which is the default?
+Choices: Contained (as today) / Elevated
+Answer:
