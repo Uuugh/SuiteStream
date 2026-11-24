@@ -141,5 +141,5 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-18.c | backlog | Pressing and holding an item for the delay makes it movable: it follows the pointer and can be dropped as SCB-07 says; releasing before the delay is a click. | — |
 | SCB-19 | backlog | The Retire target is a trash-bin icon (msg:scbRetire) at the left of the footer (SCB-15.d); dragging any requirement or issue onto it from the Backlog, the Features & Requirements column or the Issues column retires it. | — |
 | SCB-19.a | backlog | Retiring a requirement moves its whole row from its requirement file to `requirements/retired.md`, with the date and the reason "retired from the ScrumBoard by the Executive"; the row keeps its ID and text there, a retired row stays retired, and its ID is never reused. | — |
-| SCB-19.b | backlog | Retiring an issue closes it in the issue tracker with the label `retired`. | — |
+| SCB-19.b | backlog | Retiring an issue changes its status to `retired` in the issue database. | — |
 | SCB-19.c | backlog | A retired item no longer shows in any column, block or story; nothing else is done for a sprint it sat in: it simply is not listed there any more. | — |
