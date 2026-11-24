@@ -39,7 +39,7 @@ Future<void> _pump(
   WidgetTester tester,
   ScrumBoardApi api, {
   double width = 1000,
-  double height = 300,
+  double height = 420,
 }) async {
   final en = jsonDecode(File('assets/messages/app_en.arb').readAsStringSync()) as Map<String, dynamic>;
   final messages = Messages.fromMaps('en', en, en);
@@ -115,7 +115,7 @@ void main() {
 
   testWidgets('SCB-06.g contents scroll inside a block that is too small', (tester) async {
     final many = [for (var i = 0; i < 40; i++) _req('FEA-$i', 'backlog', 'Item $i', 'feat')];
-    await _pump(tester, FakeScrumBoardApi(requirementList: many, sprintFile: _sprint), height: 200);
+    await _pump(tester, FakeScrumBoardApi(requirementList: many, sprintFile: _sprint), height: 320);
     expect(tester.takeException(), isNull);
     expect(find.byKey(const ValueKey('item-FEA-39')), findsNothing, reason: 'offscreen rows are not built');
     await tester.drag(
@@ -124,7 +124,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('item-FEA-39')), findsOneWidget);
-    expect(tester.getSize(find.byKey(const ValueKey('backlog-block'))).height, 200 - 2 * BoardTokens.gap);
+    expect(tester.getSize(find.byKey(const ValueKey('backlog-block'))).height, 320 - 2 * BoardTokens.gap);
   });
 
   testWidgets('SCB-06.c a block is drawn inside the block it sits in', (tester) async {

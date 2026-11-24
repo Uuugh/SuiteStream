@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:scrumboard/server/paths.dart';
 import 'package:scrumboard/server/progress_usage_readers.dart';
+import 'package:scrumboard/server/requirement_status.dart';
 import 'package:scrumboard/server/requirements_reader.dart';
 import 'package:scrumboard/server/sprint_file.dart';
 
@@ -123,6 +124,29 @@ class ScrumBoardServer {
         } on SprintFormatException catch (e) {
           return await _json(request, 400, {'error': e.reason});
         }
+      }
+      final statusMatch =
+          RegExp(r'^/api/requirements/([^/]+)/status$').firstMatch(path);
+      if (statusMatch != null && method == 'PUT') {
+        final body = await _readBody(request);
+        if (body == null) {
+          return await _json(request, 413, {'error': 'body too large'});
+        }
+        Object? decoded;
+        try {
+          decoded = jsonDecode(utf8.decode(body));
+        } on FormatException {
+          return await _json(request, 400, {'error': 'the body is not JSON'});
+        }
+        final status = decoded is Map<String, dynamic> ? decoded['status'] : null;
+        if (status is! String) {
+          return await _json(request, 400, {'error': 'status is missing'});
+        }
+        final id = Uri.decodeComponent(statusMatch.group(1)!);
+        final answer = await _serialized(
+          () => setRequirementStatus(root, id, status),
+        );
+        return await _json(request, 200, answer);
       }
       if (path == '/api/progress' && method == 'GET') {
         return await _json(request, 200, readProgress(progressDir));

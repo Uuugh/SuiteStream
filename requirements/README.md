@@ -27,13 +27,13 @@ These apply to every row in `requirements/`.
 - **Feature**: an area of the app (Calendar, Sources, Account). One file: `requirements/<feature>.md`.
 - **Requirement**: one checkable rule of a feature's behavior with an ID (ACC-06), a status and a definitive statement of what to build. A requirement has a matching test. Other files link to the requirement, not to a sub-requirement.
 - **Sub-requirement**: one checkable rule that further clarifies a requirement, with a sub-ID (ACC-06.a), a status and a definitive statement of what to build. A sub-requirement has a matching sub-test.
-- **Issue**: a component not meeting a requirement. It lives in GitHub issues, not here.
+- **Issue**: a component not meeting a requirement. It lives in the issue database, not here.
 - **Process**: how work is done here (the old process notes, moved with the old app).
 - **Question (?)**: a request for a suggestion; the Product Owner decides.
 - **Shared requirements** (`common.md`): behavior several features use, written once and referenced: time (TIM), shared UI (UI), what an origin allows (CAP), defaults and limits (DEF).
 - **Parent tests**: a requirement that has sub-requirements passes when all its sub-requirements pass; its own test cell may be `—` or name a test of the whole.
 - **Test cell**: a list of tests, or `see <ID>` links to the tests of another requirement or sub-requirement, or `—` while there is none. A sub-test is simply the test the sub-requirement uses; it may be its own, its parent's, or another requirement's. A shared test lists all the requirement IDs it verifies at the start of its name, separated by commas; failures remain traceable to each listed ID.
-- **`oldkey.md`**: the record of old IDs to new IDs.
+- **`oldkey.md`**: the record of old IDs to new IDs. Rows retired from the ScrumBoard are kept whole in `retired.md`.
 - **Stories, epics, sprints and the backlog** are defined in the process rules. A story names the requirement and sub-requirement IDs it will meet and is done when their tests pass; requirements never refer to a story.
 
 ## Line format

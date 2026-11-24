@@ -46,6 +46,39 @@ void main() {
     );
   });
 
+  test('SCB-13.c setStatus returns ok and reason', () async {
+    late http.Request seen;
+    final api = HttpScrumBoardApi(
+      baseUri: base,
+      client: MockClient((req) async {
+        seen = req;
+        return json({'ok': false, 'reason': 'planned cannot move down'});
+      }),
+    );
+    final r = await api.setStatus('SCB-07.c', 'proposed');
+    expect(seen.method, 'PUT');
+    expect(seen.url.path, '/api/requirements/SCB-07.c/status');
+    expect(jsonDecode(seen.body), {'status': 'proposed'});
+    expect(r.ok, isFalse);
+    expect(r.reason, 'planned cannot move down');
+  });
+
+  test('SCB-13.c fake setStatus changes the row or refuses', () async {
+    final fake = FakeScrumBoardApi(requirementList: const [
+      Requirement(
+        id: 'A-1',
+        status: 'backlog',
+        statement: '',
+        feature: 'a',
+        file: 'requirements/a.md',
+      ),
+    ]);
+    expect((await fake.setStatus('A-1', 'planned')).ok, isTrue);
+    expect((await fake.requirements()).single.status, 'planned');
+    fake.refuseWith = 'no';
+    expect((await fake.setStatus('A-1', 'proposed')).reason, 'no');
+  });
+
   test('SCB-02 reads and saves the sprint', () async {
     late String sentBody;
     final api = HttpScrumBoardApi(

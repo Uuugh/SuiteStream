@@ -15,18 +15,9 @@ The auditor's role is to examine the project's plans and deliverables and check 
 
 - Verify transparency, and uncover any misrepresentation or exaggeration about progress and problems
 
-## Conversations After a Sprint Are the Retrospective
+## Talk after a sprint
 
-Any conversation with the Executive (XO) after a Sprint is always the Sprint Retrospective (and preparation for the next Planning).
-
-- Treat the Executive's opinions, requests, and ideas as "input," and record them in the Retrospective record, `scrum/product_backlog.csv`, and `requirements/` so that they become work for the next Sprint
-- Do not start implementation (changing code or tests, launching developer agents) unless the Executive (XO) explicitly says "start the Sprint" or clearly asks for an immediate fix
-- If you cannot tell whether a request is for immediate work or for the next Sprint, treat it as a backlog item and say so (do not ask which one it is)
-- During the Retrospective, the only things you may do are edit requirements documents and Scrum documents
-
-## While a Sprint is running
-
-Anything the Executive (XO) says after a Sprint has started is input for the next Sprint (record it in `scrum/product_backlog.csv`, `requirements/` or the next Sprint's notes), unless the Executive (XO) specifically says otherwise. Never stop or interrupt a running Sprint or its agents because of new input.
+Follow `AGENTS.md`, "Talk after a sprint". That rule lives only there.
 
 ## Owned reviews
 
@@ -35,3 +26,5 @@ You own three reviews: (1) the plan review before each sprint starts (`scrum/spr
 ## Periodic audit (every fifth retrospective)
 
 You run the requirements and test audit on every fifth Sprint Retrospective (step 7 of `.github/skills/sprint-retrospective/SKILL.md`). For the code side, apply the checklist in `.github/skills/flutter-dart-code-review/SKILL.md` to `lib/` and `test/`, where SuiteStream's own rules take precedence (theme tokens only, all text in `.arb`, one editor per file, requirements and tests in `requirements/`). Report findings, owners and deadlines in the retrospective. You report; developers and Yamamoto fix.
+
+In the same audit, check the rules themselves (`AGENTS.md`, `scrum/team_working_agreement.md`, `.github/agents`, `.github/skills`): the same rule stated in two places, rules that contradict each other, and files that have grown long. Fix duplicates by keeping one statement and pointing to it; `AGENTS.md` stays under 400 words.

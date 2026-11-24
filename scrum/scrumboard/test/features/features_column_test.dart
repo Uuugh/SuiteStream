@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/features/features_column.dart';
 import 'package:scrumboard/src/features/outline.dart';
+import 'package:scrumboard/src/features/requirement_drag_data.dart';
+import 'package:scrumboard/src/features/scb_filter_bar.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
 
 Requirement _r(String id, String status, {String feature = 'a'}) =>
@@ -33,7 +35,7 @@ bool _has(String id) => find.byKey(ValueKey('scb-row-$id')).evaluate().isNotEmpt
 void main() {
   testWidgets('SCB-03 and SCB-03.c rows show ID, status message, statement, feature; heading', (t) async {
     await _pump(t, _api());
-    expect(find.text('Requirements'), findsOneWidget);
+    expect(find.text('Features & Requirements'), findsOneWidget);
     expect(find.text('AAA-01'), findsOneWidget);
     expect(find.text('S AAA-01'), findsOneWidget);
     expect(find.text('Done'), findsOneWidget);
@@ -128,6 +130,17 @@ void main() {
     expect(_has('AAA-01'), isFalse);
     // SCB-11.e: AAA-01 is not listed, so its sub-requirement stands alone.
     expect(_has('AAA-01.a'), isTrue);
+  });
+
+  testWidgets('SCB-07.c a requirement row is draggable and carries its ID and status', (t) async {
+    await _pump(t, _api());
+    final d = t.widget<LongPressDraggable<RequirementDragData>>(find.byKey(const ValueKey('scb-drag-AAA-02')));
+    expect(d.data, const RequirementDragData('AAA-02', 'proposed'));
+  });
+
+  testWidgets('SCB-04 the column uses the shared ScbFilterBar', (t) async {
+    await _pump(t, _api());
+    expect(find.byType(ScbFilterBar), findsOneWidget);
   });
 
   testWidgets('SCB-01.f a failing server shows the message in the column', (t) async {

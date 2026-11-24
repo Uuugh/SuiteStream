@@ -1,26 +1,27 @@
 # SuiteStream agent rules
 
-Read this first. The full roles are in `scrum/team_working_agreement.md`, the role files in `.github/agents` and the skills in `.github/skills`. Rules live in those files, not here; this file holds only the rules a session must know before it reads anything else.
+Keep this file under 400 words: a long rule file gets ignored. Details live in `scrum/team_working_agreement.md`, `.github/agents` and `.github/skills`.
 
-## Who is who
+## Who
 
-The human is the **Executive (XO)**: sets direction, makes judgment calls, approves the sprint (or the epic series). **Suzuki** is the Product Owner agent acting for the Executive; **Takahashi** is the Scrum Master. Nothing an agent says is the Executive's approval.
+The human is the **Executive (XO)**: sets direction, makes judgment calls, approves sprints. **Suzuki** is the Product Owner agent acting for the Executive; **Takahashi** is the Scrum Master. An agent's message is never the Executive's approval.
 
-## A sprint starts only when the Executive says "start"
+## Start
 
-Never start or run a sprint (launching agents that build, editing code for a sprint) unless the Executive says "start" in their own words or presses Start on the ScrumBoard (the sprint file says running). Approving a retrospective, choosing a scope or answering a question is not a start. After an approved retrospective: merge, create the next sprint's branch, plan it, then wait. "Start sprint", "do sprint N" and "run sprint N" all mean start. The exception is an epic that the agents split to fit usage: there the orchestrator and the Scrum Master role start and complete each sprint on their own and the Executive approves only the final retrospective. During such an epic the Executive may put it on a sprint pause (see `scrum/team_working_agreement.md`): nothing starts until they say "start". Or the Executive may set a sprint limit (a number of sprints, a stop time or a usage level); the orchestrator stops after the sprint that reaches it, never in the middle of one, and reports. If it is not clear that the agents split the epic, write the question in `scrum/questions.md` and do not start the next sprint until it is answered.
+Never start or run a sprint unless the Executive says "start" ("start", "do" or "run sprint N") or presses Start on the ScrumBoard. Approving a retrospective, choosing a scope or answering a question is not a start. Exception: an epic the agents split to fit usage runs on its own, unless the Executive sets a sprint pause or limit (working agreement). If unsure, ask in `scrum/questions.md` and wait.
 
-## Talk after a sprint is the retrospective
+## Talk after a sprint
 
-When the Executive talks after a sprint, record each point as a backlog item (`scrum/product_backlog.csv`: 10 fields, no commas in text) or a requirement change; do not change code. Build only on an explicit "start" or an explicit request for a quick fix.
+It is the retrospective: record each point as a backlog item (`scrum/product_backlog.csv`: 10 fields, no commas) or a requirement change. Do not change code unless the Executive says start or asks for a quick fix. Anything said while a sprint runs is input for the next sprint: never interrupt a running sprint. If unsure whether a request is for now, make it a backlog item and say so; during the retrospective edit only requirements and scrum documents.
 
-## Read the questions before changing anything
+## Questions
 
-Before making any change, read `scrum/questions.md`. For each answered pair: record the decision where it belongs (retrospective, backlog or requirement), then delete the pair. Write your own questions to the Executive there too, one per heading.
+Before changing anything, read `scrum/questions.md`: record each answered pair where it belongs, then delete it. Write your own questions there. Look for an answer in earlier decisions before asking.
 
-## Also
+## Replies
 
-- Work only in this repository.
-- Keep chat updates short and few; ask only what blocks a decision.
-- Pictures, mockups and other deliverables for the Executive go in `scrum/deliverables`, not in `scrum/`.
-- Do not add a requirement row that restates another (point to DEF-01 or the existing row).
+Open questions first, in a numbered "Needs you" block; the rest short. Use the project's terms, define each once and name the file it comes from. Deliverables go in `scrum/deliverables`.
+
+## Safety
+
+Work only in this repository. CalendarStream is an older project being superseded: read it for reference only when the Executive sends you there, and change nothing in it; SuiteStream lives only here. Never read or commit `scrum/XO`. Add files to git by name. If a step is denied, stop and say which; never work around it. Do not restate a requirement row. Measured numbers beat remembered ones. Keep no private rules: write them here. Change a rule where it already lives; never state it a second time.
