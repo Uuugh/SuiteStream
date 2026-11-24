@@ -1,6 +1,6 @@
 # Sprint 012 Planning
 
-**Status: running.** Branch `sprint012`. The Executive said "start 012. pause at 014", "no sprint limit on the ScrumBoard epic" and "the goal is for this process to be automated" (`team_working_agreement.md`, Executive role 3 and "sprint pause"). So Sprint 012 and 013 run on their own, and the epic holds before Sprint 014. The sprint ends without waiting for a retrospective approval; the Executive reviews at the pause.
+**Status: finished (recorded automatically).** Branch `sprint012`. The Executive said "start 012. pause at 014", "no sprint limit on the ScrumBoard epic" and "the goal is for this process to be automated" (`team_working_agreement.md`, Executive role 3 and "sprint pause"). So Sprint 012 and 013 run on their own, and the epic holds before Sprint 014. The sprint ends without waiting for a retrospective approval; the Executive reviews at the pause.
 
 ## Usage decision (scrum/usage.md, Cost per story point, steps 1 to 4)
 

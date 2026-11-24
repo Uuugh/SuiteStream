@@ -1026,6 +1026,8 @@
   "scbLoadFailed": "Não foi possível ler os dados: {reason}",
   "scbServerUnreachable": "Não foi possível contactar o servidor do ScrumBoard: {reason}",
   "scbRequirements": "Requisitos",
+  "scbFeaturesRequirements": "Funcionalidades e requisitos",
+  "scbMoveRefused": "Movimento recusado: {reason}",
   "scbBacklog": "Backlog",
   "scbStatusProposed": "Proposto",
   "scbStatusBacklog": "Backlog",

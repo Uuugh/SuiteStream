@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:scrumboard/src/api/reload_scope.dart';
 import 'package:scrumboard/src/api/scrumboard_api.dart';
 import 'package:scrumboard/src/features/outline.dart';
-import 'package:scrumboard/src/features/scb_filter.dart';
+import 'package:scrumboard/src/features/requirement_drag_data.dart';
+import 'package:scrumboard/src/features/scb_filter_bar.dart';
 import 'package:scrumboard/src/l10n/messages.dart';
+import 'package:scrumboard/src/theme/scrum_theme.dart';
 
 /// SCB-11.a: the sub-requirement indent (DEF-01), per level, in logical pixels.
 const double subRequirementIndent = 16;
-
-const _statuses = ['proposed', 'backlog', 'planned', 'done'];
 
 /// SCB-03: the Requirements column (the Features column of the page). It fills
 /// the space the page gives it and scrolls inside (SCB-15.b).
@@ -29,9 +29,7 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   bool _loading = true;
 
   // SCB-04: what the user chose to hide, kept in memory only.
-  Set<String> _hiddenFeatures = {};
-  Set<String> _hiddenIds = {};
-  Set<String> _hiddenStatuses = {};
+  ScbHiddenFilters _hidden = const ScbHiddenFilters();
 
   // SCB-11.d: nothing is expanded when the page opens.
   Set<String> _expanded = {};
@@ -71,15 +69,6 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
     });
   }
 
-  /// SCB-04.d: an entry is listed when it meets all three filters.
-  List<Requirement> get _listed => [
-        for (final r in _all)
-          if (!_hiddenFeatures.contains(r.feature) &&
-              !_hiddenIds.contains(r.id) &&
-              !_hiddenStatuses.contains(r.status))
-            r,
-      ];
-
   String _statusText(Messages m, String status) => switch (status) {
         'proposed' => m('scbStatusProposed'),
         'backlog' => m('scbStatusBacklog'),
@@ -92,53 +81,25 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   Widget build(BuildContext context) {
     final m = context.msg;
     final theme = Theme.of(context);
-    final listed = _listed;
+    final listed = _hidden.apply(_all);
     final parents = parentIds(listed);
     final allExpanded = parents.isNotEmpty && parents.every(_expanded.contains);
     final rows = buildOutline(listed, _expanded);
-    final features = ({for (final r in _all) r.feature}.toList()..sort());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.all(8),
-          child: Text(m('scbRequirements'), style: theme.textTheme.titleMedium),
+          child: Text(m('scbFeaturesRequirements'), style: theme.textTheme.titleMedium),
         ),
-        // SCB-04 and SCB-11.f: the filters, the count, and at the right end the switch.
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
+        // SCB-04 and SCB-11.f: the shared filter bar; at the right end the switch.
+        ScbFilterBar(
+          items: _all,
+          hidden: _hidden,
+          onChanged: (h) => setState(() => _hidden = h),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    ScbFilter(
-                      label: m('scbFilterFeature'),
-                      choices: [for (final f in features) ScbFilterChoice(f, f)],
-                      hidden: _hiddenFeatures,
-                      onChanged: (h) => setState(() => _hiddenFeatures = h),
-                    ),
-                    ScbFilter(
-                      label: m('scbFilterRequirement'),
-                      choices: [for (final r in _all) ScbFilterChoice(r.id, r.id)],
-                      hidden: _hiddenIds,
-                      onChanged: (h) => setState(() => _hiddenIds = h),
-                    ),
-                    ScbFilter(
-                      label: m('scbFilterStatus'),
-                      choices: [for (final s in _statuses) ScbFilterChoice(s, _statusText(m, s))],
-                      hidden: _hiddenStatuses,
-                      onChanged: (h) => setState(() => _hiddenStatuses = h),
-                    ),
-                    Text(
-                      m('scbShownOf', {'shown': listed.length, 'total': _all.length}),
-                      key: const ValueKey('scb-shown-of'),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
               Text(m('scbExpandAll'), style: theme.textTheme.bodySmall),
               Switch(
                 key: const ValueKey('scb-expand-all'),
@@ -173,7 +134,7 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
   Widget _row(BuildContext context, Messages m, ThemeData theme, OutlineRow row) {
     final r = row.requirement;
     final open = _expanded.contains(r.id);
-    return Container(
+    final content = Container(
       key: ValueKey('scb-row-${r.id}'),
       padding: EdgeInsets.only(left: 8 + row.depth * subRequirementIndent, right: 8),
       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: theme.dividerColor))),
@@ -217,6 +178,18 @@ class _FeaturesColumnState extends State<FeaturesColumn> {
           ),
         ],
       ),
+    );
+    // SCB-07.c: the row is dragged with its ID and status.
+    return LongPressDraggable<RequirementDragData>(
+      key: ValueKey('scb-drag-${r.id}'),
+      data: RequirementDragData(r.id, r.status),
+      feedback: Material(
+        child: Padding(
+          padding: const EdgeInsets.all(scrumPartGap),
+          child: Text(r.id, style: theme.textTheme.labelLarge),
+        ),
+      ),
+      child: content,
     );
   }
 }

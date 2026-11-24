@@ -24,7 +24,7 @@ void main() {
     final m = (await t.runAsync(() => Messages.load('en')))!;
     await t.pumpWidget(ScrumBoardApp(api: api, messages: m));
     await t.pumpAndSettle();
-    expect(find.text('Requirements'), findsWidgets);
+    expect(find.text('Features & Requirements'), findsWidgets);
     expect(find.text('AAA-01'), findsWidgets);
     final before = api.calls['requirements'] ?? 0;
     await t.tap(find.byKey(const ValueKey('scbReload')));

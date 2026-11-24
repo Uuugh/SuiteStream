@@ -47,6 +47,10 @@ abstract class ScrumBoardApi {
 
   /// `GET /api/usage`.
   Future<UsageData> usage();
+
+  /// `PUT /api/requirements/<id>/status` (SCB-13.c, SCB-13.d). A refused move
+  /// is `ok: false` with the reason, not an exception.
+  Future<({bool ok, String reason})> setStatus(String id, String status);
 }
 
 /// Talks to the server over HTTP. [baseUri] is the page's own origin in the
@@ -93,6 +97,19 @@ class HttpScrumBoardApi implements ScrumBoardApi {
   Future<UsageData> usage() async => UsageData.fromJson(
         await _send('GET', '/api/usage') as Map<String, dynamic>,
       );
+
+  @override
+  Future<({bool ok, String reason})> setStatus(String id, String status) async {
+    final json = await _send(
+      'PUT',
+      '/api/requirements/${Uri.encodeComponent(id)}/status',
+      body: jsonEncode({'status': status}),
+    ) as Map<String, dynamic>;
+    return (
+      ok: json['ok'] == true,
+      reason: (json['reason'] ?? '').toString(),
+    );
+  }
 
   Future<Object?> _send(String method, String path, {String? body}) async {
     final request = http.Request(method, baseUri.resolve(path));
@@ -185,4 +202,31 @@ class FakeScrumBoardApi implements ScrumBoardApi {
 
   @override
   Future<UsageData> usage() => _answer('usage', () => usageData);
+
+  /// What [setStatus] answers next; null means ok. Every call is recorded in
+  /// [statusCalls] as `id -> status`.
+  String? refuseWith;
+  final List<({String id, String status})> statusCalls = [];
+
+  @override
+  Future<({bool ok, String reason})> setStatus(String id, String status) =>
+      _answer('setStatus', () {
+        statusCalls.add((id: id, status: status));
+        final reason = refuseWith;
+        if (reason != null) return (ok: false, reason: reason);
+        requirementList = [
+          for (final r in requirementList)
+            if (r.id == id)
+              Requirement(
+                id: r.id,
+                status: status,
+                statement: r.statement,
+                feature: r.feature,
+                file: r.file,
+              )
+            else
+              r,
+        ];
+        return (ok: true, reason: '');
+      });
 }

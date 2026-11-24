@@ -46,12 +46,12 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-07 | backlog | The Product Owner and the team build the sprint by dragging and dropping. | — |
 | SCB-07.a | backlog | A block can be dragged onto a block it may sit in (SCB-06.c) and then sits there, written to the sprint file (SCB-02.d). | — |
 | SCB-07.b | backlog | A block can be dragged to the top of the board and then sits there if it may (SCB-06.c). | — |
-| SCB-07.c | backlog | A requirement or an issue can be dropped only on the Backlog block or on a story. | — |
-| SCB-07.d | backlog | Dropping a `proposed` requirement or issue on the Backlog block sets its status to `backlog`. | — |
-| SCB-07.e | backlog | Dropping a requirement or an issue on a story sets its status to `planned` and records it in the story's Members rows. | — |
-| SCB-07.f | backlog | Dropping a requirement or an issue that is in a story on the Backlog block removes it from the story's Members rows and sets its status to `backlog`. | — |
-| SCB-07.g | backlog | A drop that would move a status down in any other way, or that is not allowed by SCB-07.c, changes nothing and says why (msg:scbMoveRefused, with the reason as {reason}). | — |
-| SCB-07.h | backlog | Dropping something where it already is changes nothing. | — |
+| SCB-07.c | planned | A requirement or an issue can be dropped only on the Backlog block or on a story. | scrum/scrumboard/test/board/requirement_drop_test.dart |
+| SCB-07.d | planned | Dropping a `proposed` requirement or issue on the Backlog block sets its status to `backlog`. | scrum/scrumboard/test/board/requirement_drop_test.dart |
+| SCB-07.e | planned | Dropping a requirement or an issue on a story sets its status to `planned` and records it in the story's Members rows. | scrum/scrumboard/test/board/requirement_drop_test.dart |
+| SCB-07.f | planned | Dropping a requirement or an issue that is in a story on the Backlog block removes it from the story's Members rows and sets its status to `backlog`. | scrum/scrumboard/test/board/requirement_drop_test.dart |
+| SCB-07.g | planned | A drop that would move a status down in any other way, or that is not allowed by SCB-07.c, changes nothing and says why (msg:scbMoveRefused, with the reason as {reason}). | scrum/scrumboard/test/board/requirement_drop_test.dart |
+| SCB-07.h | planned | Dropping something where it already is changes nothing. | scrum/scrumboard/test/board/requirement_drop_test.dart |
 | SCB-07.i | backlog | Dragging a requirement or an issue out of the Backlog block, onto nothing, removes it from the Backlog and puts it back to the status it had before it entered the Backlog; the board keeps that earlier status in the sprint file (SCB-02.d) when the item enters the Backlog. The item stays listed in its own column in every case, with the status changed in the requirement file or the issue database; the board is a window onto the existing process. | — |
 | SCB-08 | backlog | A sprint block has one lifecycle button (msg:scbPause, msg:scbStart, msg:scbStop, msg:scbResume, msg:scbAccept) in its header to the right of its usage metric; stories have none. A sprint's state is shown as a chip: planned, running, stopped, complete, accepted. | — |
 | SCB-08.a | backlog | On a planned sprint the button is Start. It is the Executive's word "start": pressing it sets the sprint to running in the sprint file (SCB-02.d), and agents begin the sprint only when they read that state. | — |
@@ -96,8 +96,8 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-13 | backlog | One command starts the server, which serves the web app and gives it the data over HTTP; the progress folder is given with `--progress <dir>`. | — |
 | SCB-13.a | planned | The server listens on the local machine only, on the port given with `--port` (it starts as the port in DEF-01, ScrumBoard port, 8081; the app itself uses 8080), and answers only a request whose Host is that address or `localhost` and whose Origin, when present, matches it. | scrum/scrumboard/test/server/server_test.dart |
 | SCB-13.b | backlog | The server answers only these requests: read and write the sprint file, list the requirements, set a requirement's status, list the issues, create an issue, set an issue's status, create a requirement, list the progress, read the usage file; any other request is answered not found. | — |
-| SCB-13.c | backlog | The server checks every status change: a status only moves up the order `proposed`, `backlog`, `planned`, `done`, and the only move down is `planned` to `backlog`; any other change is refused with its reason. | — |
-| SCB-13.d | backlog | A requirement's status change edits only the status cell of that row in its file, and the file is replaced as a whole or not at all. | — |
+| SCB-13.c | planned | The server checks every status change: a status only moves up the order `proposed`, `backlog`, `planned`, `done`, and the only move down is `planned` to `backlog`; any other change is refused with its reason. | scrum/scrumboard/test/server/status_test.dart |
+| SCB-13.d | planned | A requirement's status change edits only the status cell of that row in its file, and the file is replaced as a whole or not at all. | scrum/scrumboard/test/server/status_test.dart |
 | SCB-13.e | backlog | An issue's status change updates its status field in the issue database and nothing else of the issue. | — |
 | SCB-13.f | backlog | The server reaches the issue database only through the SuiteStream API, passes every value as data and never builds a command or query from text, and holds no token or secret in its code. | — |
 | SCB-13.g | backlog | When the issue database or its API fails, the server answers with its reason and its other answers keep working. | — |

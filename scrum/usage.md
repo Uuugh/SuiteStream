@@ -96,3 +96,5 @@ If `usage-now.json` is null or stale (the VS Code extension does not refresh it)
 ## Measured rate (Sprint 009, Executive (XO) readings)
 
 Sprint 009 (14 story points, parallel agents, about 20 minutes of work from 11:45) took the session from 91% to the reset at 11:50 and on to 7% afterwards: about 16 points, or **about 0.8% per minute of active sprint time** and about 1.1 session points per story point. Sprints 007 and 008 gave 0.4 to 0.7% per minute. Use **0.5% per minute** as the rule when the Executive (XO) says so, and 0.8% per minute when several agents run in parallel. Idle time costs nothing; measure from the commit times.
+
+| sprint012 | ScrumBoard slice 2 (PBI-081, 090, 092), 4 agent runs, about 300k agent tokens | 2026-11-23 | Sonnet 5.5 | 31 (8 x 3.9) | ~0 (after the 10:50 PM reset; 79 / 37 before it) / 37 | ~12 / ~40 (orchestrator estimate, not a reading) | ~12 (est.) | Estimate from 300k tokens at 2.7 per 100k (8) plus about 4 for the orchestrator; the Executive's real reading replaces it. Agents started only after the reset because nothing fit below 85% before it |
