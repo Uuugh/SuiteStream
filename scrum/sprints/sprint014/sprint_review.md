@@ -40,3 +40,11 @@ Slice 4 of the ScrumBoard epic (PBI-049): PBI-102, PBI-103, PBI-104, PBI-106, PB
 5. A file change in the first seconds after a reload shows on the board.
 6. Block widths look right.
 7. PBI-106 against the real `usage.sh` on Windows (SCB-14.o).
+
+## Executive check results (2026-11-24, after the sprint)
+
+- Check 1 (zoom icon, SCB-20, SCB-20.a, PBI-102): good. The Executive wants the look changed to a boxed font size between minus and plus: PBI-123.
+- Check 2 (status token, SCB-23, PBI-103): good. The Executive does not need the name after an ID: PBI-124.
+- PBI-102 and PBI-103 accepted and moved to `scrum/product_backlog_done.csv`; SCB-20, SCB-20.a and SCB-23 set to `done`.
+- Check 3 (theme and zoom kept, SCB-24, PBI-104): good. PBI-104 accepted and moved to `scrum/product_backlog_done.csv`; SCB-24 set to `done`.
+- Still to be reported: Features column backlog choice (PBI-108), first change (PBI-107), block widths (PBI-109), real `usage.sh` (PBI-106).

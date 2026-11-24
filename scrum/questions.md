@@ -19,10 +19,3 @@ Question: ...
    Choices: ... (optional)
 Answer:
 ```
-
-## 3. Takahashi, Sprint 014 When do points count as completed?
-Status: open
-Question: `scrum/velocity.csv` has a completed_points column. For Sprints 11 to 14 I counted points as completed once they were built and tested, even though you have not accepted them yet (everything is still In Review). What should the column mean?
-   a. Built and tested, as now (recommended)
-   b. Only points you have accepted
-Answer:
