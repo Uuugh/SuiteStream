@@ -9,26 +9,26 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-01 | backlog | The ScrumBoard is one web page, served by a local server (SCB-13), that shows the backlog, the sprint blocks, their usage and the agents' progress. | — |
 | SCB-01.a | backlog | The ScrumBoard changes only the sprint file, the status cell of a requirement row, the questions file (SCB-17), the issues and labels of the issue tracker through the user's own signed-in access, and nothing else; it reads the progress files; no token or secret is in its code or in the repository. | — |
 | SCB-01.b | backlog | When the issue tracker cannot be reached, the issue column says why (msg:scbTrackerUnreachable, with the reason as {reason}) and the rest of the ScrumBoard keeps working. | — |
-| SCB-01.c | backlog | A Reload control (msg:scbReload) reads the sprint file, the requirement files, the issues and the progress files again. | — |
-| SCB-01.d | backlog | Every label, heading and note the ScrumBoard shows is a cited message key (rule 14 of `requirements/README.md`) with translations in `requirements/messages/`; the rows below cite them. | — |
-| SCB-01.f | backlog | When the sprint file or the requirement files cannot be read, the page says why (msg:scbLoadFailed, with the reason as {reason}) in the places that need them and the other places keep working. | — |
-| SCB-01.g | backlog | The ScrumBoard's colors come from the theme built from the THM-02 colors, in light and dark; no widget names a color. | — |
-| SCB-02 | backlog | The sprint file `SCRUM.d/sprint.md` holds the blocks, which requirements and issues each story holds, the review and the retrospective. | — |
-| SCB-02.a | backlog | The file has a Blocks table, a Members table, a Review section and a Retrospective section. | — |
-| SCB-02.b | backlog | A Blocks row has: block ID, kind (story, epic or sprint), name, parent block ID (blank at the top), assignee, estimate and usage. | — |
-| SCB-02.c | backlog | A Members row has a story's block ID and one item: a requirement ID or an issue number written #N. | — |
-| SCB-02.d | backlog | Every change made in the ScrumBoard is written to the file at once, and the review and retrospective text is kept as it was. | — |
-| SCB-02.e | backlog | When the file does not exist the sprint is empty, and the first change creates the file. | — |
-| SCB-02.f | backlog | What the ScrumBoard does not edit is written back as it was: text before the first table, other sections, headings inside the Review or Retrospective text, and a row it cannot read. | — |
-| SCB-03 | backlog | The Requirements column lists the requirements read from the requirement files, each with its ID, status, statement and feature. | — |
-| SCB-03.a | backlog | Every row of a feature file in `requirements/` is read, including the files in `connections.d` and `plugins.d`; the README, `oldkey.md` and `open-questions.md` hold no requirements. | — |
-| SCB-03.b | backlog | A status is shown as a message (msg:scbStatusProposed, msg:scbStatusBacklog, msg:scbStatusPlanned, msg:scbStatusDone); a blank status counts as `backlog`. | — |
-| SCB-03.c | backlog | The column's heading is msg:scbRequirements. | — |
-| SCB-04 | backlog | The Requirements column and the Issues column each have the shared filter (UIC-21) for the feature, for the requirement and for the status. | — |
-| SCB-04.a | backlog | The feature filter's choices are the features of what the column lists (msg:scbFilterFeature). | — |
-| SCB-04.b | backlog | The requirement filter's choices are the requirement IDs of what the column lists (msg:scbFilterRequirement). | — |
-| SCB-04.c | backlog | The status filter's choices are the four statuses (msg:scbFilterStatus). | — |
-| SCB-04.d | backlog | An entry is listed when it meets all three filters, and the column shows how many entries are listed out of all (msg:scbShownOf, {shown} the entries listed, {total} all entries). | — |
+| SCB-01.c | planned | A Reload control (msg:scbReload) reads the sprint file, the requirement files, the issues and the progress files again. | scrum/scrumboard/test/app/scrumboard_page_test.dart, scrum/scrumboard/test/api/reload_scope_test.dart |
+| SCB-01.d | planned | Every label, heading and note the ScrumBoard shows is a cited message key (rule 14 of `requirements/README.md`) with translations in `requirements/messages/`; the rows below cite them. | scrum/scrumboard/test/app/scrumboard_page_test.dart, scrum/scrumboard/test/l10n/messages_test.dart |
+| SCB-01.f | planned | When the sprint file or the requirement files cannot be read, the page says why (msg:scbLoadFailed, with the reason as {reason}) in the places that need them and the other places keep working. | scrum/scrumboard/test/app/scrumboard_page_test.dart, scrum/scrumboard/test/board/backlog_timeline_test.dart, scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-01.g | planned | The ScrumBoard's colors come from the theme built from the THM-02 colors, in light and dark; no widget names a color. | scrum/scrumboard/test/app/scrumboard_page_test.dart |
+| SCB-02 | planned | The sprint file `SCRUM.d/sprint.md` holds the blocks, which requirements and issues each story holds, the review and the retrospective. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-02.a | planned | The file has a Blocks table, a Members table, a Review section and a Retrospective section. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-02.b | planned | A Blocks row has: block ID, kind (story, epic or sprint), name, parent block ID (blank at the top), assignee, estimate and usage. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-02.c | planned | A Members row has a story's block ID and one item: a requirement ID or an issue number written #N. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-02.d | planned | Every change made in the ScrumBoard is written to the file at once, and the review and retrospective text is kept as it was. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-02.e | planned | When the file does not exist the sprint is empty, and the first change creates the file. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-02.f | planned | What the ScrumBoard does not edit is written back as it was: text before the first table, other sections, headings inside the Review or Retrospective text, and a row it cannot read. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-03 | planned | The Requirements column lists the requirements read from the requirement files, each with its ID, status, statement and feature. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-03.a | planned | Every row of a feature file in `requirements/` is read, including the files in `connections.d` and `plugins.d`; the README, `oldkey.md` and `open-questions.md` hold no requirements. | scrum/scrumboard/test/server/readers_test.dart |
+| SCB-03.b | planned | A status is shown as a message (msg:scbStatusProposed, msg:scbStatusBacklog, msg:scbStatusPlanned, msg:scbStatusDone); a blank status counts as `backlog`. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-03.c | planned | The column's heading is msg:scbRequirements. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-04 | planned | The Requirements column and the Issues column each have the shared filter (UIC-21) for the feature, for the requirement and for the status. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-04.a | planned | The feature filter's choices are the features of what the column lists (msg:scbFilterFeature). | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-04.b | planned | The requirement filter's choices are the requirement IDs of what the column lists (msg:scbFilterRequirement). | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-04.c | planned | The status filter's choices are the four statuses (msg:scbFilterStatus). | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-04.d | planned | An entry is listed when it meets all three filters, and the column shows how many entries are listed out of all (msg:scbShownOf, {shown} the entries listed, {total} all entries). | scrum/scrumboard/test/features/features_column_test.dart |
 | SCB-05 | backlog | The Issues column lists the open issues read from the issue tracker, each with its number, title, status, feature, requirement and assignee; its heading is msg:scbIssues. | — |
 | SCB-05.a | backlog | An issue's status is the one of its labels `proposed`, `backlog`, `planned` or `done`; an issue with none counts as `backlog`. | — |
 | SCB-05.b | backlog | An issue's feature is the name after `feature:` in its labels. | — |
@@ -36,13 +36,13 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-05.d | backlog | An issue without a feature or a requirement shows a dash in its place. | — |
 | SCB-05.e | backlog | The issue list holds at most the number of issues in DEF-01, newest first, and says when more exist (msg:scbIssuesTruncated, with the number as {limit}). | — |
 | SCB-06 | backlog | The board along the top has the Backlog block fixed at its left edge, and to the right of it the sprint timeline: the sprint blocks run from the oldest on the left to the newest on the right, and the timeline scrolls sideways in from behind the Backlog block; the add control is the `+` in the right zone of the board's header (SCB-16.a). | — |
-| SCB-06.a | backlog | The Backlog block (heading msg:scbBacklog) is the queue for a sprint: it holds the features (requirements) and the issues whose status is `backlog`. | — |
+| SCB-06.a | planned | The Backlog block (heading msg:scbBacklog) is the queue for a sprint: it holds the features (requirements) and the issues whose status is `backlog`. | scrum/scrumboard/test/board/backlog_timeline_test.dart |
 | SCB-06.b | backlog | The add control (msg:scbAddBlock) asks which kind of block (msg:scbBlockKind, msg:scbKindStory, msg:scbKindEpic, msg:scbKindSprint) and its name (msg:scbBlockName), and adds the block at the end of the board; its Cancel is msg:cancel and its Save is msg:scbSave. | — |
-| SCB-06.c | backlog | A story can sit in an epic or in a sprint, an epic can sit in a sprint, and a sprint sits at the top of the board; a block is drawn inside the block it sits in. | — |
-| SCB-06.d | backlog | A story holds the requirements and the issues that were dropped on it and shows each with its ID or number and title. | — |
-| SCB-06.e | backlog | The Backlog block does not scroll with the timeline; the sprint blocks stand in one row that scrolls sideways under it, and when the page opens the timeline is scrolled to its right end, so the newest sprints are in view. | — |
+| SCB-06.c | planned | A story can sit in an epic or in a sprint, an epic can sit in a sprint, and a sprint sits at the top of the board; a block is drawn inside the block it sits in. | scrum/scrumboard/test/board/backlog_timeline_test.dart |
+| SCB-06.d | planned | A story holds the requirements and the issues that were dropped on it and shows each with its ID or number and title. | scrum/scrumboard/test/board/backlog_timeline_test.dart |
+| SCB-06.e | planned | The Backlog block does not scroll with the timeline; the sprint blocks stand in one row that scrolls sideways under it, and when the page opens the timeline is scrolled to its right end, so the newest sprints are in view. | scrum/scrumboard/test/board/backlog_timeline_test.dart |
 | SCB-06.f | backlog | A scrollbar on the board moves to older sprints, to the left; they are read from `scrum/sprints` and loaded in batches of the size in DEF-01 only when the scroll nears them, never all at once. | — |
-| SCB-06.g | backlog | The Backlog block is as wide as a sprint block; every block of the top level has the same width, and its contents scroll inside it (SCB-15.b). | — |
+| SCB-06.g | planned | The Backlog block is as wide as a sprint block; every block of the top level has the same width, and its contents scroll inside it (SCB-15.b). | scrum/scrumboard/test/board/backlog_timeline_test.dart |
 | SCB-07 | backlog | The Product Owner and the team build the sprint by dragging and dropping. | — |
 | SCB-07.a | backlog | A block can be dragged onto a block it may sit in (SCB-06.c) and then sits there, written to the sprint file (SCB-02.d). | — |
 | SCB-07.b | backlog | A block can be dragged to the top of the board and then sits there if it may (SCB-06.c). | — |
@@ -72,19 +72,19 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-10.b | backlog | A sprint or an epic shows the sum of the estimates and the sum of the usage of the stories it holds. | — |
 | SCB-10.c | backlog | Each of these blocks shows its usage and estimate as a bar, in the warn color (THM-02.j) when usage is above the estimate. | — |
 | SCB-11 | backlog | The Requirements column lists each requirement with its sub-requirements beneath it as an outline. | — |
-| SCB-11.a | backlog | A sub-requirement is indented from its requirement by the sub-requirement indent in DEF-01. | — |
-| SCB-11.b | backlog | A requirement that has sub-requirements shows a triangle that collapses or expands them, pointing right when they are collapsed and down when they are expanded; a requirement without sub-requirements shows no triangle (msg:scbExpandRow, msg:scbCollapseRow name it). | — |
-| SCB-11.c | backlog | A switch above the list (msg:scbExpandAll) collapses every requirement's sub-requirements, so only the requirements with no parent remain visible, or expands them all again at once; collapsing never hides a requirement that has no parent. | — |
-| SCB-11.d | backlog | When the page opens every requirement shows without its sub-requirements, so the column is never empty while requirements are listed. | — |
-| SCB-11.e | backlog | The outline is built from the listed entries: a sub-requirement whose requirement is not listed is listed on its own, without an indent. | — |
-| SCB-11.f | backlog | The switch of SCB-11.c sits on the row of the column's filters, at the right end of that row. | — |
+| SCB-11.a | planned | A sub-requirement is indented from its requirement by the sub-requirement indent in DEF-01. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-11.b | planned | A requirement that has sub-requirements shows a triangle that collapses or expands them, pointing right when they are collapsed and down when they are expanded; a requirement without sub-requirements shows no triangle (msg:scbExpandRow, msg:scbCollapseRow name it). | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-11.c | planned | A switch above the list (msg:scbExpandAll) collapses every requirement's sub-requirements, so only the requirements with no parent remain visible, or expands them all again at once; collapsing never hides a requirement that has no parent. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-11.d | planned | When the page opens every requirement shows without its sub-requirements, so the column is never empty while requirements are listed. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-11.e | planned | The outline is built from the listed entries: a sub-requirement whose requirement is not listed is listed on its own, without an indent. | scrum/scrumboard/test/features/features_column_test.dart |
+| SCB-11.f | planned | The switch of SCB-11.c sits on the row of the column's filters, at the right end of that row. | scrum/scrumboard/test/features/features_column_test.dart |
 | SCB-11.g | backlog | The Issues column lists the issues under the feature they belong to: a feature row with a triangle that collapses or expands its issues, the same control as SCB-11.b; collapsing hides only the issues and leaves every feature row visible. | — |
 | SCB-11.h | backlog | An issue belongs to its feature (SCB-05.b) or, when it has none, to the feature of the requirement it names (SCB-05.c); an issue with neither is a top-level row under no feature and always stays visible. | — |
 | SCB-11.i | backlog | The Issues column has the switch of SCB-11.c on its filter row, collapsing or expanding the issues of every feature, and opens collapsed (SCB-11.d). | — |
-| SCB-15 | backlog | The page fits the window and every part of it scrolls on its own. | — |
-| SCB-15.a | backlog | The page itself does not scroll. It has three rows: the board along the top (SCB-06) with 40 % of the window's height, a middle row with the usage chart and the running agents (SCB-12, SCB-14) with 20 %, and a bottom row of three columns, Features (the Requirements column, SCB-03), Issues (SCB-05) and Questions (SCB-17), each a third of the page width, with 40 % of the height. | — |
-| SCB-15.b | backlog | Each column, and each block's contents, has its own vertical scrollbar when its content is longer than its area. | — |
-| SCB-15.c | backlog | Nothing is clipped or overflows at the window sizes in DEF-01. | — |
+| SCB-15 | planned | The page fits the window and every part of it scrolls on its own. | scrum/scrumboard/test/app/scrumboard_page_test.dart |
+| SCB-15.a | planned | The page itself does not scroll. It has three rows: the board along the top (SCB-06) with 40 % of the window's height, a middle row with the usage chart and the running agents (SCB-12, SCB-14) with 20 %, and a bottom row of three columns, Features (the Requirements column, SCB-03), Issues (SCB-05) and Questions (SCB-17), each a third of the page width, with 40 % of the height. | scrum/scrumboard/test/app/scrumboard_page_test.dart |
+| SCB-15.b | planned | Each column, and each block's contents, has its own vertical scrollbar when its content is longer than its area. | scrum/scrumboard/test/app/scrumboard_page_test.dart |
+| SCB-15.c | planned | Nothing is clipped or overflows at the window sizes in DEF-01. | scrum/scrumboard/test/app/scrumboard_page_test.dart |
 | SCB-12 | backlog | The middle row has two parts side by side: the usage chart (SCB-14) and the running agents (heading msg:scbAgentProgress), each agent with its name and a completion bar next to it. | — |
 | SCB-12.a | backlog | An agent's bar shows jobs done over total jobs, the jobs being that agent's tasks in the sprint backlog (the Done column, SCB-12.e), and the text `done/total`; the points of the stories done over the points of all stories of the sprint are shown in the same way on the sprint's own bar. | — |
 | SCB-12.b | backlog | With no sprint backlog, or no task in it, the agents part is empty and says so (msg:scbNoProgress). | — |
@@ -92,14 +92,14 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-12.d | backlog | A sprint backlog without a Done column shows no bars. | — |
 | SCB-12.e | backlog | The sprint backlog table (`sprint_backlog.md`) has a Done column; the task owner marks a task done there when it is finished, and the server counts the done tasks of each owner (SCB-12.a). | — |
 | SCB-13 | backlog | One command starts the server, which serves the web app and gives it the data over HTTP; the progress folder is given with `--progress <dir>`. | — |
-| SCB-13.a | backlog | The server listens on the local machine only, on the port given with `--port` (it starts as the port in DEF-01, ScrumBoard port, 8081; the app itself uses 8080), and answers only a request whose Host is that address or `localhost` and whose Origin, when present, matches it. | — |
+| SCB-13.a | planned | The server listens on the local machine only, on the port given with `--port` (it starts as the port in DEF-01, ScrumBoard port, 8081; the app itself uses 8080), and answers only a request whose Host is that address or `localhost` and whose Origin, when present, matches it. | scrum/scrumboard/test/server/server_test.dart |
 | SCB-13.b | backlog | The server answers only these requests: read and write the sprint file, list the requirements, set a requirement's status, list the issues, create an issue, set an issue's status, create a requirement, list the progress, read the usage file; any other request is answered not found. | — |
 | SCB-13.c | backlog | The server checks every status change: a status only moves up the order `proposed`, `backlog`, `planned`, `done`, and the only move down is `planned` to `backlog`; any other change is refused with its reason. | — |
 | SCB-13.d | backlog | A requirement's status change edits only the status cell of that row in its file, and the file is replaced as a whole or not at all. | — |
 | SCB-13.e | backlog | An issue's status change removes the other status labels and adds the new one, creating the label when it is missing, and leaves the issue's open or closed state as it is. | — |
 | SCB-13.f | backlog | The server runs the issue tracker's commands with each argument passed separately and never through a shell, and holds no token or secret. | — |
 | SCB-13.g | backlog | When the issue tracker's command fails, the server answers with its reason and its other answers keep working. | — |
-| SCB-13.h | backlog | When the web app cannot reach the server it says so (msg:scbServerUnreachable, with the reason as {reason}). | — |
+| SCB-13.h | planned | When the web app cannot reach the server it says so (msg:scbServerUnreachable, with the reason as {reason}). | scrum/scrumboard/test/api/api_test.dart |
 | SCB-14 | backlog | In the middle row, beside the running agents, a usage chart (heading msg:scbUsageChart) shows the readings of the 5-hour session and of the 7-day week against the estimates, read from `SCRUM.d/usage.md`. | — |
 | SCB-14.a | backlog | The usage file has a Usage table whose rows are: block ID, estimate session %, estimate weekly %, before session %, before weekly %, after session % and after weekly %; a cell that is not known is a dash. | — |
 | SCB-14.b | backlog | The chart has two meters, one for the session (msg:scbMeterSession) and one for the week (msg:scbMeterWeek), each on a scale from 0 to 100. | — |
@@ -112,7 +112,7 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-14.j | backlog | A legend under the meters says what the colors and marks mean: the reported reading, the markers of the planned builds, and the reset symbol. | — |
 | SCB-14.k | backlog | Each reading in the usage file carries the reset time of its window (weekday and time), which the meter and its line use. | — |
 | SCB-14.g | backlog | When the usage file is missing or has no Usage table the chart is empty and says so (msg:scbNoUsage). | — |
-| SCB-13.i | backlog | Text from the issue tracker's commands is read as Unicode (the UTF 8 form) and the server's answers declare that character set, so characters such as ’, — and › show as written (a defect found in use: they showed as â€™, â€” and â€º). | — |
+| SCB-13.i | planned | Text from the issue tracker's commands is read as Unicode (the UTF 8 form) and the server's answers declare that character set, so characters such as ’, — and › show as written (a defect found in use: they showed as â€™, â€” and â€º). | scrum/scrumboard/test/server/server_test.dart |
 | SCB-16 | backlog | The three add controls (a new block on the board, a new requirement in the Requirements column, a new issue in the Issues column) are one shared control that opens one shared add popup. | — |
 | SCB-16.a | backlog | Each add control is a `+` button in the right zone of the header of its section (UIC-14): the board, Features and Issues; its tooltip and accessible name are msg:scbAddBlock, msg:scbNewRequirement or msg:scbNewIssue. Any section that has an add feature has this `+` in the same place. | — |
 | SCB-16.b | backlog | The popup for a new requirement or a new issue has an optional ID field (msg:scbIdOptional): the ID of the new requirement, or for an issue the ID of the requirement it names; it may be left empty. | — |

@@ -24,6 +24,7 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 
 | sprint003 | T01 to T14 and the Executive's review changes (event dialog, store, header, drag, popups, settings) | 2026-11-21 to 22 | Sonnet 5.5 | 30–40 (est.) | 20 / 92 | 66 / 98 | 46 | Before-reading is the sprint 002 after-reading; after-reading supplied by the Executive (XO) on 2026-11-22. The week rose 6 points and is above the 85% Warning level: no new job should start until the weekly reset (Wed Nov 25, 5:00 PM) |
 | sprint010 | Stack, sync, fixes and reviews (agent run), round 2 and quick fixes, ScrumBoard requirements and mockups | 2026-11-23 | Sonnet 5.5 | – | 18 / 20 | 16 / 29 | ? | Readings along the way: 58 / 25 and 69 / 26 (still the first window). The after-reading is in the next window (reset 4:50 PM, next 10:50 PM), so the session actual is unknown; the week rose 9 points |
+| sprint011 | ScrumBoard slice 1 (PBI-077 to PBI-080) | 2026-11-23 | Sonnet 5.5 | 11 | 27 / 30 | ~45 / ~33 (orchestrator estimate, not a reading) | ~18 (est.) | After-reading is an orchestrator estimate; the Executive's real reading replaces it. |
 
 ## ChatGPT
 
