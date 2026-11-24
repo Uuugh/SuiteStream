@@ -34,7 +34,7 @@ Slice 5 of the ScrumBoard epic (PBI-049): PBI-126, PBI-086, PBI-125 (the Questio
 - Environment: `scrum/order/order005.md` (pause at Sprint 016), `order006.md` (Linux Docker stack items first for Sprint 016; reusable for CalendarStream), `order007.md` (bin color, header expand and collapse icons, agent renames after Sprint 015 is closed out). All are Sprint 016 refinement input.
 - Usage: no reading was taken for this sprint; nothing is logged in `scrum/usage/usage.log`.
 - Housekeeping: a cut-off copy of the IMP-003 row left in `scrum/impediment_log.csv` by the Day 3 commit is removed.
-- Merge to main and `git pull origin main` not done: they wait for the Executive.
+- Merge to main and `git pull origin main`: not done in the review; they follow at the retrospective close-out under `scrum/order/order005.md` and the agent-driven epic rule (amended in the retrospective).
 - For information: the Day 1 `dart format` churn in `models.dart` and `scrumboard_api.dart` is committed as is (`daily_scrum.md` Day 1).
 
 ## Checks the Executive must do (light and dark, hard refresh)
