@@ -143,3 +143,4 @@ Terms. A **status** is one of `proposed`, `backlog`, `planned` or `done` (`requi
 | SCB-19.a | backlog | Retiring a requirement moves its whole row from its requirement file to `requirements/retired.md`, with the date and the reason "retired from the ScrumBoard by the Executive"; the row keeps its ID and text there, a retired row stays retired, and its ID is never reused. | — |
 | SCB-19.b | backlog | Retiring an issue changes its status to `retired` in the issue database. | — |
 | SCB-19.c | backlog | A retired item no longer shows in any column, block or story; nothing else is done for a sprint it sat in: it simply is not listed there any more. | — |
+| SCB-19.d | backlog | Dropping on the Retire target asks nothing: undoing a retirement is the job of the SuiteStream History undo (HIS-03), which the ScrumBoard uses once it is implemented; until then the row kept whole in `requirements/retired.md` is the way back. | — |
