@@ -23,6 +23,7 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 | sprint002 | T01 to T10 (messages, five views, header, date picker, Calendar filter) | 2026-11-21 | Sonnet 5.5 | – | 9 / 90 | 20 / 92 | 11 | Before-reading is the sprint 001 after-reading (9 / 90); after-reading 20 / 92 supplied by the Executive (XO); the week rose 2 points. Includes the Executive's three review changes and the legend removal |
 
 | sprint003 | T01 to T14 and the Executive's review changes (event dialog, store, header, drag, popups, settings) | 2026-11-21 to 22 | Sonnet 5.5 | 30–40 (est.) | 20 / 92 | 66 / 98 | 46 | Before-reading is the sprint 002 after-reading; after-reading supplied by the Executive (XO) on 2026-11-22. The week rose 6 points and is above the 85% Warning level: no new job should start until the weekly reset (Wed Nov 25, 5:00 PM) |
+| sprint010 | Stack, sync, fixes and reviews (agent run), round 2 and quick fixes, ScrumBoard requirements and mockups | 2026-11-23 | Sonnet 5.5 | – | 18 / 20 | 16 / 29 | ? | Readings along the way: 58 / 25 and 69 / 26 (still the first window). The after-reading is in the next window (reset 4:50 PM, next 10:50 PM), so the session actual is unknown; the week rose 9 points |
 
 ## ChatGPT
 
