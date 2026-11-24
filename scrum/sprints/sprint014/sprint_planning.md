@@ -53,9 +53,9 @@ Takahashi writes the statement cells before wave 0: SCB-20 and SCB-20.a rewritte
 | Yamamoto | `requirements/messages/*.arb` (six), root `tool/sync_messages.sh`, `assets/messages/*`, `lib/src/l10n/*`, `lib/src/features/*`, `test/l10n/*`, `test/features/*` |
 | Ito | `lib/src/board/*` (new `status_choice.dart`), `test/board/*` |
 | Tanaka | `lib/main.dart`, `lib/src/app/*` (new `board_prefs.dart`, `board_prefs_default.dart`, `board_prefs_web.dart`), `lib/src/theme/*`, `lib/src/api/reload_scope.dart`, `test/app/*`, `test/api/reload_scope_test.dart`, `test/theme/*` |
-| Takahashi | `scrum/sprint014/*`, backlog, velocity, `scrum/usage/usage.log`, statement, status and test cells of `requirements/scrumboard.md` |
+| Takahashi | `scrum/sprints/sprint014/*`, backlog, velocity, `scrum/usage/usage.log`, statement, status and test cells of `requirements/scrumboard.md` |
 
-Handoffs: `scrum/sprint014/handoffs.md`. Keys from anyone but Yamamoto go in `strings_<name>.md`; none are expected (no new labels: the zoom halves keep msg:scbZoomOut and msg:scbZoomIn).
+Handoffs: `scrum/sprints/sprint014/handoffs.md`. Keys from anyone but Yamamoto go in `strings_<name>.md`; none are expected (no new labels: the zoom halves keep msg:scbZoomOut and msg:scbZoomIn).
 
 ## Fixed names
 

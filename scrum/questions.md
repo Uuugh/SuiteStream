@@ -13,9 +13,16 @@ When the Executive types "questions", list every open question in the format bel
 - Each answer choice (a, b, c...) is on its own new line, indented 3 spaces under its question.
 
 ```
-## <number>. <asker, sprint> <short title>
+<number>. <asker, sprint> <short title>
 Status: open
 Question: ...
    Choices: ... (optional)
 Answer:
 ```
+
+## 3. Takahashi, Sprint 014 When do points count as completed?
+Status: open
+Question: `scrum/velocity.csv` has a completed_points column. For Sprints 11 to 14 I counted points as completed once they were built and tested, even though you have not accepted them yet (everything is still In Review). What should the column mean?
+   a. Built and tested, as now (recommended)
+   b. Only points you have accepted
+Answer:

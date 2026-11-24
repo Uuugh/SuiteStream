@@ -12,6 +12,6 @@ Sprint goal: the ScrumBoard fixes from the Executive's look at Sprint 013 (one z
 | PBI-104 | ScrumBoard remembers its theme and zoom between starts | 1 | Tanaka | Built; In Review |
 | PBI-106 | ScrumBoard runs usage.sh for estimate and trend | 3 | Nakamura | Built; In Review |
 
-Burndown (points not built): Day 0: 9; Day 1: 3; Day 2: 0. Waves 0 to 2 are done; "In Review" waits for the Executive's browser checks (`sprint_planning.md`, Done). The independent Kobayashi review has not run (daily_scrum.md, Day 2).
+Burndown (points not built): Day 0: 9; Day 1: 3; Day 2: 0. Waves 0 to 2 are done; "In Review" waits for the Executive's browser checks (`sprint_planning.md`, Done). The independent Kobayashi code review has now run (`kobayashi_code_review.md`): verdict revise; the must-fix (README) is fixed in 068d515.
 
 Total: 9 points. PBI-108 is counted once (Ito's helper and Yamamoto's column use); it changes one behaviour: the Features column's 'backlog' choice now also removes the requirement from its story (SCB-07.f). PBI-106 ends at the server, API, fake and tests; its two chart clauses moved to PBI-084.

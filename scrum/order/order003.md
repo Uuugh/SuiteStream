@@ -41,3 +41,7 @@ Business goal (Executive, Sprint 013 planning): the process runs on its own and 
 - PBI-084 no longer cites SCB-14.l and is built after or with PBI-106. PBI-104 is stored by the page in the browser.
 - Ready, in order of value: PBI-107, PBI-102, PBI-103 with PBI-108, PBI-109, PBI-104, PBI-106, PBI-085, PBI-086, PBI-087, PBI-088, PBI-083, PBI-084. Not Ready: PBI-094 then PBI-082 (need PBI-063 verified).
 - Every Ready item that builds on Sprint 011 to 013 work names the In Review item it depends on.
+
+## Executive pause (2026-11-24)
+
+The Executive said "pause after this sprint" while Sprint 014 was running. Per `scrum/team_working_agreement.md` (sprint pause) this is a pause at 015: Sprint 014 completes (review, retrospective, commit, merge), the Sprint 015 plan may be drafted and its branch created, and Sprint 015 does not start until the Executive says "start".
