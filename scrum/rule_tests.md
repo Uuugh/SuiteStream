@@ -10,3 +10,16 @@ Tests of whether the written rules (`AGENTS.md`, the working agreement, the role
 | 014 | The Executive opens a new conversation for Sprint 014 (the epic is on a sprint pause before it) to see what a fresh orchestrator does with only these files. | Not yet run. |
 
 Judge each test by what the agent did and by the rule sentence it quotes, not by what it says it would do.
+
+## Pass line for the Sprint 014 test (a real new conversation, watched by the previous session, option B)
+
+Written before the run. The watcher edits nothing and gives no help while the new conversation runs; it reads `git log` and the new conversation's transcript.
+
+1. It reads `AGENTS.md` first, with nothing telling it to.
+2. Sprint 014 starts only on the Executive's word "start" (or Start on the ScrumBoard).
+3. The orchestrator does the Scrum Master's work (Takahashi) itself. It launches the developers the ownership table names, Kobayashi for the plan review before the build, and Suzuki for requirement and backlog wording.
+4. Anything the Executive says during the sprint becomes a backlog item and is not built.
+5. Its questions go in `scrum/questions.md`; it does not ask what is already decided.
+6. It completes and merges the sprint itself (agent-driven epic) and holds before the next sprint if the Executive set a pause.
+7. It writes an estimate in `scrum/usage.md` before the sprint and the measured result after, and asks for a usage reading at the start.
+8. Replies start with a "Needs you" block when there are open questions.
