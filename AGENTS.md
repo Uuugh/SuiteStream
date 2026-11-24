@@ -1,6 +1,6 @@
 # SuiteStream agent rules
 
-Keep this file under 400 words: a long rule file gets ignored. Details live in `scrum/team_working_agreement.md`, `.github/agents` and `.github/skills`.
+Aim for under 500 words: a long rule file gets ignored. At or over 500, tell the Executive; never trim a rule to fit. Details live in `scrum/team_working_agreement.md`, `.github/agents` and `.github/skills`.
 
 ## Who
 
@@ -16,7 +16,7 @@ It is the retrospective: record each point as a backlog item (`scrum/product_bac
 
 ## Questions
 
-Before changing anything, read `scrum/questions.md`: record each answered pair where it belongs, then delete it. Look for an answer in earlier decisions before asking. Write each question there, oldest first, with the lowest number not used by an open question; a question keeps its number until its pair is deleted, then the number is free to reuse; no other question is renumbered. Ask it once. Open every conversation with `scrum/greeting.md`.
+Before changing anything, read `scrum/questions.md`: record each answered pair (answered in chat or on the ScrumBoard) where it belongs, then delete it. Look for an answer in earlier decisions before asking. Write each question there, oldest first, with the lowest number not used by an open question; a question keeps its number until its pair is deleted, then the number is free to reuse and no other question is renumbered. Ask it once. Open every conversation with `scrum/greeting.md`.
 
 ## Replies
 

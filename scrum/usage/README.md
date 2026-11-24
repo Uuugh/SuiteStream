@@ -1,9 +1,9 @@
 # Usage log
 
-Values are percentages 0-100; `?` or `-` means unknown.
+Values are percentages 0-100; `?` or `-` means unknown. Points are optional (`-`): such a row is logged but not used in the estimate. Bad input prints one error and exits 1; nothing is logged, so fix it and run again.
 
 ```
-bash scrum/usage/usage.sh <model> <session_before> <session_after> <week_before> <week_after> <points> [note]
+bash scrum/usage/usage.sh <model> <session_before> <session_after> <week_before> <week_after> [points] [note]
 bash scrum/usage/usage.sh estimate [model]
 bash scrum/usage/usage.sh trend [model]
 bash scrum/usage/usage.sh project <model> <points> <session_now> [week_now]
@@ -15,7 +15,7 @@ Readings come from the Executive, who pastes `/usage` or the status line. `usage
 
 ## When
 
-- Ask the Executive for a reading at the start of every sprint; record before and after readings at its end.
+- Only the orchestrator asks the Executive for a reading: at the start of every sprint, and it records the before and after readings at the sprint's end. Other agents never ask; they read `usage.log` and use `estimate`, `trend` and `project` to plan sprints, stories and epics.
 - Run `project` before starting any job.
 - Caution (70%): tell the Executive, then continue.
 - Warning (85%): do not start the job; split it or wait for the reset (an epic decides alone, otherwise ask).

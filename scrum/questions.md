@@ -10,6 +10,6 @@ Format:
 ## <number>. <asker, sprint> <short title>
 Status: open
 Question: ...
-Choices: ... (optional)
+   Choices: ... (optional)
 Answer:
 ```

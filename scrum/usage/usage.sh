@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Usage log and estimate. See README.md in this folder.
-#   usage.sh <model> <session_before> <session_after> <week_before> <week_after> <points> [note]
+#   usage.sh <model> <session_before> <session_after> <week_before> <week_after> [points] [note]
 #   usage.sh estimate [model]
 #   usage.sh trend [model]
 #   usage.sh project <model> <points> <session_now> [week_now]
@@ -112,15 +112,15 @@ case "$1" in
     ;;
   ''|-h|--help) sed -n '2,7p' "$0"; exit 1 ;;
   *)
-    [ $# -ge 6 ] || { echo "usage: usage.sh <model> <session_before> <session_after> <week_before> <week_after> <points> [note]"; exit 1; }
+    [ $# -ge 5 ] || { echo "usage: usage.sh <model> <session_before> <session_after> <week_before> <week_after> [points] [note]"; exit 1; }
     model=$1; note=${7//|/\/}
     [ -n "$model" ] || { echo "model must not be empty"; exit 1; }
     for k in 2 3 4 5; do
       v=$(pct "${!k}") || { echo "argument $k must be a number from 0 to 100, or ? or -"; exit 1; }
       case $k in 2) sb=$v;; 3) sa=$v;; 4) wb=$v;; 5) wa=$v;; esac
     done
-    posnum "$6" || { echo "points must be a positive number"; exit 1; }
-    pts=$6
+    pts=${6:--}   # points are optional: empty or - means none (the row is logged but not used in the estimate)
+    [ "$pts" = '-' ] || posnum "$pts" || { echo "points must be a positive number, or - for none"; exit 1; }
     t=${USAGE_TIME:-$(date +%Y-%m-%dT%H:%M:%S)}
     line="$t|$model|$sb|$sa|$(delta "$sb" "$sa")|$wb|$wa|$(delta "$wb" "$wa")|$pts|$note|auto"
     [ -f "$log" ] || echo "# time|model|session_before|session_after|session_delta|week_before|week_after|week_delta|points|note|used|est_session|est_week" > "$log"
