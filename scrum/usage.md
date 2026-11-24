@@ -24,6 +24,8 @@ The readings file is `C:\Users\rfrie\.claude\usage-now.json` (fields `five_hour_
 
 | sprint003 | T01 to T14 and the Executive's review changes (event dialog, store, header, drag, popups, settings) | 2026-11-21 to 22 | Sonnet 5.5 | 30–40 (est.) | 20 / 92 | 66 / 98 | 46 | Before-reading is the sprint 002 after-reading; after-reading supplied by the Executive (XO) on 2026-11-22. The week rose 6 points and is above the 85% Warning level: no new job should start until the weekly reset (Wed Nov 25, 5:00 PM) |
 | sprint010 | Stack, sync, fixes and reviews (agent run), round 2 and quick fixes, ScrumBoard requirements and mockups | 2026-11-23 | Sonnet 5.5 | – | 18 / 20 | 16 / 29 | ? | Readings along the way: 58 / 25 and 69 / 26 (still the first window). The after-reading is in the next window (reset 4:50 PM, next 10:50 PM), so the session actual is unknown; the week rose 9 points |
+| sprint011 | ScrumBoard slice 1 (PBI-077 to PBI-080) | 2026-11-23 | Sonnet 5.5 | 11 | 27 / 30 | ~45 / ~33 (orchestrator estimate, not a reading) | ~18 (est.) | After-reading is an orchestrator estimate; the Executive's real reading replaces it. |
+| sprint011 | ScrumBoard first slice (PBI-077 to 080, 8 points) run by a sub-agent as orchestrator, 13 agent runs, about 1.2M agent tokens | 2026-11-23 | Sonnet 5.5 | 11 (plan) | 27 / 30 | 58 / 34 | 31 | Executive reading after the sprint; the orchestrator's own estimate was 45 / 33, so it ran about 13 session points low; about 3.9 session points per story point, far above the 1.1 of earlier sprints (a first sprint on a new project with a server and many reviews) |
 
 ## ChatGPT
 
@@ -65,12 +67,13 @@ PBI-011, PBI-013, PBI-014 and PBI-018 stay In Review; they are the Sprint 006 st
 The orchestrator checks `usage-now.json` first. When it is stale or null (the VS Code extension does not run the status line, so only a terminal session refreshes it), the orchestrator estimates usage itself, without asking:
 
 - Anchor: the Executive's last pasted reading and the time it was given.
-- Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens, plus the orchestrator's own turns).
+- Add: the token counts that each finished agent reports, at the rate calibrated in Sprint 007 (about 28 session points for about 690k agent tokens, so roughly 4 points per 100k tokens in Sprint 007, but only about 2.7 per 100k in Sprints 009 and 011 (about 16 points for 590k tokens and 31 points for 1.2M tokens, against the Executive's readings); use 2.7 for the next estimate and replace it with the next measured value, plus the orchestrator's own turns).
 - Apply the Caution (70%) and Warning (85%) actions to the estimate. Say the number is an estimate, and take any new reading the Executive (XO) gives as the new anchor.
 - The session window resets at the time in the reading; weekly usage does not reset until its reset time, so check the weekly estimate too.
 
 ## Cost per story point (calibrated 2026-11-23; use it instead of asking)
 
+**Which rate wins:** the most recently measured rate (Sprint 011: about 3.9 session points per story point, or 2.7 per 100k agent tokens) wins over the older figures below; the older figures are history. Use the measured rate for the slice cost and keep the "plus 3 for orchestration" only when the measurement did not include it.
 Measured over Sprints 006 and 007 (planning, three waves of four developers, Kobayashi's review, rounds of fixes):
 
 - **About 1 session point per story point.** Sprint 007 delivered 22 points and the session went from about 44% to about 65%, plus planning and review.

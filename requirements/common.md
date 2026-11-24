@@ -291,7 +291,11 @@ SuiteStream), **rule** (made by a rule).
 | Update check time limit | 15 seconds | | default only |
 | Update checker first wait | 30 seconds | | default only |
 | Update checker wait between rounds | until the next check is due | at least 60 seconds, at most 1 hour | default only |
+| Usage reading age | 30 minutes | 5 to 120 minutes | |
 | ScrumBoard port | 8081 | any free port with --port (SCB-13.a) | default only |
+| ScrumBoard sub-requirement indent | 16 px for each level below the top one (SCB-11) | | default only |
+| ScrumBoard window sizes | 1920 x 1080, 1366 x 768 and 1024 x 640 px (SCB-15.c) | | default only |
+| ScrumBoard request body limit | 1 MiB (1,048,576 bytes); a larger body gets 413 (SCB-13.b) | | default only |
 | Update progress asked | every 2 seconds | gives up after 15 minutes | default only |
 | Update status asked while the page is shown | every minute | | default only |
 | Reload when the restart was never seen | 0.8 seconds | | default only |

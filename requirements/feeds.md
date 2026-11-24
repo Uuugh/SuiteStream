@@ -4,5 +4,5 @@ Settings > Feeds: a container for the connections that are feeds. Everything abo
 
 | ID | status | statement | test |
 |---|---|---|---|
-| FDS-01 | backlog | The Feeds section contains the connections that are feeds; each connection supplies its own header, settings and operation, and the section adds nothing about them. | — |
+| FDS-01 | proposed | The Feeds section contains the connections that are feeds; each connection supplies its own header, settings and operation, and the section adds nothing about them. | — |
 | FDS-01.a | backlog | The section is called Feeds and is a section as UIC-05 says. | — |
