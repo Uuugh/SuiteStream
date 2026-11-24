@@ -1,6 +1,6 @@
 # Sprint 014 Planning
 
-**Status: running (Executive said Run Sprint 14).** Planned; Kobayashi re-review verdict revise, must-fix 14 resolved by Takahashi. Branch `sprint014`. Executive words: "Run Sprint 14" (2026-11-24) released the pause at 014 (`scrum/order/order003.md`); the epic (PBI-049) stays agent-driven with no sprint limit. Review: `kobayashi_plan_review.md` (findings 1 to 18, Re-review section).
+**Status: finished (Executive said Run Sprint 14; merged into main).** Planned; Kobayashi re-review verdict revise, must-fix 14 resolved by Takahashi. Branch `sprint014`. Executive words: "Run Sprint 14" (2026-11-24) released the pause at 014 (`scrum/order/order003.md`); the epic (PBI-049) stays agent-driven with no sprint limit. Review: `kobayashi_plan_review.md` (findings 1 to 18, Re-review section).
 
 ## Availability and timebox
 

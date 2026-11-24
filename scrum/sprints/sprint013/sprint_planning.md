@@ -1,6 +1,6 @@
 # Sprint 013 Planning
 
-**Status: running (recorded automatically).** Branch `sprint013`. Executive words: "start 012. pause at 014", "no sprint limit on the ScrumBoard epic", "the goal is for this process to be automated with me tweaking priorities". `team_working_agreement.md` (sprint pause: "pause at N" means sprints before N run, N does not) so Sprint 013 runs on its own and the epic holds before Sprint 014. The Executive reviews at the pause; no retrospective approval is waited for.
+**Status: finished (recorded automatically).** Branch `sprint013`. Executive words: "start 012. pause at 014", "no sprint limit on the ScrumBoard epic", "the goal is for this process to be automated with me tweaking priorities". `team_working_agreement.md` (sprint pause: "pause at N" means sprints before N run, N does not) so Sprint 013 runs on its own and the epic holds before Sprint 014. The Executive reviews at the pause; no retrospective approval is waited for.
 
 ## Usage decision (scrum/usage.md, Cost per story point, steps 1 to 4)
 
