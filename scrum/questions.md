@@ -19,3 +19,8 @@ Question: Run the rule test again with an agent that has edit access and a tempt
 Choices: Yes / No
 Answer:
 
+
+## Orchestrator, Sprint 010: how the CalendarStream dashboard splits sessions
+Status: open
+Question: I read the CalendarStream-dashboard code (usage_chart.dart, usage_meter_view.dart, usage_table.dart) and its usage.md and dashboard.md rows DSH-14 and found no place where a bar is split at a session break; a bar is one before-to-after span on a 0 to 100 track. Where does the dashboard split sessions (a file, a screenshot, or a short description)? Until I know, SCB-14.f (my reading: 100 is the session break and the bar continues from 0 on a second track) is unconfirmed.
+Answer:
